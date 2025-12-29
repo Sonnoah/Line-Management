@@ -1,6 +1,6 @@
 "use client";
 
-import { saveToFirestore } from "@/script/savedata";
+import { saveToFirestore } from "@/lib/savedata";
 
 export default function Home() {
 

@@ -1,12 +1,13 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import liff from "@line/liff";
-import { useEffect, useState } from "react";
 import { saveUser } from "@/lib/saveuser";
 
-export function liff_init() {
+export function useLiff() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const savedRef = useRef(false); 
 
   useEffect(() => {
     async function init() {
@@ -15,10 +16,10 @@ export function liff_init() {
 
         if (!liff.isLoggedIn()) {
           liff.login();
-          return; 
+          return;
         }
 
-         const profile = await liff.getProfile();
+        const profile = await liff.getProfile();
 
         const userProfile = {
           userId: profile.userId,
@@ -26,7 +27,10 @@ export function liff_init() {
           pictureUrl: profile.pictureUrl,
         };
 
-        await saveUser(userProfile);
+        if (!savedRef.current) {
+          await saveUser(userProfile);
+          savedRef.current = true;
+        }
 
         setProfile(userProfile);
       } catch (err) {
