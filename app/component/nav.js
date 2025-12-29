@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Nav() {
     return (
         <div className="navbar fixed top-0 left-0 w-full z-50">
@@ -9,8 +11,8 @@ export default function Nav() {
                      <ul
                         tabIndex="-1"
                         className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow">
-                        <li><a>Home</a></li>
-                        <li><a>Profile</a></li>
+                        <li> <Link href="/">Home</Link></li>
+                        <li> <Link href="/profile">Profile</Link></li>
                         <li><a>About</a></li>
                     </ul>
                 </div>

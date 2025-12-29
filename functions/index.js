@@ -16,197 +16,108 @@ exports.sendReportToLine = onDocumentCreated(
     const userId = data.userId;
     if (!userId) return;
 
-    const message = {
-      "type": "bubble",
-      "header": {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
+  const message = {
+    type: "flex",
+    altText: "New Leave Request",
+    contents: {
+      type: "bubble",
+      header: {
+        type: "box",
+        layout: "vertical",
+        contents: [
           {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
+            type: "text",
+            text: "PROTOOL (Thailand) Co., Ltd.",
+            align: "center",
+            color: "#ffffff8f",
+            size: "10px"
+          },
+          {
+            type: "text",
+            text: "New Leave Request",
+            weight: "bold",
+            color: "#FFFFFF",
+            align: "center",
+            size: "18px"
+          }
+        ],
+        backgroundColor: "#464F69"
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          row("Full Name", data.name),
+          row("Types of Leave", data.type),
+          row("Start Date", data.start_date),
+          row("End Date", data.end_date),
+          row("Total Days", `${data.total_day} วัน`),
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "md",
+            contents: [
               {
-                "type": "text",
-                "text": "PROTOOL (Thailand) Co., Ltd.",
-                "align": "center",
-                "color": "#ffffff8f",
-                "size": "10px"
+                type: "text",
+                text: "Remarks",
+                weight: "bold",
+                color: "#555555",
+                size: "14px"
               },
               {
-                "type": "text",
-                "text": "New Leave Request",
-                "weight": "bold",
-                "style": "normal",
-                "color": "#FFFFFF",
-                "align": "center",
-                "size": "18px"
+                type: "text",
+                text: data.note || "-",
+                size: "14px",
+                wrap: true
               }
             ]
           }
-        ],
-        "backgroundColor": "#464F69"
-      },
-      "body": {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-          {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "text",
-                    "text": "Full Name",
-                    "size": "14px",
-                    "color": "#555555",
-                    "weight": "bold"
-                  },
-                  {
-                    "type": "text",
-                    "text": data.name,
-                    "size": "14px",
-                    "color": "#111111",
-                    "align": "start"
-                  }
-                ],
-                "margin": "5px"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "text",
-                    "text": "Types of Leave",
-                    "size": "14px",
-                    "color": "#555555",
-                    "weight": "bold"
-                  },
-                  {
-                    "type": "text",
-                    "text": data.type,
-                    "size": "14px",
-                    "color": "#111111",
-                    "align": "start"
-                  }
-                ],
-                "margin": "5px"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "text",
-                    "text": "Start Date",
-                    "size": "14px",
-                    "color": "#555555",
-                    "weight": "bold"
-                  },
-                  {
-                    "type": "text",
-                    "text": data.start_date,
-                    "size": "14px",
-                    "color": "#111111",
-                    "align": "start"
-                  }
-                ],
-                "margin": "5px"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "text",
-                    "text": "End Date",
-                    "size": "14px",
-                    "color": "#555555",
-                    "weight": "bold"
-                  },
-                  {
-                    "type": "text",
-                    "text": data.end_date,
-                    "size": "14px",
-                    "color": "#111111",
-                    "align": "start"
-                  }
-                ],
-                "margin": "5px"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "text",
-                    "text": "Total Days",
-                    "size": "14px",
-                    "color": "#555555",
-                    "weight": "bold"
-                  },
-                  {
-                    "type": "text",
-                    "text": data.total_day+" วัน",
-                    "size": "14px",
-                    "color": "#111111",
-                    "align": "start"
-                  }
-                ],
-                "margin": "5px"
-              },
-              {
-                "type": "box",
-                "layout": "vertical",
-                "contents": [
-                  {
-                    "type": "text",
-                    "text": "Remarks",
-                    "size": "14px",
-                    "color": "#555555",
-                    "weight": "bold"
-                  },
-                  {
-                    "type": "text",
-                    "text": data.note || "-",
-                    "size": "14px",
-                    "color": "#111111",
-                    "margin": "3px",
-                    "align": "start"
-                  }
-                ],
-                "margin": "5px"
-              }
-            ],
-            "margin": "5px"
-          }
         ]
-      },
-      "styles": {
-        "footer": {
-          "separator": true
-        }
       }
     }
-    
+  };
 
-    await axios.post(
-      "https://api.line.me/v2/bot/message/push",
-      {
-        to: userId, 
-        messages: [message],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN.value()}`,
-          "Content-Type": "application/json",
+  function row(label, value) {
+    return {
+      type: "box",
+      layout: "horizontal",
+      margin: "md",
+      contents: [
+        {
+          type: "text",
+          text: label,
+          size: "14px",
+          color: "#555555",
+          weight: "bold",
         },
-      }
-    );
+        {
+          type: "text",
+          text: value || "-",
+          size: "14px",
+          color: "#111111",
+          wrap: true
+        }
+      ]
+    };
+  }
+
+    try {
+      await axios.post(
+        "https://api.line.me/v2/bot/message/push",
+        {
+          to: userId,
+          messages: [message],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN.value()}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("LINE sent success");
+    } catch (err) {
+      console.error("LINE ERROR:", err.response?.data || err.message);
+    }
   }
 );

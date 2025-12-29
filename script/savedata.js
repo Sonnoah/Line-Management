@@ -1,33 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import liff from "@line/liff";
 import { db } from "./firebase_config";
 import { collection, addDoc } from "firebase/firestore";
+import { get_liff_Profile } from "../helper/liff_get.profile";
 import Swal from "sweetalert2";
 
-
-async function main() {
-  await liff.init({ liffId: "2008650824-im7pjpsM" });
-  if (liff.isLoggedIn()) {
-    const profile = await liff.getProfile();
-    document.getElementById("userId").value = profile.userId;
-  } else {
-    liff.login();
-  }
-}
-main();
-
 export async function saveToFirestore() {
+
+  const profile = await get_liff_Profile();
+
   const form = document.getElementById("Form");
 
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
-
   const data = {
-    userId: document.getElementById("userId").value,
+    userId: profile.userId,        
     name: document.getElementById("name").value,
     type: document.getElementById("type").value,
     start_date: document.getElementById("start_date").value,
@@ -49,8 +34,10 @@ export async function saveToFirestore() {
     });
 
     form.reset();
+
   } catch (e) {
     console.error(e);
+
     Swal.fire({
       icon: "error",
       title: "ส่งคำขอไม่สำเร็จ",
@@ -58,4 +45,3 @@ export async function saveToFirestore() {
     });
   }
 }
-

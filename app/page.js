@@ -3,14 +3,15 @@
 import { saveToFirestore } from "@/script/savedata";
 
 export default function Home() {
+
+
   return (
     <div className="wrap">
-      <main className="main-container">
+      <main className="from-container">
         <h2 className="uppercase">Request For Leave</h2>
         <div className="input-container ">
+          
           <form id="Form" className="form">
-            <input type="hidden" id="userId"></input>
-
             <label className="label_title">Full Name</label>
             <label className="input w-full">
               <span className="solar--user-linear"></span>
