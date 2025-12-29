@@ -1,5 +1,5 @@
 import { Kanit } from "next/font/google"
-import Liff_login from "./component/liff_login"
+import LiffLogin from "@/lib/liff_login"
 import Nav from "./component/nav"
 import "./globals.css"
 import "./style/icon.css"
@@ -16,10 +16,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="th">
       <body className={kanit.className}>
-        <Liff_login>
+        <LiffLogin>
           <Nav/>
           {children}
-        </Liff_login>
+        </LiffLogin>
       </body>
     </html>
   )

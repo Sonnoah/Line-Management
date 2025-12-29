@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { load_profile } from "@/helper/liff_get.profile";
+import { load_profile } from "@/helper/liff_get_profile";
 import { Loading } from "@/helper/loading";
+import EditUsername from "@/app/component/edit_username";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -28,7 +29,7 @@ export default function Profile() {
            <label className="label_profile_title ">User ID</label>
             <button
               type="button"
-              className="eye-btn ml-2"
+              className="profile_icon ml-2"
               onClick={() => setShowUserId(!showUserId)}
             >
               {showUserId ? <span className="radix-icons--eye-none"></span> 
@@ -39,6 +40,13 @@ export default function Profile() {
         <span className="label_profile break-all">
             {showUserId ? profile.userId : "************"}
         </span>
+        
+        <label className="label_profile">
+          <EditUsername
+            userId={profile.userId}
+            currentUsername={profile.username}
+          />
+        </label>
 
         <label className="label_profile_title ">Display Name</label>
         <label className="label_profile">{profile.displayName}</label>
@@ -46,7 +54,7 @@ export default function Profile() {
         <label className="label_profile_title ">Role</label>
         <label className="label_profile"></label>
 
-
+                   
       </main>
     </div>
   );

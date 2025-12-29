@@ -10,11 +10,18 @@ export default function Nav() {
                     </div>
                      <ul
                         tabIndex="-1"
-                        className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow">
-                        <li> <Link href="/">Home</Link></li>
-                        <li> <Link href="/profile">Profile</Link></li>
-                        <li><a>About</a></li>
-                    </ul>
+                        className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow text-[16px]">
+                        <li> <Link href="/"><span className="iconamoon--home"></span> Home</Link></li>
+                        <li> <Link href="/profile"><span className="ri--user-5-line"></span>Profile</Link></li>
+                        <li>
+                            <a className="pointer-events-none opacity-50"><span className="oui--nav-reports"></span>Request</a>
+                            <ul>
+                            <li><a>Submenu 1</a></li>
+                            <li> <Link href="/request_for_leave">Request For Leave</Link></li>
+                            </ul>
+                        </li>
+                        <li> <Link href="/admit">Admit Panel</Link></li>
+                        </ul>
                 </div>
             </div>
         </div>
