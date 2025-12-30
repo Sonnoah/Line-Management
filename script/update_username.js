@@ -8,7 +8,7 @@ export async function update_username(userId, username) {
     throw new Error("Must be more than 2 characters.");
   }
 
-  await updateDoc(doc(db, "users", userId), {
+  await updateDoc(doc(db, "Users", userId), {
     username: value,
     updatedAt: serverTimestamp(),
   });

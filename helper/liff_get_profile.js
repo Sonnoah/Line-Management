@@ -1,13 +1,13 @@
 import liff from "@line/liff";
-import { getUser } from "@/lib/get_user";
+import { getUser } from "@/script/get_user";
 import { saveUser } from "@/lib/saveuser";
 
-export async function load_profile(setProfile) {
+export async function get_liff_Profile() {
   await liff.init({ liffId: "2008650824-im7pjpsM" });
 
   if (!liff.isLoggedIn()) {
     liff.login();
-    return;
+    return null;
   }
 
   const liffProfile = await liff.getProfile();
@@ -18,14 +18,13 @@ export async function load_profile(setProfile) {
     pictureUrl: liffProfile.pictureUrl,
   };
 
-
   await saveUser(baseProfile);
 
   const dbUser = await getUser(baseProfile.userId);
 
-  setProfile({
+  return {
     ...baseProfile,
     username: dbUser?.username ?? null,
     role: dbUser?.role ?? "user",
-  });
+  };
 }

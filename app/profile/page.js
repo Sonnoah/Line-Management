@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { load_profile } from "@/helper/liff_get_profile";
+import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { Loading } from "@/helper/loading";
 import EditUsername from "@/app/component/edit_username";
 
@@ -10,7 +10,13 @@ export default function Profile() {
   const [showUserId, setShowUserId] = useState(false);
 
   useEffect(() => {
-    load_profile(setProfile);
+    async function load() {
+      const data = await get_liff_Profile();
+      if (data) {
+        setProfile(data);
+      }
+    }
+    load();
   }, []);
 
   if (!profile) return <Loading />;

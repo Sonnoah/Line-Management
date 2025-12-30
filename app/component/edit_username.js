@@ -6,6 +6,7 @@ import { update_username } from "../../script/update_username";
 export default function EditUsername({ userId, currentUsername }) {
   const [editing, setEditing] = useState(false);
   const [username, setUsername] = useState(currentUsername || "");
+  const [savedUsername, setSavedUsername] = useState(currentUsername || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -13,7 +14,11 @@ export default function EditUsername({ userId, currentUsername }) {
     try {
       setLoading(true);
       setError("");
+
       await update_username(userId, username);
+
+      setSavedUsername(username);
+
       setEditing(false);
     } catch (err) {
       setError(err.message);
@@ -23,20 +28,23 @@ export default function EditUsername({ userId, currentUsername }) {
   }
 
   function Cancel() {
-    setUsername(currentUsername || "");
+    setUsername(savedUsername);
     setEditing(false);
     setError("");
   }
 
   return (
-    <>
+    <div>
       <div className="userid-row">
         <label className="label_profile_title">User Name</label>
 
         <button
           type="button"
           className="profile_icon ml-2"
-          onClick={() => setEditing(true)}
+          onClick={() => {
+            setUsername(savedUsername);
+            setEditing(true);
+          }}
         >
           <span className="cuida--edit-outline"></span>
         </button>
@@ -44,24 +52,23 @@ export default function EditUsername({ userId, currentUsername }) {
 
       {!editing ? (
         <label className="label_profile">
-          {username || (
+          {savedUsername || (
             <span className="opacity-50">Anonymous</span>
           )}
         </label>
       ) : (
         <div className="flex items-center gap-2">
           <input
-            className="input input-bordered input-sm focus:outline-hidden text-[16px]"
+            className="input input-bordered input-sm text-[16px] focus:outline-hidden"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
             autoFocus
           />
 
           <button
             className="btn btn-sm btn-accent"
             disabled={loading}
-            onClick={Save}
+            onMouseDown={Save}
           >
             <span className="charm--tick"></span>
           </button>
@@ -78,6 +85,6 @@ export default function EditUsername({ userId, currentUsername }) {
       {error && (
         <p className="text-red-500 text-sm mt-1">{error}</p>
       )}
-    </>
+    </div>
   );
 }

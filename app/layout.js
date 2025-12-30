@@ -1,5 +1,5 @@
 import { Kanit } from "next/font/google"
-import LiffLogin from "@/lib/liff_login"
+import LiffLogin from "@/script/liff_login"
 import Nav from "./component/nav"
 import "./globals.css"
 import "./style/icon.css"

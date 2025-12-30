@@ -20,7 +20,7 @@ export default function Nav() {
                             <li> <Link href="/request_for_leave">Request For Leave</Link></li>
                             </ul>
                         </li>
-                        <li> <Link href="/admit">Admit Panel</Link></li>
+                        <li> <Link href="/admit"><span className="qlementine-icons--id-card-16"></span>Admit Panel</Link></li>
                         </ul>
                 </div>
             </div>
