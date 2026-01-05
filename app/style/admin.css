@@ -1,0 +1,27 @@
+.admin-container {
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 48rem; 
+  align-items: self-start;
+  padding: 4rem 1rem 2rem 1rem;
+  background-color: #ffffff;
+}
+
+.label_admin_title {
+  display: flex; 
+  align-self: flex-start; 
+  align-items: center; 
+  font-size: 14px; 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  margin: 0; 
+  color: #444444a6;
+}
+
+.label_admin {
+  align-self: flex-start;
+  font-size: 16px;
+  margin: 0px 0px 5px 0px;
+  color: #444444;
+}

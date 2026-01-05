@@ -1,9 +1,7 @@
-"use client";
-
 export function Loading() {
   return (
-      <div className="wrap">
-        <span className="loading loading-ring loading-xl"></span>
-      </div>
-    )
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70">
+      <span className="loading loading-ring loading-xl"></span>
+    </div>
+  );
 }

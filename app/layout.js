@@ -5,6 +5,7 @@ import "./globals.css"
 import "./style/icon.css"
 import "./style/from.css"
 import "./style/profile.css"
+import "./style/admin.css"
 
 const kanit = Kanit({
   subsets: ["thai","latin"],

@@ -30,7 +30,6 @@ export default function Profile() {
 
         <div className="divider mt-5 w-full uppercase text-[14px]"> Profile </div>
 
-
           <div className="userid-row">
            <label className="label_profile_title ">User ID</label>
             <button
@@ -58,8 +57,7 @@ export default function Profile() {
         <label className="label_profile">{profile.displayName}</label>
 
         <label className="label_profile_title ">Role</label>
-        <label className="label_profile"></label>
-
+        <label className="label_profile">{profile.role}</label>
                    
       </main>
     </div>
