@@ -46,8 +46,7 @@ const handleSubmit = async () => {
         <div className="input-container">
           <form id="Form" className="form">
             <label className="label_title">Full Name</label>
-            <label className="input w-full">
-
+            <label className="input w-full border-[#243c5a]/10 outline-accent">
               <span className="solar--user-linear"></span>
               <input
                 type="text"
@@ -60,21 +59,23 @@ const handleSubmit = async () => {
 
             <label className="label_title">Types of Leave</label>
             <select
-              className="select w-full"
+              className="select w-full border-[#243c5a]/10 outline-accent"
               name="type"
               value={formData.type}
               onChange={handleChange}
             >
               <option value="" disabled hidden>Select</option>
-              <option value="SickLeave">Sick Leave</option>
-              <option value="PersonalLeave">Personal Leave</option>
-              <option value="SwapLeaveDate">Swap Leave Date</option>
+              <option value="Private_pay">Private pay</option>
+              <option value="Private_no_pay">Private no pay</option>
+              <option value="Annual">Annual</option>
+              <option value="Sick">Sick</option>
+              <option value="Holiday_swap">Holiday swap</option>
             </select>
 
             <label className="label_title">Start Date</label>
             <input
               type="date"
-              className="input w-full"
+              className="input w-full border-[#243c5a]/10 outline-accent"
               name="start_date"
               value={formData.start_date}
               onChange={handleChange}
@@ -83,14 +84,14 @@ const handleSubmit = async () => {
             <label className="label_title">End Date</label>
             <input
               type="date"
-              className="input w-full"
+              className="input w-full border-[#243c5a]/10 outline-accent"
               name="end_date"
               value={formData.end_date}
               onChange={handleChange}
             />
 
             <label className="label_title">Total Days</label>
-            <label className="input w-full">
+            <label className="input w-full border-[#243c5a]/10 outline-accent">
               <span className="hugeicons--date-time"></span>
               <input
                 type="number"
@@ -105,7 +106,7 @@ const handleSubmit = async () => {
             <label className="label_title">Remarks</label>
             <textarea
               name="note"
-              className="textarea w-full"
+              className="textarea w-full border-[#243c5a]/10 outline-accent"
               placeholder="Optional"
               value={formData.note}
               onChange={handleChange}

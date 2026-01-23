@@ -26,14 +26,13 @@
   font-weight: 700; 
   text-transform: uppercase; 
   margin: 0; 
-  color: #444444a6;
+  
 }
 
 .label_profile {
   align-self: flex-start;
   font-size: 16px;
   margin: 0px 0px 10px 0px;
-  color: #444444;
 }
 
 .userid-row {

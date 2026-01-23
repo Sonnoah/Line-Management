@@ -3,11 +3,18 @@
 import { useEffect, useState } from "react";
 import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { Loading } from "@/helper/loading";
-import EditUsername from "@/app/component/edit_username";
+import EditUsername from "@/app/components/edit_username";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [showUserId, setShowUserId] = useState(false);
+
+  function handleUsernameUpdated(newUsername) {
+  setProfile(prev => ({
+      ...prev,
+      username: newUsername,
+    }));
+  }
 
   useEffect(() => {
     async function load() {
@@ -31,7 +38,7 @@ export default function Profile() {
         <div className="divider mt-5 w-full uppercase text-[14px]"> Profile </div>
 
           <div className="userid-row">
-           <label className="label_profile_title ">User ID</label>
+           <label className="label_profile_title opacity-50">User ID</label>
             <button
               type="button"
               className="profile_icon ml-2"
@@ -50,13 +57,14 @@ export default function Profile() {
           <EditUsername
             userId={profile.userId}
             currentUsername={profile.username}
+            onUsernameUpdated={handleUsernameUpdated}
           />
         </label>
 
-        <label className="label_profile_title ">Display Name</label>
+        <label className="label_profile_title opacity-50">Display Name</label>
         <label className="label_profile">{profile.displayName}</label>
 
-        <label className="label_profile_title ">Role</label>
+        <label className="label_profile_title opacity-50">Role</label>
         <label className="label_profile">{profile.role}</label>
                    
       </main>
