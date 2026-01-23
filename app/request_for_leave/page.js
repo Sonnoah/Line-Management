@@ -65,11 +65,11 @@ const handleSubmit = async () => {
               onChange={handleChange}
             >
               <option value="" disabled hidden>Select</option>
-              <option value="Private_pay">Private pay</option>
-              <option value="Private_no_pay">Private no pay</option>
+              <option value="Private pay">Private pay</option>
+              <option value="Private no pay">Private no pay</option>
               <option value="Annual">Annual</option>
               <option value="Sick">Sick</option>
-              <option value="Holiday_swap">Holiday swap</option>
+              <option value="Holiday swap">Holiday swap</option>
             </select>
 
             <label className="label_title">Start Date</label>

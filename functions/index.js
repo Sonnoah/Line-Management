@@ -12,7 +12,7 @@ const db = getFirestore();
 const LINE_CHANNEL_ACCESS_TOKEN = defineSecret("LINE_CHANNEL_ACCESS_TOKEN");
 
 /* =====================================================
-   1️⃣ เมื่อมี Leave Request ใหม่
+  Leave Request
 ===================================================== */
 exports.onLeaveRequestCreated = onDocumentCreated(
   {
@@ -21,15 +21,26 @@ exports.onLeaveRequestCreated = onDocumentCreated(
     secrets: [LINE_CHANNEL_ACCESS_TOKEN],
   },
   async (event) => {
-    const data = event.data.data();
+    const requestData = event.data.data();
     const docId = event.params.docId;
 
-    if (!data?.userId) return;
+    if (!requestData?.userId) return;
 
-    /* 👉 ส่งให้ USER */
-    await pushMessage(data.userId, userFlex(data));
+    const userSnap = await db
+      .collection("Users")
+      .doc(requestData.userId)
+      .get();
 
-    /* 👉 ดึง ADMIN */
+    const userData = userSnap.exists ? userSnap.data() : {};
+
+    const payload = {
+      ...requestData,
+      pictureUrl: userData.pictureUrl,
+      displayName: userData.displayName,
+    };
+
+    await pushMessage(requestData.userId, userFlex(payload));
+
     const adminSnap = await db
       .collection("Users")
       .where("role", "==", "Admin")
@@ -37,15 +48,18 @@ exports.onLeaveRequestCreated = onDocumentCreated(
 
     const adminIds = adminSnap.docs.map(d => d.data().userId);
 
-    /* 👉 ส่งให้ ADMIN */
     if (adminIds.length) {
-      await multicastMessage(adminIds, adminFlex(docId, data));
+      await multicastMessage(adminIds, {
+        type: "flex",
+        altText: "New Leave Request",
+        contents: adminFlex(docId, payload),
+      });
     }
   }
 );
 
 /* =====================================================
-   2️⃣ LINE Webhook (Approve / Reject)
+   LINE Webhook (Approve / Reject)
 ===================================================== */
 exports.lineWebhook = onRequest(
   {
@@ -64,21 +78,47 @@ exports.lineWebhook = onRequest(
 
     if (!docId) return res.sendStatus(200);
 
-    /* 👉 update Firestore */
+    const adminSnap = await db
+      .collection("Users")
+      .doc(event.source.userId)
+      .get();
+
+    if (!adminSnap.exists || adminSnap.data().role !== "Admin") {
+      await pushMessage(event.source.userId, {
+        type: "text",
+        text: "Unauthorized Action: You lack the necessary authority to approve this transaction.",
+      });
+      return res.sendStatus(200);
+    }
+
+    const reqSnap = await db.collection("Request").doc(docId).get();
+    if (!reqSnap.exists) return res.sendStatus(200);
+
+    const status = reqSnap.data().status;
+    if (status === "approved" || status === "rejected") {
+      await pushMessage(event.source.userId, {
+        type: "text",
+        text: "This transaction is already complete.",
+      });
+      return res.sendStatus(200);
+    }
+
+    // update
     await db.collection("Request").doc(docId).update({
       status: action === "approve" ? "approved" : "rejected",
-      approvedAt: new Date(),
+      approvedAt: admin.firestore.FieldValue.serverTimestamp(),
+      approvedBy: event.source.userId,
     });
 
-    /* 👉 แจ้ง admin ที่กด */
     await pushMessage(event.source.userId, {
       type: "text",
-      text: `✅ Request ${action.toUpperCase()} แล้ว`,
+      text: `Request ${action.toUpperCase()} successfully.`,
     });
 
     res.sendStatus(200);
   }
 );
+
 
 /* =====================================================
    Helper: ส่งข้อความ LINE
@@ -113,32 +153,95 @@ async function multicastMessage(to, message) {
    Flex Message: USER
 ===================================================== */
 function userFlex(data) {
+  
+  const avatar =
+  data.pictureUrl && data.pictureUrl.startsWith("http")
+    ? data.pictureUrl
+    : "https://firebasestorage.googleapis.com/v0/b/pt-test-b0dc9.firebasestorage.app/o/user.png?alt=media&token=e695e669-2e82-4dee-82fc-b191982257b3";
+
   return {
     type: "flex",
-    altText: "New Leave Request",
+    altText: "Leave Request",
     contents: {
       type: "bubble",
+      size: "mega",
       header: {
         type: "box",
-        layout: "vertical",
-        backgroundColor: "#464F69",
+        layout: "horizontal",
         contents: [
           {
-            type: "text",
-            text: "PROTOOL (Thailand) Co., Ltd.",
-            size: "10px",
-            color: "#ffffff8f",
-            align: "center",
-          },
-          {
-            type: "text",
-            text: "New Leave Request",
-            size: "18px",
-            weight: "bold",
-            color: "#FFFFFF",
-            align: "center",
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              {
+                type: "box",
+                layout: "horizontal",
+                contents: [
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                      {
+                        type: "image",
+                        url: avatar,
+                        aspectMode: "cover",
+                        size: "full",
+                        align: "center",
+                      },
+                    ],
+                    maxWidth: "52px",
+                    maxHeight: "52px",
+                    justifyContent: "center",
+                    cornerRadius: "100px",
+                  },
+                ],
+                width: "72px",
+                height: "72px",
+                justifyContent: "center",
+                alignItems: "center",
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                contents: [
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                      {
+                        type: "image",
+                        url: "https://firebasestorage.googleapis.com/v0/b/pt-test-b0dc9.firebasestorage.app/o/logo.png?alt=media&token=57f46cf7-9134-45ef-aee1-5e16b4518342",
+                        aspectMode: "fit",
+                        align: "start",
+                        position: "relative",
+                        size: "50px",
+                      },
+                    ],
+                    maxHeight: "20px",
+                    justifyContent: "center",
+                  },
+                  {
+                    type: "text",
+                    text: "Leave Request",
+                    weight: "bold",
+                    align: "start",
+                    size: "18px",
+                  },
+                  {
+                    type: "text",
+                    size: "10px",
+                    align: "start",
+                    text: formatTimestamp(data.timestamp),
+                  },
+                ],
+                justifyContent: "center",
+                paddingAll: "5px",
+              },
+            ],
           },
         ],
+      paddingAll: "15px",
+      backgroundColor: "#FBF8EF"
       },
       body: {
         type: "box",
@@ -148,9 +251,29 @@ function userFlex(data) {
           row("Type", data.type),
           row("Start", data.start_date),
           row("End", data.end_date),
-          row("Total", `${data.total_day} วัน`),
-          row("Remark", data.note),
+          row("Total", `${data.total_day || "-"} day`),
+
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "sm",
+            contents: [
+              {
+                type: "text",
+                text: "Remark",
+                weight: "bold",
+                size: "14px",
+              },
+              {
+                type: "text",
+                text: data.note || "-",
+                size: "14px",
+                wrap: true,
+              },
+            ],
+          },
         ],
+        paddingAll: "20px",
       },
     },
   };
@@ -160,49 +283,165 @@ function userFlex(data) {
    Flex Message: ADMIN (Approve / Reject)
 ===================================================== */
 function adminFlex(docId, data) {
+
+  const avatar =
+  data.pictureUrl && data.pictureUrl.startsWith("http")
+    ? data.pictureUrl
+    : "https://firebasestorage.googleapis.com/v0/b/pt-test-b0dc9.firebasestorage.app/o/user.png?alt=media&token=e695e669-2e82-4dee-82fc-b191982257b3";
+
   return {
-    type: "flex",
-    altText: "Leave Request (Admin)",
-    contents: {
-      type: "bubble",
-      body: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          row("Name", data.name),
-          row("Type", data.type),
-          row("Start", data.start_date),
-          row("End", data.end_date),
-          row("Total", `${data.total_day} วัน`),
-        ],
-      },
-      footer: {
-        type: "box",
-        layout: "horizontal",
-        spacing: "sm",
-        contents: [
-          {
-            type: "button",
-            style: "primary",
-            color: "#22c55e",
-            action: {
-              type: "postback",
-              label: "Approve",
-              data: `action=approve&docId=${docId}`,
+    type: "bubble",
+    size: "mega",
+    header: {
+      type: "box",
+      layout: "horizontal",
+      contents: [
+        {
+          type: "box",
+          layout: "horizontal",
+          contents: [
+            {
+              type: "box",
+              layout: "horizontal",
+              contents: [
+                {
+                  type: "box",
+                  layout: "vertical",
+                  contents: [
+                    {
+                      type: "image",
+                      url: avatar,
+                      aspectMode: "cover",
+                      size: "full",
+                      align: "center",
+                    },
+                  ],
+                  maxWidth: "52px",
+                  maxHeight: "52px",
+                  justifyContent: "center",
+                  cornerRadius: "100px",
+                },
+              ],
+              width: "72px",
+              height: "72px",
+              justifyContent: "center",
+              alignItems: "center",
             },
-          },
-          {
-            type: "button",
-            style: "secondary",
-            color: "#ef4444",
-            action: {
-              type: "postback",
-              label: "Reject",
-              data: `action=reject&docId=${docId}`,
+            {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "box",
+                  layout: "vertical",
+                  contents: [
+                    {
+                      type: "image",
+                      url: "https://firebasestorage.googleapis.com/v0/b/pt-test-b0dc9.firebasestorage.app/o/logo.png?alt=media&token=57f46cf7-9134-45ef-aee1-5e16b4518342",
+                      aspectMode: "fit",
+                      align: "start",
+                      position: "relative",
+                      size: "50px",
+                    },
+                  ],
+                  maxHeight: "20px",
+                  justifyContent: "center",
+                },
+                {
+                  type: "text",
+                  text: "Leave Request",
+                  weight: "bold",
+                  color: "#FFFFFF",
+                  align: "start",
+                  size: "18px",
+                },
+                {
+                  type: "text",
+                  size: "10px",
+                  color: "#FFFFFF",
+                  weight: "regular",
+                  align: "start",
+                  text: formatTimestamp(data.timestamp),
+                },
+              ],
+              justifyContent: "center",
+              paddingAll: "5px",
             },
-          },
-        ],
-      },
+          ],
+        },
+      ],
+      paddingAll: "15px",
+      backgroundColor: "#5E936C",
+    },
+
+    body: {
+      type: "box",
+      layout: "vertical",
+      contents: [
+        row("Full Name", data.name),
+        row("Type", data.type),
+        row("Start", data.start_date),
+        row("End", data.end_date),
+        row("Total", `${data.total_day || "-"} day`),
+        {
+          type: "box",
+          layout: "vertical",
+          margin: "sm",
+          contents: [
+            {
+              type: "text",
+              text: "Remark",
+              weight: "bold",
+              size: "14px",
+            },
+            {
+              type: "text",
+              text: data.note || "-",
+              size: "14px",
+              wrap: true,
+            },
+          ],
+        },
+      ],
+    },
+
+    footer: {
+      type: "box",
+      layout: "horizontal",
+      contents: [
+        {
+          type: "box",
+          layout: "horizontal",
+          contents: [
+            {
+              type: "button",
+              style: "primary",
+              color: "#5E936C",
+              action: {
+                type: "postback",
+                label: "Approve",
+                data: `action=approve&docId=${docId}`,
+              },
+            },
+          ],
+        },
+        {
+          type: "box",
+          layout: "horizontal",
+          contents: [
+            {
+              type: "button",
+              style: "secondary",
+              action: {
+                type: "postback",
+                label: "Decline",
+                data: `action=reject&docId=${docId}`,
+              },
+            },
+          ],
+          margin: "md",
+        },
+      ],
     },
   };
 }
@@ -214,24 +453,41 @@ function row(label, value) {
   return {
     type: "box",
     layout: "horizontal",
-    margin: "md",
+    margin: "sm",
     contents: [
       {
         type: "text",
         text: label,
-        size: "14px",
-        color: "#555555",
         weight: "bold",
+        size: "14px",
         flex: 3,
       },
       {
         type: "text",
         text: value || "-",
         size: "14px",
-        color: "#111111",
-        wrap: true,
         flex: 5,
+        wrap: true,
       },
     ],
   };
+}
+
+
+function formatTimestamp(ts) {
+  if (!ts) return "-";
+
+  const date =
+    typeof ts?.toDate === "function"
+      ? ts.toDate()
+      : new Date(ts);
+
+  if (isNaN(date)) return "-";
+
+  return date.toLocaleString("en-US", {
+    timeZone: "Asia/Bangkok",
+    dateStyle: "long",
+    timeStyle: "medium",
+    hour12: false,
+  });
 }
