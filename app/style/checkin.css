@@ -106,43 +106,127 @@ h2 {
 }
 
 
-
-
 /* ===== Info ===== */
 .info-card {
+  width: 100%;
+  min-height: 30px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
   background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  padding: 0.75rem 1rem;
-  border-radius: 14px;
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 1rem;
 }
 
-/* ===== Buttons ===== */
-/* .btn {
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: 20px;
-} */
 
 
 /* ===== Camera ===== */
 .camera-card {
   margin-top: 1rem;
   padding: 1rem;
-  border-radius: 18px;
+  border-radius: 30px;
   background: #f8fafc;
   border: 1px dashed #cbd5f5;
 }
 
 .video {
   width: 100%;
-  border-radius: 14px;
+  border-radius: 30px;
   margin-bottom: 0.5rem;
 }
 
-/* ===== Utility ===== */
+.photo-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.photo-preview {
+  width: 100%;
+  border-radius: 30px;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+
+.photo-close-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.photo-close-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+
+.photo-confirm-text {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #16a34a;
+  text-align: center;
+}
+
+.video-wrapper {
+  position: relative;
+}
+
+.camera-shutter-overlay {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.05s ease-out;
+}
+
+.camera-shutter-overlay span {
+  width: 52px;
+  height: 52px;
+  background: #fff;
+  border-radius: 50%;
+
+  transition: transform 0.05s ease-out;
+}
+
+ 
+.camera-shutter-overlay:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.camera-shutter-overlay:active span {
+  transform: scale(0.85);
+}
+
 .hidden {
   display: none;
 }

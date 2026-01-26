@@ -1,34 +1,56 @@
 import {
+  collection,
+  addDoc,
   doc,
-  getDoc,
-  setDoc,
   updateDoc,
-  Timestamp
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../lib/firebase_config";
 
+
 export async function getTodayCheckin(userId, date) {
-  const ref = doc(db, "checkins", `${userId}_${date}`);
-  const snap = await getDoc(ref);
-  return snap;
+  const q = query(
+    collection(db, "Checkins"),
+    where("userId", "==", userId),
+    where("date", "==", date),
+    orderBy("createdAt", "desc"),
+    limit(1)
+  );
+
+  const snap = await getDocs(q);
+  return snap.empty ? null : snap.docs[0];
 }
 
-export async function checkIn(userId, date, geo) {
-  const ref = doc(db, "checkins", `${userId}_${date}`);
-  await setDoc(ref, {
+
+export async function checkIn(userId, date, geo, photo) {
+  const ref = await addDoc(collection(db, "Checkins"), {
     userId,
     date,
-    geoIn: geo,
-    timeIn: Timestamp.now(),
-    createdAt: Timestamp.now()
+
+    checkInAt: serverTimestamp(),
+    checkInGeo: geo,
+    checkInPhoto: photo,
+
+    status: "IN",
+    createdAt: serverTimestamp(),
   });
+
+  return ref.id; 
 }
 
-export async function checkOut(userId, date, geo) {
-  const ref = doc(db, "checkins", `${userId}_${date}`);
+export async function checkOut(checkinId, geo, photo) {
+  const ref = doc(db, "Checkins", checkinId);
+
   await updateDoc(ref, {
-    geoOut: geo,
-    timeOut: Timestamp.now(),
-    updatedAt: Timestamp.now()
+    checkOutAt: serverTimestamp(),
+    checkOutGeo: geo,
+    checkOutPhoto: photo,
+    status: "DONE",
+    updatedAt: serverTimestamp(),
   });
 }

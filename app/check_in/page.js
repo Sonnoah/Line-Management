@@ -14,26 +14,46 @@ export default function CheckinPage() {
 
   const [mode, setMode] = useState("IN");
   const [status, setStatus] = useState("Please Confirm Your Location");
-  const [statusType, setStatusType] = useState("idle"); // idle | success | error
+  const [statusType, setStatusType] = useState("idle"); 
   const [geo, setGeo] = useState(null);
   const [timeText, setTimeText] = useState("");
   const [photo, setPhoto] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [checkinId, setCheckinId] = useState(null);
+
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  /* ========= INIT (โหลดสถานะวันนี้) ========= */
+  const resetSession = () => {
+  setStatus("Please Confirm Your Location");
+  setStatusType("idle");
+  setGeo(null);
+  setTimeText("");
+  setPhoto(null);
+  setShowCamera(false);
+};
+
+ const retakePhoto = () => {
+    setPhoto(null);
+
+    setShowCamera(false);
+    setTimeout(() => {
+      setShowCamera(true);
+    }, 0);
+  };
+
   useEffect(() => {
     if (!profile) return;
 
     async function loadToday() {
       const today = new Date().toISOString().slice(0, 10);
-      const snap = await getTodayCheckin(profile.userId, today);
+      const docSnap = await getTodayCheckin(profile.userId, today);
 
-      if (snap.exists()) {
-        setMode(snap.data().timeOut ? "DONE" : "OUT");
+      if (docSnap) {
+        setMode(docSnap.data().status === "DONE" ? "IN" : "OUT");
+        setCheckinId(docSnap.id); 
       }
     }
 
@@ -73,15 +93,21 @@ export default function CheckinPage() {
         };
 
         setGeo(geoData);
-        setStatus("Current Location Confirmed");
+        setStatus("Current location confirmed");
         setStatusType("success");
 
-        if (mode === "IN") {
-          setTimeText("🕘 เวลาเช็คอิน: " + new Date().toLocaleTimeString());
-          setShowCamera(true);
-        } else {
-          setTimeText("🕘 เวลาเช็คเอาท์: " + new Date().toLocaleTimeString());
-        }
+        const time = new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Bangkok",
+          timeStyle: "short",
+          hour12: false,
+        });
+
+        setTimeText(
+          mode === "IN"
+            ? "Checked in at " + time
+            : "Checked out at " + time
+        );
+      setShowCamera(true)
       },
       () => {
         setStatus("Unable to access location");
@@ -92,20 +118,23 @@ export default function CheckinPage() {
 
   /* ========= TAKE PHOTO ========= */
   const takePhoto = () => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    if (!canvas || !video) return;
+  const canvas = canvasRef.current;
+  const video = videoRef.current;
+  if (!canvas || !video) return;
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
 
-    setPhoto(canvas.toDataURL("image/jpeg"));
+  const imageData = canvas.toDataURL("image/jpeg");
+  setPhoto(imageData);
 
-    const stream = video.srcObject;
-    if (stream) stream.getTracks().forEach(track => track.stop());
-    video.srcObject = null;
-  };
+
+  const stream = video.srcObject;
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  video.srcObject = null;
+};
+
 
   /* ========= SUBMIT ========= */
   const handleSubmit = async () => {
@@ -116,17 +145,48 @@ export default function CheckinPage() {
 
     try {
       if (mode === "IN") {
-        await checkIn(profile.userId, today, geo);
-        setMode("OUT");
-        alert("เช็คอินสำเร็จ");
+        const id = await checkIn(
+          profile.userId,
+          today,
+          geo,
+          photo
+        );
+
+        setCheckinId(id);
+
+        setStatus("Checked in successfully");
+        setStatusType("success");
+
+        setTimeout(() => {
+          setMode("OUT");
+          resetSession();
+        }, 600);
+
       } else if (mode === "OUT") {
-        await checkOut(profile.userId, today, geo);
-        setMode("DONE");
-        alert("เช็คเอาท์สำเร็จ");
+        if (!checkinId) {
+          setStatus("Session expired, please check in again");
+          setStatusType("error");
+          setMode("IN");
+          resetSession();
+          return;
+        }
+
+        await checkOut(checkinId, geo, photo);
+
+        setStatus("Checked out successfully");
+        setStatusType("success");
+
+        setTimeout(() => {
+          setCheckinId(null);
+          setMode("IN");
+          resetSession();
+        }, 600);
       }
+
     } catch (e) {
       console.error(e);
-      alert("บันทึกไม่สำเร็จ");
+      setStatus("Submit failed");
+      setStatusType("error");
     } finally {
       setSubmitting(false);
     }
@@ -144,8 +204,6 @@ export default function CheckinPage() {
 
         <div className="status-row">
           <div className={`status-field ${statusType}`}>
-            {/* <span className="status-label">STATUS</span>
-            <span className="status-sep">|</span> */}
             <span
               className={`status-icon ${
                 statusType === "success"
@@ -155,6 +213,7 @@ export default function CheckinPage() {
                   : "tabler--map-2"
               }`}
             />
+            <span className="status-sep">|</span>
             <span className="status-value">{status}</span>
           </div>
 
@@ -166,31 +225,69 @@ export default function CheckinPage() {
           </button>
         </div>
 
-        {timeText && <div className="info-card">{timeText}</div>}
+        {timeText &&( 
+          <div className="info-card">
+            <span class="tabler--clock"></span>
+            <span className="status-sep">|</span>
+            <div>{timeText}</div>
+          </div>
+        )}
+        
         {geo && (
           <div className="info-card">
-            📍 {geo.lat.toFixed(6)}, {geo.lng.toFixed(6)}
+            <span class="pepicons-pencil--map"></span> 
+            <span className="status-sep">|</span>
+            {geo.lat.toFixed(6)}, {geo.lng.toFixed(6)}
           </div>
         )}
 
         {showCamera && (
-          <div className="camera-card">
-            <video ref={videoRef} autoPlay playsInline muted className="video" />
-            <canvas ref={canvasRef} className="hidden" />
+          <div className="video-wrapper">
             {!photo && (
-              <button className="btn camera" onClick={takePhoto}>
-                📸 ถ่ายรูปยืนยัน
+              <>
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="video"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+
+                 <button className="camera-shutter-overlay" onClick={takePhoto}>
+                <span />
               </button>
+              </>
             )}
+
+           {photo && (
+              <div className="photo-wrapper">
+                <img
+                  src={photo}
+                  alt="Captured"
+                  className="photo-preview"
+                />
+
+                <button
+                  className="photo-close-btn"
+                  onClick={retakePhoto}
+                  aria-label="Retake photo"
+                >
+                  <span class="maki--cross"></span>
+                </button>
+              </div>
+            )}
+
+
           </div>
         )}
 
         <button
-          disabled={!geo || submitting || (mode === "IN" && !photo)}
+          disabled={!geo || submitting || !photo}
           onClick={handleSubmit}
-          className="btn submit"
+          className="btn btn-soft btn-success w-full mt-5"
         >
-          {mode === "IN" ? "✅ เช็คอิน" : "🚪 เช็คเอาท์"}
+          {mode === "IN" ? "Check In" : "Check Out"}
         </button>
 
       </main>
