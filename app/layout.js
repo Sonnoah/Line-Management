@@ -1,6 +1,6 @@
 import { Kanit } from "next/font/google"
 import LiffLogin from "@/script/liff_login"
-import Nav from "./component/nav"
+import Nav from "./components/nav"
 import "./globals.css"
 import "./style/icon.css"
 import "./style/from.css"

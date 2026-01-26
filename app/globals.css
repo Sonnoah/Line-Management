@@ -13,4 +13,6 @@ body {
   font-family: var(--font-kanit);
 }
 
-
+/* .menu li > *:active {
+  background-color: bg-sky-800 !important;
+} */
