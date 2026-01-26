@@ -83,11 +83,10 @@ exports.lineWebhook = onRequest(
                           type: "box",
                           layout: "horizontal",
                           paddingAll: "10px",
-                          offsetEnd: "1px",
                           contents: [
                             {
                               type: "image",
-                              url: "https://firebasestorage.googleapis.com/v0/b/pt-test-b0dc9.firebasestorage.app/o/paper.png?alt=media&token=b872201a-6b88-4341-94d5-c167282c95c5",
+                              url: "https://firebasestorage.googleapis.com/v0/b/pt-test-b0dc9.firebasestorage.app/o/warning.png?alt=media&token=92477c03-5d07-4f90-8302-caa1dc4d2d14",
                             },
                           ],
                         },

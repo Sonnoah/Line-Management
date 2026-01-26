@@ -38,8 +38,8 @@ export default function Nav() {
             onClick={() => document.activeElement?.blur()}>
               <li><Link href="/"><span className="iconamoon--home"></span> Home</Link></li> 
               <li><Link href="/profile"><span className="ri--user-5-line"></span>Profile</Link></li>
+              <li><Link href="/check_in"><span className="ri--user-5-line"></span>Check In</Link></li>
               <li><a className="pointer-events-none opacity-50">
-
                 <span className="oui--nav-reports"></span>Request</a> 
                   <ul>
                     <li><Link href="/request_for_leave">Request For Leave</Link></li> 
