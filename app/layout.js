@@ -3,10 +3,12 @@ import LiffLogin from "@/script/liff_login"
 import Nav from "./components/nav"
 import "./globals.css"
 import "./style/icon.css"
+import "./style/home.css"
 import "./style/from.css"
 import "./style/profile.css"
 import "./style/admin.css"
 import "./style/checkin.css"
+
 
 const kanit = Kanit({
   subsets: ["thai","latin"],

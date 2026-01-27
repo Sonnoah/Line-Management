@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { update_username } from "../../script/update_username";
+import { updateUsername } from "../../script/update_username";
 import { useEffect } from "react";
 import ConfirmDialog from "./confirm_dialog";
 
@@ -159,7 +159,7 @@ export default function EditUsername({ userId, onUsernameUpdated, currentUsernam
           setLoading(true);
 
           try {
-            await update_username(userId, username);
+            await updateUsername(userId, username);
             setSavedUsername(username);
             onUsernameUpdated?.(username);
           } catch (err) {
