@@ -1,7 +1,7 @@
 "use client";
 
 import { liff_init } from "@/helper/liff_Init";
-import { Loading } from "@/helper/loading";
+import { Loading } from "@/app/components/loading";
 
 export default function LiffLogin({ children }) {
   const { loading, profile } = liff_init();

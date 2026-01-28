@@ -11,7 +11,8 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
 import { liff_init } from "@/helper/liff_Init";
-import { Loading } from "@/helper/loading";
+import { Loading } from "@/app/components/loading";
+import Swal from "sweetalert2";
 
 const WORK_MINUTES_PER_DAY = 9 * 60;
 
@@ -20,7 +21,6 @@ export default function Home() {
 
   const [data, setData] = useState(null);
 
-  // realtime state
   const [checkInStart, setCheckInStart] = useState(null);
   const [workedSeconds, setWorkedSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -37,15 +37,16 @@ export default function Home() {
       );
 
       const snap = await getDocs(q);
+
       if (snap.empty) {
         setData(null);
+        setIsRunning(false);
         return;
       }
 
       const last = snap.docs[0].data();
       setData(last);
 
-  
       if (last.status === "IN" && last.checkInAt) {
         setCheckInStart(last.checkInAt.toDate().getTime());
         setIsRunning(true);
@@ -57,7 +58,6 @@ export default function Home() {
     loadLastSession();
   }, [profile]);
 
-  /* ================= REALTIME TIMER ================= */
   useEffect(() => {
     if (!isRunning || !checkInStart) return;
 
@@ -71,9 +71,7 @@ export default function Home() {
 
   if (loading) return <Loading />;
 
-  /* ================= SAFE CALCULATION ================= */
-
-  const isCheckedOut = data && data.status === "DONE";
+  const isCheckedOut = data?.status === "DONE";
 
   const workedMinutes =
     data === null
@@ -85,41 +83,82 @@ export default function Home() {
   const diffMinutes =
     workedMinutes === null ? null : workedMinutes - WORK_MINUTES_PER_DAY;
 
+  const workHMS = {
+    h: Math.floor(workedSeconds / 3600),
+    m: Math.floor((workedSeconds % 3600) / 60),
+    s: workedSeconds % 60,
+  };
+
+  const targetSeconds = WORK_MINUTES_PER_DAY * 60;
+
+  const diffSeconds =
+    data === null ? null : targetSeconds - workedSeconds;
+
+  const isOvertime = diffSeconds !== null && diffSeconds < 0;
+
+  const balanceSecondsAbs =
+    diffSeconds === null ? null : Math.abs(diffSeconds);
+
+  const balanceHMS =
+    balanceSecondsAbs === null
+      ? null
+      : {
+          h: Math.floor(balanceSecondsAbs / 3600),
+          m: Math.floor((balanceSecondsAbs % 3600) / 60),
+          s: balanceSecondsAbs % 60,
+        };
+
+  const balanceSign =
+    diffSeconds === null
+      ? ""
+      : diffSeconds < 0
+      ? "+"
+      : "-";
+
+
   return (
     <div className="wrap">
       <main className="home-container">
-
-        <h3 className="uppercase text-[16px] font-bold mb-3">Today's Working Summary</h3>
+        <h3 className="uppercase text-[16px] font-bold mb-3">
+          Today's Working Summary
+        </h3>
 
         <div className="stats shadow w-full">
           <div className="stat p-3">
             <div className="stat-figure text-secondary">
-              <span class="streamline-ultimate--co-working-space-laptop"></span>
+              <span className="streamline-ultimate--co-working-space-laptop" />
             </div>
+
             <div className="stat-title">
-              {isRunning ? (
-                <p>Working</p>
-              ) : !data ? (
-                <p>Empty record</p>
+              {isRunning ? "Working" : !data ? "Empty record" : "Worked"}
+            </div>
+
+            <div
+              className={`stat-value transition-opacity ${
+                isRunning ? "text-black" : "text-black opacity-50"
+              }`}
+            >
+              {!data ? (
+                <span className="countdown text-lg text-black opacity-50">
+                  --:--
+                </span>
               ) : (
-                <p>Worked</p>
+                <span className="countdown font-mono text-lg">
+                  <span style={{ "--value": workHMS.h, "--digits": 2 }}>{workHMS.h}</span>:
+                  <span style={{ "--value": workHMS.m, "--digits": 2 }}>{workHMS.m}</span>:
+                  <span style={{ "--value": workHMS.s, "--digits": 2 }}>{workHMS.s}</span>
+                </span>
               )}
             </div>
-                <div className={`stat-value text-[20px] ${
-                  !isRunning ? "text-black opacity-50" : "text-black"
-                }`}
-              >
-                {workedMinutes === null
-                  ? "-"
-                  : `${(workedMinutes / 60).toFixed(2)}`}
-              </div>
-                  <div className="stat-desc">hrs</div>
-              </div>
+
+            <div className="stat-desc">hrs</div>
+          </div>
 
           <div className="stat p-3">
-             <div className="stat-figure text-secondary">
-              <span class="duo-icons--clock"></span>
+            <div className="stat-figure text-secondary">
+              <span className="duo-icons--clock" />
             </div>
+
             <div className="stat-title">
               {diffMinutes === null
                 ? "Time Balance"
@@ -127,22 +166,35 @@ export default function Home() {
                 ? "Overtime"
                 : "Remaining"}
             </div>
-            <div className={`stat-value text-[20px] ${
-                diffMinutes === null
-                  ? "text-base-content"
-                  : isCheckedOut
-                  ? "text-black opacity-50"
-                  : diffMinutes >= 0
-                  ? "text-success"
-                  : "text-warning"
-              }`}
-            >
-              {diffMinutes === null
-                ? "-"
-                : `${diffMinutes >= 0 ? "+ " : "- "}${Math.abs(
-                    diffMinutes / 60
-                  ).toFixed(2)}`}
-            </div>
+
+           <div className={`stat-value transition-opacity flex items-center gap-1 ${
+              diffMinutes === null
+                ? "text-base-content"
+                : isCheckedOut
+                ? "text-black opacity-50"
+                : diffMinutes >= 0
+                ? "text-success"
+                : "text-warning"
+            }`}
+          >
+            {balanceHMS === null ? (
+              <span className="text-lg text-black opacity-50">
+                --:--
+              </span>
+            ) : (
+              <>
+                <span className="text-lg">
+                  {diffSeconds < 0 ? "+" : "-"}
+                </span>
+
+                <span className="countdown font-mono text-lg">
+                  <span style={{ "--value": balanceHMS.h, "--digits": 2 }}>{balanceHMS.h}</span>:
+                  <span style={{ "--value": balanceHMS.m, "--digits": 2 }}>{balanceHMS.m}</span>:
+                  <span style={{ "--value": balanceHMS.s, "--digits": 2 }}>{balanceHMS.s}</span>
+                </span>
+              </>
+            )}
+          </div>
             <div className="stat-desc">hrs</div>
           </div>
         </div>

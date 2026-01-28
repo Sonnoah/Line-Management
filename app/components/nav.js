@@ -4,10 +4,21 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { getUser } from "@/script/get_user";
+import { useRouter } from "next/navigation";
+
 
 export default function Nav() {
 
   const [role, setRole] = useState(null); 
+  const [navigating, setNavigating] = useState(false);
+
+  const router = useRouter();
+
+  function goTo(path) {
+    setNavigating(true);
+    document.activeElement?.blur(); 
+    router.push(path);
+  }
 
   useEffect(() => {
     async function loadRole() {
@@ -36,13 +47,35 @@ export default function Nav() {
           <ul tabIndex={-1} 
             className="menu menu-md dropdown-content bg-base-100 rounded-box mt-0 w-60 p-5 shadow-sm" 
             onClick={() => document.activeElement?.blur()}>
-              <li><Link href="/"><span className="iconamoon--home"></span><p className=" text-[16px]">Home</p></Link></li> 
-              <li><Link href="/profile"><span class="mage--scan-user"></span><p className=" text-[16px]">Profile</p></Link></li>
-              <li><Link href="/check_in"><span className="akar-icons--check-in"></span><p className=" text-[16px]">Check In</p></Link></li>
+              <li> 
+                  <button className="flex items-center gap-2 text-left" onClick={() => goTo("/")}>
+                    <span className="iconamoon--home"></span>
+                    <p className="text-[16px]">Home</p>
+                  </button>
+              </li>
+
+              <li> 
+                  <button className="flex items-center gap-2 text-left" onClick={() => goTo("/profile")}>
+                    <span className="mage--scan-user"></span>
+                    <p className="text-[16px]">Profile</p>
+                  </button>
+              </li>
+
+              <li> 
+                  <button className="flex items-center gap-2 text-left" onClick={() => goTo("/check_in")}>
+                    <span className="akar-icons--check-in"></span>
+                    <p className="text-[16px]">Check In</p>
+                  </button>
+              </li>
+
               <li><a className="pointer-events-none opacity-50">
                 <span className="oui--nav-reports"></span><p className=" text-[16px]">Request</p></a> 
                   <ul>
-                    <li><Link href="/request_for_leave"><p className=" text-[16px]">Request For Leave</p></Link></li> 
+                    <li> 
+                      <button className="flex items-center gap-2 text-left" onClick={() => goTo("/request_for_leave")}>
+                        <p className="text-[16px]">Request For Leave</p>
+                      </button>
+                    </li>
                   </ul> 
                 </li>
 
@@ -50,7 +83,11 @@ export default function Nav() {
                  <li><a className="pointer-events-none opacity-50">
                   <span className="solar--user-id-broken"></span><p className=" text-[16px]">Admit Panel</p></a> 
                   <ul>
-                     <li><Link href="/admin"><p className=" text-[16px]">Users List</p></Link></li>
+                     <li> 
+                      <button className="flex items-center gap-2 text-left" onClick={() => goTo("/admin")}>
+                        <p className="text-[16px]">Users List</p>
+                      </button>
+                    </li>
                   </ul> 
                 </li>
                 )

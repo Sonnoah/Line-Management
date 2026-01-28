@@ -4,6 +4,7 @@ import {
   checkIn,
   checkOut
 } from "@/lib/check_in_service";
+import Swal from "sweetalert2";
 
 export function useCheckinLogic(profile) {
   const [mode, setMode] = useState("IN");
@@ -66,37 +67,65 @@ export function useCheckinLogic(profile) {
   }, [showCamera]);
 
   const handleGPS = () => {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const geoData = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        };
+  Swal.fire({
+    title: "Getting location",
+    text: "Please wait a moment",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
-        setGeo(geoData);
-        setStatus("Current location confirmed");
-        setStatusType("success");
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      Swal.close(); 
 
-        const time = new Date().toLocaleString("en-US", {
-          timeZone: "Asia/Bangkok",
-          timeStyle: "short",
-          hour12: false,
-        });
+      const geoData = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      };
 
-        setTimeText(
-          mode === "IN"
-            ? "Checked in at " + time
-            : "Checked out at " + time
-        );
+      setGeo(geoData);
+      setStatus("Current location confirmed");
+      setStatusType("success");
 
-        setShowCamera(true);
-      },
-      () => {
-        setStatus("Unable to access location");
-        setStatusType("error");
-      }
-    );
-  };
+      const time = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+        timeStyle: "short",
+        hour12: false,
+      });
+
+      setTimeText(
+        mode === "IN"
+          ? "Checked in at " + time
+          : "Checked out at " + time
+      );
+
+      setShowCamera(true);
+    },
+    error => {
+      Swal.close(); 
+
+      setStatus("Unable to access location");
+      setStatusType("error");
+
+    Swal.fire({
+      icon: "error",
+      title: "Location Error",
+       html: `
+            <div>
+              <p>Location access failed</p>
+              <p>Please try again</p>
+            </div>
+          `,
+      width: 300,
+      showConfirmButton: false,
+      timer: 3000
+    });
+    }
+  );
+};
+
 
   const takePhoto = () => {
     const canvas = canvasRef.current;
@@ -118,27 +147,47 @@ export function useCheckinLogic(profile) {
   if (submitting) return;
   setSubmitting(true);
 
+  if (!geo || !photo) {
+    setStatus("Please confirm location and photo");
+    setStatusType("error");
+    setSubmitting(false);
+    return;
+  }
+
   const today = new Date().toISOString().slice(0, 10);
 
   try {
     if (mode === "IN") {
       const id = await checkIn(profile.userId, today, geo, photo);
 
+      Swal.fire({
+        icon: "success",
+        title: "CHECK IN",
+        text: "Your check in information has been received.",
+        width: 300, 
+        timer: 3000,
+        showConfirmButton: false,
+      });
       setCheckinId(id);
-
-      setMode("OUT");
-
-      setGeo(null);
-      setPhoto(null);
-      setShowCamera(false);
-      setTimeText("");
 
       setStatus("Checked in successfully");
       setStatusType("success");
 
+      setMode("OUT");
+      resetSession(); 
+
     } else if (mode === "OUT") {
       await checkOut(checkinId, geo, photo);
 
+         Swal.fire({
+            icon: "success",
+            title: "CHECK OUT",
+            text: "Your check out information has been received.",
+            width: 300, 
+            timer: 3000,
+            showConfirmButton: false,
+          });
+  
       setStatus("Checked out successfully");
       setStatusType("success");
 
@@ -146,6 +195,7 @@ export function useCheckinLogic(profile) {
       setCheckinId(null);
       resetSession();
     }
+
   } catch (e) {
     console.error(e);
     setStatus("Submit failed");

@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { getAllUsers } from "@/script/get_all_user";
-import { Loading } from "@/helper/loading";
+import { Loading } from "@/app/components/loading";
 import { deleteUser } from "@/script/delete_user";
 import Detail_popup from "../detail_popup";
 import ConfirmDialog from "../confirm_dialog";
@@ -86,7 +86,7 @@ export default function AdminPanel() {
                     <div tabIndex="0" role="button" className="btn btn-ghost btn-xs">
                       <span className="solar--menu-dots-bold"></span>
                     </div>
-                    <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-30 shadow-sm">
+                    <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 p-3 shadow-sm">
                       <li onClick={() => openDetail(profile)}>
                         <a>
                           <span className="clarity--details-line"></span>

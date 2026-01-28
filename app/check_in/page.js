@@ -1,6 +1,6 @@
 "use client";
 
-import { Loading } from "@/helper/loading";
+import { Loading } from "@/app/components/loading";
 import { liff_init } from "@/helper/liff_Init";
 import { useCheckinLogic } from "@/script/use_checkin_logic";
 import StatusSection from "../components/status_section";
@@ -39,11 +39,12 @@ export default function CheckinPage() {
         <button
           disabled={!geo || submitting || !photo}
           onClick={handleSubmit}
-          className="btn btn-soft btn-success w-full mt-5"
+          className={`btn btn-soft btn-lg w-full mt-5
+            ${mode === "IN" ? "btn-success" : "btn-error"}
+          `}
         >
           {mode === "IN" ? "Check In" : "Check Out"}
         </button>
-
       </main>
     </div>
   );

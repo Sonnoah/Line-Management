@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { getUser } from "@/script/get_user";
-import { Loading } from "@/helper/loading";
+import { Loading } from "@/app/components/loading";
 import AdminPanel from "../components/pages/admin_panel";
 
 export default function AdminPage() {
