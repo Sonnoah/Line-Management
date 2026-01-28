@@ -1,4 +1,4 @@
-function buildFlexMessage({
+function checkFlex({
   title,
   color,
   userName,
@@ -9,14 +9,13 @@ function buildFlexMessage({
 }) {
   return {
     type: "flex",
-    altText: `${title} Notification`,
+    altText: `${title} - ${userName}`,
     contents: {
       type: "bubble",
       header: {
         type: "box",
         layout: "vertical",
         backgroundColor: color,
-        paddingAll: "12px",
         contents: [
           {
             type: "text",
@@ -37,29 +36,18 @@ function buildFlexMessage({
             type: "image",
             url: photoUrl,
             size: "full",
-            aspectRatio: "1:1",
+            aspectRatio: "4:3",
             aspectMode: "cover",
-            cornerRadius: "12px",
-            action: {
-              type: "uri",
-              uri: photoUrl, 
-            },
           },
           {
-            type: "box",
-            layout: "baseline",
-            contents: [
-              { type: "text", text: "Name", weight: "bold", flex: 2 },
-              { type: "text", text: userName, flex: 5, wrap: true },
-            ],
+            type: "text",
+            text: `Name: ${userName}`,
+            wrap: true,
           },
           {
-            type: "box",
-            layout: "baseline",
-            contents: [
-              { type: "text", text: "Time", weight: "bold", flex: 2 },
-              { type: "text", text: timeText, flex: 5 },
-            ],
+            type: "text",
+            text: `Time: ${timeText}`,
+            wrap: true,
           },
         ],
       },
@@ -69,11 +57,10 @@ function buildFlexMessage({
         contents: [
           {
             type: "button",
-            style: "primary",
-            color: "#1E90FF",
+            style: "link",
             action: {
               type: "uri",
-              label: "📍 View Location",
+              label: "Location",
               uri: `https://www.google.com/maps?q=${lat},${lng}`,
             },
           },
@@ -82,3 +69,6 @@ function buildFlexMessage({
     },
   };
 }
+
+
+module.exports = checkFlex;

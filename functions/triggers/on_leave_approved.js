@@ -13,6 +13,7 @@ exports.onLeaveApproved = onDocumentUpdated(
     if (before.status === "approved") return;
     if (after.status !== "approved") return;
 
+
     const { userId, type } = after;
     const year = new Date().getFullYear();
 

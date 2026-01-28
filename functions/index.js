@@ -10,6 +10,9 @@ exports.calculateWorkTime =
 exports.onLeaveApproved =
   require("./triggers/on_leave_approved").onLeaveApproved;
 
-  exports.onCheckinUpdated =
-  require("./triggers/on_checkin_updated").onCheckinUpdated;
+exports.onCheckinUpdate =
+  require("./triggers/on_checkin_updated").onCheckinUpdate;
+
+exports.onCheckinPhotoUpload =
+  require("./triggers/on_checkin_photo_upload").onCheckinPhotoUpload;
 
