@@ -1,11 +1,11 @@
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
 
-export async function updateUserRole(userId, role) {
+export async function updateUserDepartment(userId, department) {
+  if (!userId || !department) return;
+
   await updateDoc(doc(db, "Users", userId), {
-    role,
+    department,
     updatedAt: serverTimestamp(),
   });
 }
-
-

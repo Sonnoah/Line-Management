@@ -26,5 +26,6 @@ export async function get_liff_Profile() {
     ...baseProfile,
     username: dbUser?.username ?? null,
     role: dbUser?.role ?? "user",
+    department: dbUser?.department ?? null,
   };
 }

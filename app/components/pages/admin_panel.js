@@ -34,6 +34,19 @@ export default function AdminPanel() {
   );
 }
 
+  function handleDepartmentUpdated(userId, newDepartment) {
+    setUsers(prev =>
+      prev.map(u =>
+        u.userId === userId ? { ...u, department: newDepartment } : u
+      )
+    );
+
+    setSelectedUser(prev =>
+      prev ? { ...prev, department: newDepartment } : prev
+    );
+  }
+
+
   useEffect(() => {
     async function load() {
       const data = await getAllUsers();
@@ -52,6 +65,7 @@ export default function AdminPanel() {
           <thead>
             <tr>
               <th className="pl-0 pr-0">Name</th>
+              <th className="pl-1 pr-0">Department</th>
               <th className="pl-1 pr-0">Role</th>
               <th className="pl-1 pr-0"></th>
             </tr>
@@ -67,14 +81,18 @@ export default function AdminPanel() {
                       className="h-10 w-10 mask mask-squircle"
                     />
                     <div>
-                      <div className="font-bold text-[16px]">
+                      <div className="font-bold text-[14px]">
                         {profile.displayName}
                       </div>
-                      <div className="text-sm opacity-50 text-[14px]">
+                      <div className="text-sm opacity-50 text-[10px]">
                         {profile.username}
                       </div>
                     </div>
                   </div>
+                </td>
+
+                <td className="pl-1 pr-0">
+                  <div className="text-[14px]">{profile.department}</div>
                 </td>
 
                 <td className="pl-1 pr-0">
@@ -116,7 +134,9 @@ export default function AdminPanel() {
           ref={dialogRef}
           profile={selectedUser}
           onRoleUpdated={handleRoleUpdated}
+          onDepartmentUpdated={handleDepartmentUpdated}
         />
+
 
        {confirmDelete && userToDelete && (
           <ConfirmDialog
