@@ -1,89 +1,14 @@
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
-const { LINE_CHANNEL_ACCESS_TOKEN } = require("../services/line_service");
+const { LINE_CHANNEL_TOKEN } = require("../services/line_service");
 const { pushMessage, multicastMessage } = require("../services/line_service");
 const { db, admin } = require("../config/firebase");
-
-function checkFlex({
-  title,
-  color,
-  userName,
-  timeText,
-  photoUrl,
-  lat,
-  lng,
-}) {
-  return {
-    type: "flex",
-    altText: `${title} - ${userName}`,
-    contents: {
-      type: "bubble",
-      header: {
-        type: "box",
-        layout: "vertical",
-        backgroundColor: color,
-        contents: [
-          {
-            type: "text",
-            text: title,
-            weight: "bold",
-            size: "lg",
-            align: "center",
-            color: "#FFFFFF",
-          },
-        ],
-      },
-      body: {
-        type: "box",
-        layout: "vertical",
-        spacing: "md",
-        contents: [
-         {
-          type: "image",
-          url: photoUrl,
-          size: "full",
-          aspectRatio: "4:3",
-          aspectMode: "cover",
-            action: {
-              type: "uri",
-              uri: photoUrl, 
-            },
-          },
-          {
-            type: "text",
-            text: `Name: ${userName}`,
-            wrap: true,
-          },
-          {
-            type: "text",
-            text: `Time: ${timeText}`,
-            wrap: true,
-          },
-        ],
-      },
-      footer: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          {
-            type: "button",
-            style: "link",
-            action: {
-              type: "uri",
-              label: "Location",
-              uri: `https://www.google.com/maps?q=${lat},${lng}`,
-            },
-          },
-        ],
-      },
-    },
-  };
-}
+const { checkFlex } = require("./checkFlex");
 
 exports.onCheckinUpdate = onDocumentWritten(
   {
     document: "Checkins/{checkinId}",
     region: "us-central1",
-    secrets: [LINE_CHANNEL_ACCESS_TOKEN],
+    secrets: [LINE_CHANNEL_TOKEN],
   },
   async (event) => {
     const before = event.data.before?.data() || null;
@@ -117,10 +42,26 @@ exports.onCheckinUpdate = onDocumentWritten(
       minute: "2-digit",
     });
 
+    const dateText = timeStamp.toDate().toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const userSnap = await db.collection("Users").doc(after.userId).get();
+
+    const userName =
+      userSnap.exists
+        ? userSnap.data().username ||
+          userSnap.data().displayName ||
+          "Anonymous"
+        : "Anonymous";
+
     const flex = checkFlex({
       title: isCheckIn ? "CHECK IN" : "CHECK OUT",
       color: isCheckIn ? "#5EDD60" : "#E53935",
-      userName: after.userName || after.displayName || "Employee",
+      dateText,
+      userName: userName,
       timeText,
       photoUrl,
       lat: geo.lat,

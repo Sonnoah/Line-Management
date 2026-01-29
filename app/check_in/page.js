@@ -40,7 +40,7 @@ export default function CheckinPage() {
           disabled={!geo || submitting || !photo}
           onClick={handleSubmit}
           className={`btn btn-soft btn-lg w-full mt-5
-            ${mode === "IN" ? "btn-success" : "btn-error"}
+            ${mode === "IN" ? "btn-success" : "btn-secondary"}
           `}
         >
           {mode === "IN" ? "Check In" : "Check Out"}

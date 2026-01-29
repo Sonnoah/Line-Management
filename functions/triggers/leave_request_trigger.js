@@ -1,5 +1,5 @@
 const { db } = require("../config/firebase");
-const { pushMessage, multicastMessage, LINE_CHANNEL_ACCESS_TOKEN } = require("../services/line_service");
+const { pushMessage, multicastMessage, LINE_CHANNEL_TOKEN } = require("../services/line_service");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 
 const userFlex = require("../flex/user_flex");
@@ -9,7 +9,7 @@ exports.onLeaveRequestCreated = onDocumentCreated(
   {
     document: "Request/{docId}",
     region: "us-central1",
-    secrets: [LINE_CHANNEL_ACCESS_TOKEN],
+    secrets: [LINE_CHANNEL_TOKEN],
   },
   async (event) => {
     const requestData = event.data.data();

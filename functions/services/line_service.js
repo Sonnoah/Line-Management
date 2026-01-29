@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { defineSecret } = require("firebase-functions/params");
 
-const LINE_CHANNEL_ACCESS_TOKEN = defineSecret("LINE_CHANNEL_ACCESS_TOKEN");
+const LINE_CHANNEL_TOKEN = defineSecret("LINE_CHANNEL_TOKEN");
 
 async function pushMessage(to, message) {
   return axios.post(
@@ -9,7 +9,7 @@ async function pushMessage(to, message) {
     { to, messages: [message] },
     {
       headers: {
-        Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN.value()}`,
+        Authorization: `Bearer ${LINE_CHANNEL_TOKEN.value()}`,
         "Content-Type": "application/json",
       },
     }
@@ -22,7 +22,7 @@ async function multicastMessage(to, message) {
     { to, messages: [message] },
     {
       headers: {
-        Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN.value()}`,
+        Authorization: `Bearer ${LINE_CHANNEL_TOKEN.value()}`,
         "Content-Type": "application/json",
       },
     }
@@ -30,7 +30,7 @@ async function multicastMessage(to, message) {
 }
 
 module.exports = {
-  LINE_CHANNEL_ACCESS_TOKEN,
+  LINE_CHANNEL_TOKEN,
   pushMessage,
   multicastMessage,
 };

@@ -1,7 +1,8 @@
 export default function StatusSection({
   status,
   statusType,
-  onGPS
+  onGPS,
+  mode,
 }) {
   return (
     <div className="status-row">
@@ -17,12 +18,16 @@ export default function StatusSection({
         <span className="status-value">{status}</span>
       </div>
 
-      <button
-        className="btn btn-soft btn-accent btn-location"
+      
+     <button
+        className={`btn btn-soft btn-location transition-colors
+          ${mode === "IN" ? "btn-success" : "btn-secondary"}
+        `}
         onClick={onGPS}
       >
         <span className="mingcute--location-fill" />
       </button>
+
     </div>
   );
 }

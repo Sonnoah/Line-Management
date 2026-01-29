@@ -3,7 +3,7 @@ import { getUser } from "@/script/get_user";
 import { saveUser } from "@/lib/saveuser";
 
 export async function get_liff_Profile() {
-  await liff.init({ liffId: "2008650824-im7pjpsM" });
+  await liff.init({ liffId: "2009004348-Yg6fhO0l" });
 
   if (!liff.isLoggedIn()) {
     liff.login();

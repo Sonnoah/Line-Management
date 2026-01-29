@@ -2,7 +2,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 
 const { db } = require("../config/firebase");
-const { pushMessage, LINE_CHANNEL_ACCESS_TOKEN } = require("../services/line_service");
+const { pushMessage, LINE_CHANNEL_TOKEN } = require("../services/line_service");
 const { formatTimestamp } = require("../flex/utils");
 const approvedFlex = require("../flex/approved_flex");
 const declinedFlex = require("../flex/declined_flex");
@@ -10,7 +10,7 @@ const declinedFlex = require("../flex/declined_flex");
 exports.lineWebhook = onRequest(
   {
     region: "us-central1",
-    secrets: [LINE_CHANNEL_ACCESS_TOKEN],
+    secrets: [LINE_CHANNEL_TOKEN],
   },
   async (req, res) => {
     try {
@@ -123,7 +123,6 @@ exports.lineWebhook = onRequest(
         return res.sendStatus(200);
       }
 
-      /* ================== Prepare Data ================== */
       const newStatus = action === "approve" ? "approved" : "declined";
       const adminData = adminSnap.data();
 
@@ -149,7 +148,7 @@ exports.lineWebhook = onRequest(
         adminData.displayName ||
         "Admin";
 
-      /* ================== Update Firestore ================== */
+
       await reqRef.update({
         status: newStatus,
         approvedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -157,7 +156,7 @@ exports.lineWebhook = onRequest(
         approvedByName,
       });
 
-      /* ================== Notify Requester ================== */
+
       if (reqData.userId) {
         await pushMessage(
           reqData.userId,
@@ -175,7 +174,7 @@ exports.lineWebhook = onRequest(
         );
       }
 
-      /* ================== Notify Admin ================== */
+
   await pushMessage(event.source.userId, {
     type: "flex",
     altText: `You have ${newStatus} ${requesterName}'s request from ${formatTimestamp(

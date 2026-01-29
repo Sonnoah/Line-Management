@@ -4,7 +4,7 @@
   width: 100%;
   max-width: 48rem; 
   align-items: self-start;
-  padding: 2rem 2rem 2rem 3rem;
+  padding: 1rem 2rem 1rem 2rem;
   background-color: #ffffff;
 }
 
@@ -28,11 +28,11 @@ h2 {
 }
 
 .mode-title.in {
-  color: #16a34a;
+  color: #13d2ba;
 }
 
 .mode-title.out {
-  color: #dc2626;
+  color: #f33298;
 }
 
 .subtitle {

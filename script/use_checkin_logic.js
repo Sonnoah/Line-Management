@@ -163,7 +163,7 @@ export function useCheckinLogic(profile) {
       Swal.fire({
         icon: "success",
         title: "CHECK IN",
-        text: "Your check in information has been received.",
+        text: "Your check in information has been received",
         width: 300, 
         timer: 3000,
         showConfirmButton: false,
@@ -182,7 +182,7 @@ export function useCheckinLogic(profile) {
          Swal.fire({
             icon: "success",
             title: "CHECK OUT",
-            text: "Your check out information has been received.",
+            text: "Your check out information has been received",
             width: 300, 
             timer: 3000,
             showConfirmButton: false,

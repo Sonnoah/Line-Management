@@ -177,7 +177,7 @@ export default function Request_For_Leave() {
             disabled={!isFormValid || submitting}
             onClick={handleSubmit}
           >
-            {submitting ? "Submitting..." : "Submit"}
+            {submitting ? "Submit" : "Submit"}
           </button>
         </div>
       </main>

@@ -11,7 +11,7 @@ export function liff_init() {
   useEffect(() => {
     async function init() {
       try {
-        await liff.init({ liffId: "2008650824-im7pjpsM" });
+        await liff.init({ liffId: "2009004348-Yg6fhO0l" });
 
         if (!liff.isLoggedIn()) {
           liff.login();
