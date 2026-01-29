@@ -37,12 +37,16 @@ function checkFlex({
         layout: "vertical",
         spacing: "md",
         contents: [
-          {
-            type: "image",
-            url: photoUrl,
-            size: "full",
-            aspectRatio: "4:3",
-            aspectMode: "cover",
+         {
+          type: "image",
+          url: photoUrl,
+          size: "full",
+          aspectRatio: "4:3",
+          aspectMode: "cover",
+            action: {
+              type: "uri",
+              uri: photoUrl, 
+            },
           },
           {
             type: "text",
@@ -75,7 +79,6 @@ function checkFlex({
   };
 }
 
-/* ================= FIRESTORE TRIGGER ================= */
 exports.onCheckinUpdate = onDocumentWritten(
   {
     document: "Checkins/{checkinId}",
@@ -87,19 +90,18 @@ exports.onCheckinUpdate = onDocumentWritten(
     const after = event.data.after?.data() || null;
     if (!after) return;
 
-    // กันยิงซ้ำ
-    if (after.lineNotified) return;
-
     const isCheckIn = after.status === "IN";
     const isCheckOut = after.status === "OUT" || after.status === "DONE";
     if (!isCheckIn && !isCheckOut) return;
+
+    if (isCheckIn && after.lineNotifiedIn) return;
+    if (isCheckOut && after.lineNotifiedOut) return;
 
     const photoUrl = isCheckIn
       ? after.checkInPhotoUrl
       : after.checkOutPhotoUrl;
     if (!photoUrl) return;
 
-    // ยิงเฉพาะตอนรูป URL เพิ่งมา
     const beforePhotoUrl = isCheckIn
       ? before?.checkInPhotoUrl
       : before?.checkOutPhotoUrl;
@@ -125,32 +127,35 @@ exports.onCheckinUpdate = onDocumentWritten(
       lng: geo.lng,
     });
 
-    /* ===== ส่งให้ USER (เหมือน Leave Request) ===== */
     try {
       await pushMessage(after.userId, flex);
     } catch (e) {
-      console.error("❌ push user error", e.response?.data || e);
+      console.error("push user error", e.response?.data || e);
     }
 
-    /* ===== ส่งให้ ADMIN ทุกคน ===== */
     try {
       const adminSnap = await db
         .collection("Users")
         .where("role", "==", "Admin")
         .get();
 
-      const adminIds = adminSnap.docs.map(d => d.data().userId);
+      const actorUserId = after.userId;
+
+      const adminIds = adminSnap.docs
+        .map(d => d.data().userId)
+        .filter(id => id !== actorUserId);
 
       if (adminIds.length) {
         await multicastMessage(adminIds, flex);
       }
     } catch (e) {
-      console.error("❌ multicast admin error", e.response?.data || e);
+      console.error("multicast admin error", e.response?.data || e);
     }
 
-    /* ===== mark ว่าส่งแล้ว ===== */
     await event.data.after.ref.update({
-      lineNotified: true,
+      ...(isCheckIn
+        ? { lineNotifiedIn: true }
+        : { lineNotifiedOut: true }),
       lineNotifiedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   }

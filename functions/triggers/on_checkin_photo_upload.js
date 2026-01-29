@@ -5,8 +5,10 @@ const { uploadBase64ToStorage } = require("../src/upload_image");
 exports.onCheckinPhotoUpload = onDocumentWritten(
   { document: "Checkins/{checkinId}" },
   async (event) => {
-    const after = event.data.after.exists ? event.data.after.data() : null;
+    const after = event.data.after?.data();
     if (!after) return;
+
+    if (!["IN", "OUT", "DONE"].includes(after.status)) return;
 
     const isCheckIn = after.status === "IN";
     const isCheckOut = after.status === "OUT" || after.status === "DONE";
@@ -16,6 +18,7 @@ exports.onCheckinPhotoUpload = onDocumentWritten(
       : after.checkOutPhoto;
 
     if (!base64) return;
+
     if (
       (isCheckIn && after.checkInPhotoUrl) ||
       (isCheckOut && after.checkOutPhotoUrl)
@@ -25,7 +28,7 @@ exports.onCheckinPhotoUpload = onDocumentWritten(
 
     const imageUrl = await uploadBase64ToStorage(
       base64,
-      `checkins/${event.params.checkinId}_${after.status}.jpg`
+      `checkins/${event.params.checkinId}_${isCheckIn ? "IN" : "OUT"}.jpg`
     );
 
     const update = {
