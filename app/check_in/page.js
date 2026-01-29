@@ -36,11 +36,12 @@ export default function CheckinPage() {
         <InfoSection {...logic} />
         <CameraSection {...logic} />
 
+ 
         <button
           disabled={!geo || submitting || !photo}
           onClick={handleSubmit}
           className={`btn btn-soft btn-lg w-full mt-5
-            ${mode === "IN" ? "btn-success" : "btn-secondary"}
+            ${mode === "IN" ? "btn-accent" : "btn-secondary"}
           `}
         >
           {mode === "IN" ? "Check In" : "Check Out"}

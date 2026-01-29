@@ -10,14 +10,14 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
-import { liff_init } from "@/helper/liff_Init";
+import { useLiff } from "@/lib/use_liff";
 import { Loading } from "@/app/components/loading";
-import Swal from "sweetalert2";
+import { getUser } from "@/script/get_user";
 
 const WORK_MINUTES_PER_DAY = 9 * 60;
 
 export default function Home() {
-  const { profile, loading } = liff_init();
+  const { profile, loading } = useLiff();
 
   const [data, setData] = useState(null);
 

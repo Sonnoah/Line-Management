@@ -4,6 +4,7 @@ import {
   checkIn,
   checkOut
 } from "@/lib/check_in_service";
+import { getUser } from "@/script/get_user";
 import Swal from "sweetalert2";
 
 export function useCheckinLogic(profile) {
@@ -16,6 +17,8 @@ export function useCheckinLogic(profile) {
   const [showCamera, setShowCamera] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [checkinId, setCheckinId] = useState(null);
+  const [userData, setUserData] = useState(null);
+
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -34,7 +37,7 @@ export function useCheckinLogic(profile) {
     setShowCamera(false);
     setTimeout(() => setShowCamera(true), 0);
   };
-
+  
   useEffect(() => {
     if (!profile) return;
 
@@ -50,6 +53,19 @@ export function useCheckinLogic(profile) {
 
     loadToday();
   }, [profile]);
+
+  useEffect(() => {
+    if (!profile?.userId) return;
+
+    async function loadUser() {
+      const user = await getUser(profile.userId);
+      console.log("userData from firestore", user); 
+      setUserData(user);
+    }
+
+    loadUser();
+  }, [profile]);
+
 
   useEffect(() => {
     if (!showCamera || !videoRef.current) return;
@@ -147,6 +163,8 @@ export function useCheckinLogic(profile) {
   if (submitting) return;
   setSubmitting(true);
 
+  const department = userData?.department;
+
   if (!geo || !photo) {
     setStatus("Please confirm location and photo");
     setStatusType("error");
@@ -158,7 +176,7 @@ export function useCheckinLogic(profile) {
 
   try {
     if (mode === "IN") {
-      const id = await checkIn(profile.userId, today, geo, photo);
+      const id = await checkIn(profile.userId, today, geo, photo ,department );
 
       Swal.fire({
         icon: "success",
@@ -177,7 +195,7 @@ export function useCheckinLogic(profile) {
       resetSession(); 
 
     } else if (mode === "OUT") {
-      await checkOut(checkinId, geo, photo);
+      await checkOut(checkinId, geo, photo, department );
 
          Swal.fire({
             icon: "success",
@@ -197,12 +215,24 @@ export function useCheckinLogic(profile) {
     }
 
   } catch (e) {
-    console.error(e);
-    setStatus("Submit failed");
-    setStatusType("error");
+  console.error("CHECKIN ERROR:", e);
+
+  Swal.fire({
+    icon: "error",
+    title: "Submit failed",
+    showConfirmButton: false,
+    text: e.message || "Unknown error",
+    width: 300,
+  });
+
+  setStatus("Submit failed");
+  setStatusType("error");
+
+
   } finally {
     setSubmitting(false);
   }
+  console.log("profile", profile);
 };
   return {
     mode,

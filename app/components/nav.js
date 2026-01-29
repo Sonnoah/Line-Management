@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { getUser } from "@/script/get_user";
