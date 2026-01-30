@@ -7,6 +7,7 @@ import StatusSection from "../components/status_section";
 import InfoSection from "../components/info_section";
 import CameraSection from "../components/camera_section";
 
+
 export default function CheckinPage() {
   const { profile, loading } = liff_init();
   const logic = useCheckinLogic(profile);

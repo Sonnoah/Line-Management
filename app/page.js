@@ -13,6 +13,8 @@ import { db } from "@/lib/firebase_config";
 import { liff_init } from "@/helper/liff_Init";
 import { Loading } from "@/app/components/loading";
 import { getUser } from "@/script/get_user";
+import { onSnapshot } from "firebase/firestore";
+
 
 export default function Home() {
   const { profile, loading } = liff_init();
@@ -33,19 +35,17 @@ export default function Home() {
 
   const isOT = workedSeconds > WORK_SECONDS_PER_DAY;    
 
- useEffect(() => {
+useEffect(() => {
   if (!profile || !userData) return;
 
-  async function loadLastSession() {
-    const q = query(
-      collection(db, "Checkins"),
-      where("userId", "==", profile.userId),
-      orderBy("createdAt", "desc"),
-      limit(1)
-    );
+  const q = query(
+    collection(db, "Checkins"),
+    where("userId", "==", profile.userId),
+    orderBy("createdAt", "desc"),
+    limit(1)
+  );
 
-    const snap = await getDocs(q);
-
+  const unsubscribe = onSnapshot(q, (snap) => {
     if (snap.empty) {
       setData(null);
       setIsRunning(false);
@@ -61,39 +61,34 @@ export default function Home() {
 
     setLastCheckInTime(last.checkInAt?.toDate() ?? null);
     setLastCheckOutTime(last.checkOutAt?.toDate() ?? null);
-    
+
+    // =========================
+    // 🔵 CASE: IN (นับสด)
+    // =========================
     if (last.status === "IN" && last.checkInAt) {
       const checkInMs = last.checkInAt.toDate().getTime();
       setCheckInStart(checkInMs);
-
-      const worked = Math.floor(
-        (Date.now() - checkInMs) / 1000
-      );
-
-      setWorkedSeconds(worked);
       setIsRunning(true);
       return;
     }
 
-    if ((last.status === "OUT" || last.status === "DONE")) {
+    // =========================
+    // 🟢 CASE: OUT / DONE
+    // ใช้ค่าจาก DB เท่านั้น
+    // =========================
+    if (
+      (last.status === "OUT" || last.status === "DONE") &&
+      typeof last.workedMinutes === "number"
+    ) {
       setIsRunning(false);
       setCheckInStart(null);
-
-      if (typeof last.workedSeconds === "number") {
-        setWorkedSeconds(last.workedSeconds);
-      } else if (last.checkInAt && last.checkOutAt) {
-        const worked = Math.floor(
-          (last.checkOutAt.toDate() - last.checkInAt.toDate()) / 1000
-        );
-        setWorkedSeconds(worked);
-      } else {
-        setWorkedSeconds(0);
-      }
+      setWorkedSeconds(last.workedMinutes * 60);
     }
-  }
+  });
 
-  loadLastSession();
-}, [profile, userData]);
+  return () => unsubscribe();
+}, [profile?.userId, userData?.department]);
+
 
 
     useEffect(() => {
