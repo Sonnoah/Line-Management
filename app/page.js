@@ -33,61 +33,70 @@ export default function Home() {
 
   const isOT = workedSeconds > WORK_SECONDS_PER_DAY;    
 
-  useEffect(() => {
-    if (!profile || !userData) return;
+ useEffect(() => {
+  if (!profile || !userData) return;
 
-    async function loadLastSession() {
-      const q = query(
-        collection(db, "Checkins"),
-        where("userId", "==", profile.userId),
-        orderBy("createdAt", "desc"),
-        limit(1)
+  async function loadLastSession() {
+    const q = query(
+      collection(db, "Checkins"),
+      where("userId", "==", profile.userId),
+      orderBy("createdAt", "desc"),
+      limit(1)
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      setData(null);
+      setIsRunning(false);
+      setWorkedSeconds(0);
+      setCheckInStart(null);
+      setLastCheckInTime(null);
+      setLastCheckOutTime(null);
+      return;
+    }
+
+    const last = snap.docs[0].data();
+    setData(last);
+
+    setLastCheckInTime(last.checkInAt?.toDate() ?? null);
+    setLastCheckOutTime(last.checkOutAt?.toDate() ?? null);
+    
+    if (last.status === "IN" && last.checkInAt) {
+      const checkInMs = last.checkInAt.toDate().getTime();
+      setCheckInStart(checkInMs);
+
+      const worked = Math.floor(
+        (Date.now() - checkInMs) / 1000
       );
 
-      const snap = await getDocs(q);
+      setWorkedSeconds(worked);
+      setIsRunning(true);
+      return;
+    }
 
-      if (snap.empty) {
-        setData(null);
-        setIsRunning(false);
-        setWorkedSeconds(0);
-        setLastCheckInTime(null);
-        setLastCheckOutTime(null);
-        return;
-      }
+    if ((last.status === "OUT" || last.status === "DONE")) {
+      setIsRunning(false);
+      setCheckInStart(null);
 
-      const last = snap.docs[0].data();
-      setData(last);
-
-      setLastCheckInTime(last.checkInAt?.toDate() ?? null);
-      setLastCheckOutTime(last.checkOutAt?.toDate() ?? null);
-
-      if (last.checkInAt) {
-        const checkInMs = last.checkInAt.toDate().getTime();
+      if (typeof last.workedSeconds === "number") {
+        setWorkedSeconds(last.workedSeconds);
+      } else if (last.checkInAt && last.checkOutAt) {
         const worked = Math.floor(
-          (Date.now() - checkInMs) / 1000
+          (last.checkOutAt.toDate() - last.checkInAt.toDate()) / 1000
         );
-
-        setCheckInStart(checkInMs);
         setWorkedSeconds(worked);
-
-        if (last.status === "IN") {
-          setIsRunning(true);
-        } else {
-          setIsRunning(false);
-        }
       } else {
-        setIsRunning(false);
         setWorkedSeconds(0);
-        setCheckInStart(null);
       }
     }
-    loadLastSession();
+  }
 
-  }, [profile, userData]);
+  loadLastSession();
+}, [profile, userData]);
 
 
-
-      useEffect(() => {
+    useEffect(() => {
       if (!profile?.userId) return;
 
       async function loadUser() {
@@ -159,7 +168,7 @@ export default function Home() {
               userData?.department === "Production"
                 ? "bg-warning/10 text-warning"
                 : userData?.department === "Office"
-                ? "bg-primary/10 text-primary"
+                ? "bg-secondary/10 text-secondary"
                 : "bg-base-200 text-base-content"
             }`}
           >
@@ -272,7 +281,7 @@ export default function Home() {
                 hour: "2-digit",
                 minute: "2-digit",
               })
-            : ""}
+            : "--:--"}
         </div>
 
         {!isRunning && lastCheckOutTime && (
