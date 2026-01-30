@@ -1,3 +1,5 @@
+"use client";
+
 import liff from "@line/liff";
 import { getUser } from "@/script/get_user";
 import { saveUser } from "@/lib/saveuser";
