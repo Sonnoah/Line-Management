@@ -45,14 +45,25 @@ export function useCheckinLogic(profile) {
       const today = new Date().toISOString().slice(0, 10);
       const docSnap = await getTodayCheckin(profile.userId, today);
 
-      if (docSnap) {
-        setMode(docSnap.data().status === "DONE" ? "IN" : "OUT");
-        setCheckinId(docSnap.id);
+      if (!docSnap) {
+        setMode("IN");
+        setCheckinId(null);
+        return;
+      }
+
+      const data = docSnap.data();
+      setCheckinId(docSnap.id);
+
+      if (data.status === "IN") {
+        setMode("OUT");
+      } else if (data.status === "DONE") {
+        setMode("IN");
       }
     }
 
-    loadToday();
+    loadToday(); 
   }, [profile]);
+
 
   useEffect(() => {
     if (!profile?.userId) return;

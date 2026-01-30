@@ -10,23 +10,31 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
-import { useLiff } from "@/lib/use_liff";
+import { liff_init } from "@/helper/liff_Init";
 import { Loading } from "@/app/components/loading";
 import { getUser } from "@/script/get_user";
 
-const WORK_MINUTES_PER_DAY = 9 * 60;
-
 export default function Home() {
-  const { profile, loading } = useLiff();
+  const { profile, loading } = liff_init();
 
   const [data, setData] = useState(null);
 
   const [checkInStart, setCheckInStart] = useState(null);
   const [workedSeconds, setWorkedSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [lastCheckInTime, setLastCheckInTime] = useState(null);
+  const [lastCheckOutTime, setLastCheckOutTime] = useState(null);
+
+  const WORK_SECONDS_PER_DAY =
+    userData?.department === "Production"
+      ? 8 * 60 * 60
+      : 9 * 60 * 60;
+
+  const isOT = workedSeconds > WORK_SECONDS_PER_DAY;    
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || !userData) return;
 
     async function loadLastSession() {
       const q = query(
@@ -41,47 +49,74 @@ export default function Home() {
       if (snap.empty) {
         setData(null);
         setIsRunning(false);
+        setWorkedSeconds(0);
+        setLastCheckInTime(null);
+        setLastCheckOutTime(null);
         return;
       }
 
       const last = snap.docs[0].data();
       setData(last);
 
-      if (last.status === "IN" && last.checkInAt) {
-        setCheckInStart(last.checkInAt.toDate().getTime());
-        setIsRunning(true);
+      setLastCheckInTime(last.checkInAt?.toDate() ?? null);
+      setLastCheckOutTime(last.checkOutAt?.toDate() ?? null);
+
+      if (last.checkInAt) {
+        const checkInMs = last.checkInAt.toDate().getTime();
+        const worked = Math.floor(
+          (Date.now() - checkInMs) / 1000
+        );
+
+        setCheckInStart(checkInMs);
+        setWorkedSeconds(worked);
+
+        if (last.status === "IN") {
+          setIsRunning(true);
+        } else {
+          setIsRunning(false);
+        }
       } else {
         setIsRunning(false);
+        setWorkedSeconds(0);
+        setCheckInStart(null);
       }
     }
-
     loadLastSession();
+
+  }, [profile, userData]);
+
+
+
+      useEffect(() => {
+      if (!profile?.userId) return;
+
+      async function loadUser() {
+        const user = await getUser(profile.userId);
+        setUserData(user);
+      }
+
+      loadUser();
   }, [profile]);
+
 
   useEffect(() => {
     if (!isRunning || !checkInStart) return;
 
     const timer = setInterval(() => {
-      const diffMs = Date.now() - checkInStart;
-      setWorkedSeconds(Math.floor(diffMs / 1000));
+      const worked = Math.floor(
+        (Date.now() - checkInStart) / 1000
+      );
+      setWorkedSeconds(worked);
     }, 1000);
 
     return () => clearInterval(timer);
   }, [isRunning, checkInStart]);
 
+
+
   if (loading) return <Loading />;
 
   const isCheckedOut = data?.status === "DONE";
-
-  const workedMinutes =
-    data === null
-      ? null
-      : isRunning
-      ? Math.floor(workedSeconds / 60)
-      : data.workedMinutes ?? 0;
-
-  const diffMinutes =
-    workedMinutes === null ? null : workedMinutes - WORK_MINUTES_PER_DAY;
 
   const workHMS = {
     h: Math.floor(workedSeconds / 3600),
@@ -89,39 +124,49 @@ export default function Home() {
     s: workedSeconds % 60,
   };
 
-  const targetSeconds = WORK_MINUTES_PER_DAY * 60;
+  const remainingSeconds = Math.max(
+    0,
+    WORK_SECONDS_PER_DAY - workedSeconds
+  );
 
-  const diffSeconds =
-    data === null ? null : targetSeconds - workedSeconds;
+  const overtimeSeconds = Math.max(
+    0,
+    workedSeconds - WORK_SECONDS_PER_DAY
+  );
 
-  const isOvertime = diffSeconds !== null && diffSeconds < 0;
+  const remainingHMS = {
+    h: Math.floor(remainingSeconds / 3600),
+    m: Math.floor((remainingSeconds % 3600) / 60),
+    s: remainingSeconds % 60,
+  };
 
-  const balanceSecondsAbs =
-    diffSeconds === null ? null : Math.abs(diffSeconds);
-
-  const balanceHMS =
-    balanceSecondsAbs === null
-      ? null
-      : {
-          h: Math.floor(balanceSecondsAbs / 3600),
-          m: Math.floor((balanceSecondsAbs % 3600) / 60),
-          s: balanceSecondsAbs % 60,
-        };
-
-  const balanceSign =
-    diffSeconds === null
-      ? ""
-      : diffSeconds < 0
-      ? "+"
-      : "-";
-
+  const overtimeHMS = {
+    h: Math.floor(overtimeSeconds / 3600),
+    m: Math.floor((overtimeSeconds % 3600) / 60),
+    s: overtimeSeconds % 60,
+  };
 
   return (
-    <div className="wrap">
+        <div className="wrap">
       <main className="home-container">
-        <h3 className="uppercase text-[16px] font-bold mb-3">
-          Today's Working Summary
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="uppercase text-[16px] font-bold">
+            Today's Working Summary
+          </h3>
+
+          <span
+            className={`badge badge-lg rounded-full text-sm ${
+              userData?.department === "Production"
+                ? "bg-warning/10 text-warning"
+                : userData?.department === "Office"
+                ? "bg-primary/10 text-primary"
+                : "bg-base-200 text-base-content"
+            }`}
+          >
+            {userData?.department ?? "No Department"}
+          </span>
+        </div>
+
 
         <div className="stats shadow w-full">
           <div className="stat p-3">
@@ -160,44 +205,86 @@ export default function Home() {
             </div>
 
             <div className="stat-title">
-              {diffMinutes === null
+              {!data
                 ? "Time Balance"
-                : diffMinutes >= 0
+                : isOT
                 ? "Overtime"
                 : "Remaining"}
             </div>
-
-           <div className={`stat-value transition-opacity flex items-center gap-1 ${
-              diffMinutes === null
-                ? "text-base-content"
-                : isCheckedOut
-                ? "text-black opacity-50"
-                : diffMinutes >= 0
-                ? "text-success"
-                : "text-warning"
-            }`}
-          >
-            {balanceHMS === null ? (
-              <span className="text-lg text-black opacity-50">
-                --:--
-              </span>
-            ) : (
-              <>
-                <span className="text-lg">
-                  {diffSeconds < 0 ? "+" : "-"}
-                </span>
-
-                <span className="countdown font-mono text-lg">
-                  <span style={{ "--value": balanceHMS.h, "--digits": 2 }}>{balanceHMS.h}</span>:
-                  <span style={{ "--value": balanceHMS.m, "--digits": 2 }}>{balanceHMS.m}</span>:
-                  <span style={{ "--value": balanceHMS.s, "--digits": 2 }}>{balanceHMS.s}</span>
-                </span>
-              </>
-            )}
-          </div>
-            <div className="stat-desc">hrs</div>
-          </div>
+            <div
+              className={`stat-value transition-opacity flex items-center gap-1 ${
+                !data
+                  ? "text-base-content"
+                  : !isRunning
+                  ? "text-black opacity-50"
+                  : isOT
+                  ? "text-success"
+                  : "text-warning"
+              }`
+            }
+            >
+              {!data ? (
+                <span className="text-lg text-black opacity-50">--:--</span>
+              ) : isOT ? (
+                <>
+                  <span className="text-lg">+</span>
+                  <span className="countdown font-mono text-lg">
+                    <span style={{ "--value": overtimeHMS.h, "--digits": 2 }}>
+                      {overtimeHMS.h}
+                    </span>
+                    :
+                    <span style={{ "--value": overtimeHMS.m, "--digits": 2 }}>
+                      {overtimeHMS.m}
+                    </span>
+                    :
+                    <span style={{ "--value": overtimeHMS.s, "--digits": 2 }}>
+                      {overtimeHMS.s}
+                    </span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-lg">-</span>
+                  <span className="countdown font-mono text-lg">
+                    <span style={{ "--value": remainingHMS.h, "--digits": 2 }}>
+                      {remainingHMS.h}
+                    </span>
+                    :
+                    <span style={{ "--value": remainingHMS.m, "--digits": 2 }}>
+                      {remainingHMS.m}
+                    </span>
+                    :
+                    <span style={{ "--value": remainingHMS.s, "--digits": 2 }}>
+                      {remainingHMS.s}
+                    </span>
+                  </span>
+                </>
+              )}
+            </div>
+          <div className="stat-desc">hrs</div>
         </div>
+      </div>
+       <div className="mt-3 flex justify-between text-xs text-base-content/60">
+        <div>
+          <span className="font-medium">Last Check in: </span>{" "}
+          {lastCheckInTime
+            ? lastCheckInTime.toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : ""}
+        </div>
+
+        {!isRunning && lastCheckOutTime && (
+          <div>
+            <span className="font-medium">Last Check out :</span>{" "}
+            {lastCheckOutTime.toLocaleTimeString("en-GB", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </div>
+        )}
+      </div>
       </main>
     </div>
   );

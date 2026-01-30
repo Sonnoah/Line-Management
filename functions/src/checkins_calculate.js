@@ -6,9 +6,9 @@ admin.initializeApp();
 const db = getFirestore();
 
 function getWorkMinutesByDepartment(department) {
-  if (department === "Office") return 9 * 60;
   if (department === "Production") return 8 * 60;
-  return 9 * 60; 
+  if (department === "Office") return 9 * 60;
+  return 9 * 60;
 }
 
 exports.calculateWorkTime = onDocumentUpdated(
@@ -17,34 +17,35 @@ exports.calculateWorkTime = onDocumentUpdated(
     const before = event.data.before.data();
     const after = event.data.after.data();
 
-    if (!after.checkOutAt || before.checkOutAt) return;
+    if (after.calculated) return;
+    if (!after.checkOut?.time || before.checkOut?.time) return;
 
-    const checkInAt = after.checkInAt.toDate();
-    const checkOutAt = after.checkOutAt.toDate();
+    const checkInAt = after.checkIn.time.toDate();
+    const checkOutAt = after.checkOut.time.toDate();
 
     const workedMinutes = Math.floor(
       (checkOutAt - checkInAt) / 60000
     );
 
     const department = after.department || "Office";
-    const WORK_MINUTES_PER_DAY =
+    const requiredMinutes =
       getWorkMinutesByDepartment(department);
 
-    let overtimeMinutes = 0;
-    let missingMinutes = 0;
-
-    if (workedMinutes > WORK_MINUTES_PER_DAY) {
-      overtimeMinutes = workedMinutes - WORK_MINUTES_PER_DAY;
-    } else if (workedMinutes < WORK_MINUTES_PER_DAY) {
-      missingMinutes = WORK_MINUTES_PER_DAY - workedMinutes;
-    }
+    const overtimeMinutes = Math.max(
+      0,
+      workedMinutes - requiredMinutes
+    );
+    const missingMinutes = Math.max(
+      0,
+      requiredMinutes - workedMinutes
+    );
 
     await event.data.after.ref.update({
       workedMinutes,
       workedHours: workedMinutes / 60,
 
-      requiredMinutes: WORK_MINUTES_PER_DAY,
-      requiredHours: WORK_MINUTES_PER_DAY / 60,
+      requiredMinutes,
+      requiredHours: requiredMinutes / 60,
 
       overtimeMinutes,
       overtimeHours: overtimeMinutes / 60,
@@ -52,7 +53,6 @@ exports.calculateWorkTime = onDocumentUpdated(
       missingMinutes,
       missingHours: missingMinutes / 60,
 
-      department,
       status: "DONE",
       calculated: true,
       updatedAt: Timestamp.now(),
