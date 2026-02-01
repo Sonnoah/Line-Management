@@ -14,7 +14,7 @@ export default function CheckinPage() {
   const logic = useCheckinLogic(profile);
 
   if (loading) return <Loading />;
-  if (!profile) return null;
+  if (!profile) return <Loading />;
 
 const {
   mode,
