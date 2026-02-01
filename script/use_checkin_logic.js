@@ -20,18 +20,48 @@ export function useCheckinLogic(profile) {
   const [submitting, setSubmitting] = useState(false);
   const [checkinId, setCheckinId] = useState(null);
   const [userData, setUserData] = useState(null);
-
+  const [todayDone, setTodayDone] = useState(false);
+  const [forceMode, setForceMode] = useState(false);
+  const [justCheckedOut, setJustCheckedOut] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  const [today, setToday] = useState(
+  new Date().toISOString().slice(0, 10)
+);
+
 
   const resetSession = () => {
     setStatus("Please Confirm Your Location");
     setStatusType("idle");
     setGeo(null);
-    setTimeText("");
     setPhoto(null);
     setShowCamera(false);
+  };
+
+  const forceNewCheckin = () => {
+    setForceMode(true); 
+    setTodayDone(false); 
+    setMode("IN");
+    setCheckinId(null);
+    resetForNewCheckin();
+  };
+
+  const resetForNewCheckin = () => {
+    setStatus("Please Confirm Your Location");
+    setStatusType("idle");
+    setGeo(null);
+    setTimeText("");      
+    setPhoto(null);
+    setShowCamera(false);
+};
+
+  const resetAfterCheckout = () => {
+    setGeo(null);
+    setPhoto(null);
+    setShowCamera(false);
+
   };
 
   const retakePhoto = () => {
@@ -41,30 +71,53 @@ export function useCheckinLogic(profile) {
   };
   
   useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().toISOString().slice(0, 10);
+      setToday(prev => (prev !== now ? now : prev));
+    }, 60 * 1000); 
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    setJustCheckedOut(false);
+    setForceMode(false);
+  }, [today]);
+
+
+  useEffect(() => {
     if (!profile) return;
 
     async function loadToday() {
-      const today = new Date().toISOString().slice(0, 10);
-      const docSnap = await getTodayCheckin(profile.userId, today);
+
+    const docSnap = await getTodayCheckin(profile.userId, today);
+
+      if (forceMode) return;
 
       if (!docSnap) {
         setMode("IN");
         setCheckinId(null);
+        setTodayDone(false);
+        setJustCheckedOut(false);
         return;
       }
 
       const data = docSnap.data();
-      setCheckinId(docSnap.id);
 
-      if (data.status === "IN") {
-        setMode("OUT");
-      } else if (data.status === "DONE") {
+      if (data.status === "DONE") {
+        setTodayDone(true);
         setMode("IN");
+        setCheckinId(null);
+      } else {
+        setTodayDone(false);
+        setMode("OUT");
+        setCheckinId(docSnap.id);
       }
     }
 
-    loadToday(); 
-  }, [profile]);
+    loadToday();
+  }, [profile, forceMode, today]);
+
 
 
   useEffect(() => {
@@ -205,7 +258,7 @@ export function useCheckinLogic(profile) {
       setStatusType("success");
 
       setMode("OUT");
-      resetSession(); 
+      resetSession();
 
     } else if (mode === "OUT") {
       await checkOut(checkinId, geo, photo, department );
@@ -214,7 +267,6 @@ export function useCheckinLogic(profile) {
             icon: "success",
             title: "CHECK OUT",
             text: "Your check out information has been received",
-            width: 300, 
             timer: 3000,
             showConfirmButton: false,
           });
@@ -222,9 +274,13 @@ export function useCheckinLogic(profile) {
       setStatus("Checked out successfully");
       setStatusType("success");
 
+      setTodayDone(true);  
+      setJustCheckedOut(true);  
+      setForceMode(false); 
+
       setMode("IN");
       setCheckinId(null);
-      resetSession();
+      resetAfterCheckout();
     }
 
   } catch (e) {
@@ -235,7 +291,6 @@ export function useCheckinLogic(profile) {
     title: "Submit failed",
     showConfirmButton: false,
     text: e.message || "Unknown error",
-    width: 300,
   });
 
   setStatus("Submit failed");
@@ -249,6 +304,7 @@ export function useCheckinLogic(profile) {
 };
   return {
     mode,
+    todayDone,
     status,
     statusType,
     geo,
@@ -258,6 +314,7 @@ export function useCheckinLogic(profile) {
     submitting,
     videoRef,
     canvasRef,
+    forceNewCheckin,
     handleGPS,
     takePhoto,
     handleSubmit,

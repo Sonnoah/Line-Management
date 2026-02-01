@@ -118,6 +118,10 @@ export default function Profile() {
         <label className="label_profile_title opacity-50">Display Name</label>
         <label className="label_profile">{profile.displayName}</label>
 
+        
+        <label className="label_profile_title opacity-50">Department</label>
+        <label className="label_profile">{profile.department}</label>
+
         <label className="label_profile_title opacity-50">Role</label>
         <label className="label_profile">{profile.role}</label>
  

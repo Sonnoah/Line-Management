@@ -13,6 +13,16 @@ body {
   font-family: var(--font-kanit);
 }
 
-/* .menu li > *:active {
-  background-color: bg-sky-800 !important;
-} */
+.swal2-popup {
+  font-family: "Kanit", sans-serif;
+  width: 300px;
+}
+
+.swal2-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.swal2-html-container {
+  font-size: 16px;
+}

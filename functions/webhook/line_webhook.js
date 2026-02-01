@@ -27,7 +27,6 @@ exports.lineWebhook = onRequest(
         return res.sendStatus(200);
       }
 
-      /* ================== Check Admin ================== */
       const adminSnap = await db
         .collection("Users")
         .doc(event.source.userId)
@@ -36,19 +35,18 @@ exports.lineWebhook = onRequest(
       if (!adminSnap.exists || adminSnap.data().role !== "Admin") {
         await pushMessage(event.source.userId, {
           type: "text",
-          text: "❌ You are not authorized to perform this action.",
+          text: "You are not authorized to perform this action.",
         });
         return res.sendStatus(200);
       }
 
-      /* ================== Get Request ================== */
       const reqRef = db.collection("Request").doc(docId);
       const reqSnap = await reqRef.get();
 
       if (!reqSnap.exists) {
         await pushMessage(event.source.userId, {
           type: "text",
-          text: "❌ Request not found.",
+          text: "Request not found.",
         });
         return res.sendStatus(200);
       }

@@ -22,7 +22,8 @@ const Detail_popup = forwardRef(
   const [confirmEditDept, setConfirmEditDept] = useState(false);
   const [confirmSaveDept, setConfirmSaveDept] = useState(false);
 
-  
+  const isFirstSetDept = !department; 
+
   useEffect(() => {
     if (profile) {
       setRole(profile.role || "");
@@ -77,19 +78,16 @@ const Detail_popup = forwardRef(
 
           <div className="flex flex-col gap-2">
 
-            {/* Display name */}
             <div>
               <p className="label_admin_title opacity-50">Display Name</p>
               <span className="label_admin">{profile.displayName}</span>
             </div>
 
-            {/* Username */}
             <div>
               <p className="label_admin_title opacity-50">User Name</p>
               <span className="label_admin">{profile.username || "-"}</span>
             </div>
 
-            {/* Department */}
            <div>
             <div className="userid-row items-center">
               <p className="label_admin_title opacity-50">Department</p>
@@ -105,7 +103,6 @@ const Detail_popup = forwardRef(
               )}
             </div>
 
-            {/* Confirm Edit */}
             <ConfirmDialog
               open={confirmEditDept}
               title="Confirm Edit"
@@ -116,29 +113,28 @@ const Detail_popup = forwardRef(
               onConfirm={() => {
                 setConfirmEditDept(false);
                 setEditingDept(true);
-                setPendingDept(department);
+                setPendingDept(department || "");
+
               }}
             />
 
             {!editingDept ? (
               <span className="label_admin">{department || "-"}</span>
             ) : (
-              <select
-                className="select select-sm select-ghost pl-1 text-[16px] outline-[#243c5a]/10"
-                value={pendingDept}
-                onChange={(e) => {
-                  const newDept = e.target.value;
+            <select className="select select-sm select-ghost pl-1 text-[16px] outline-[#243c5a]/10"
+              value={pendingDept}
+              onChange={(e) => {
+                setPendingDept(e.target.value);
+                setConfirmSaveDept(true);
+              }}
+            >
+              <option value="" disabled hidden> Select department</option>
+              <option value="Production" disabled={!isFirstSetDept && department === "Production"}> Production </option>
+              <option value="Office" disabled={!isFirstSetDept && department === "Office"}>Office</option>
+            </select>
 
-                  setPendingDept(newDept);
-                  setConfirmSaveDept(true);
-                }}
-              >
-                <option value="Production" disabled={department === "Production"}>Production</option>
-                <option value="Office" disabled={department === "Office"}>Office</option>
-              </select>
             )}
 
-            {/* Confirm Save */}
             <ConfirmDialog
               open={confirmSaveDept}
               title="Save Changes"

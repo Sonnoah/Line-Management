@@ -16,6 +16,15 @@ const kanit = Kanit({
   variable: "--font-kanit",
 })
 
+export const metadata = {
+  title: "PT WorkTime",
+  description: "ระบบเช็คอิน-เช็คเอาท์ผ่าน LINE LIFF",
+  icons: {
+    icon: "favicon.ico",
+    apple: "favicon.ico",
+  },
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="th">

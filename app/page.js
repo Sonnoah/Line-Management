@@ -14,6 +14,7 @@ import { liff_init } from "@/helper/liff_Init";
 import { Loading } from "@/app/components/loading";
 import { getUser } from "@/script/get_user";
 import { onSnapshot } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 
 export default function Home() {
@@ -31,19 +32,19 @@ export default function Home() {
   const WORK_SECONDS_PER_DAY =
     userData?.department === "Production"
       ? 8 * 60 * 60
-      : 9 * 60 * 60;
+      : 9 * 60 * 60 ;
 
-  const isOT = workedSeconds > WORK_SECONDS_PER_DAY;    
+  const isOT = workedSeconds > WORK_SECONDS_PER_DAY;   
+  useEffect(() => {
+    if (!profile || !userData) return;
 
-useEffect(() => {
-  if (!profile || !userData) return;
+    const q = query(
+      collection(db, "Checkins"),
+      where("userId", "==", profile.userId),
+      orderBy("createdAt", "desc"),
+      limit(1)
+    );
 
-  const q = query(
-    collection(db, "Checkins"),
-    where("userId", "==", profile.userId),
-    orderBy("createdAt", "desc"),
-    limit(1)
-  );
 
   const unsubscribe = onSnapshot(q, (snap) => {
     if (snap.empty) {
@@ -62,9 +63,6 @@ useEffect(() => {
     setLastCheckInTime(last.checkInAt?.toDate() ?? null);
     setLastCheckOutTime(last.checkOutAt?.toDate() ?? null);
 
-    // =========================
-    // 🔵 CASE: IN (นับสด)
-    // =========================
     if (last.status === "IN" && last.checkInAt) {
       const checkInMs = last.checkInAt.toDate().getTime();
       setCheckInStart(checkInMs);
@@ -72,10 +70,7 @@ useEffect(() => {
       return;
     }
 
-    // =========================
-    // 🟢 CASE: OUT / DONE
-    // ใช้ค่าจาก DB เท่านั้น
-    // =========================
+  
     if (
       (last.status === "OUT" || last.status === "DONE") &&
       typeof last.workedMinutes === "number"
@@ -120,7 +115,8 @@ useEffect(() => {
 
   if (loading) return <Loading />;
 
-  const isCheckedOut = data?.status === "DONE";
+  // const isCheckedOut = data?.status === "DONE";
+
 
   const workHMS = {
     h: Math.floor(workedSeconds / 3600),
