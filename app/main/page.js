@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "../components/loading";
@@ -9,12 +11,12 @@ export default function Home() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const page = searchParams.get("page")|| "main";;
+    const page = searchParams.get("page");
 
-    if (!page) return; 
+    if (!page) return;
 
     router.replace(`/${page}`);
-  }, [searchParams]); 
+  }, [searchParams, router]);
 
   return <Loading />;
 }
