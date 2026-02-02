@@ -184,11 +184,11 @@ export default function Home() {
               }`}
             >
               {!data ? (
-                <span className="countdown text-lg text-black opacity-50">
+                <span className="countdown text-[18px] text-black">
                   --:--
                 </span>
               ) : (
-                <span className="countdown font-mono text-lg">
+                <span className="countdown font-mono text-[18px]">
                   <span style={{ "--value": workHMS.h, "--digits": 2 }}>{workHMS.h}</span>:
                   <span style={{ "--value": workHMS.m, "--digits": 2 }}>{workHMS.m}</span>:
                   <span style={{ "--value": workHMS.s, "--digits": 2 }}>{workHMS.s}</span>
@@ -224,11 +224,11 @@ export default function Home() {
             }
             >
               {!data ? (
-                <span className="text-lg text-black opacity-50">--:--</span>
+                <span className="text-[18px] text-black opacity-50">--:--</span>
               ) : isOT ? (
                 <>
-                  <span className="text-lg">+</span>
-                  <span className="countdown font-mono text-lg">
+                  <span className="text-[18px]">+</span>
+                  <span className="countdown font-mono text-[18px]">
                     <span style={{ "--value": overtimeHMS.h, "--digits": 2 }}>
                       {overtimeHMS.h}
                     </span>
@@ -244,8 +244,8 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <span className="text-lg">-</span>
-                  <span className="countdown font-mono text-lg">
+                  <span className="text-[18px]">-</span>
+                  <span className="countdown font-mono text-[18px]">
                     <span style={{ "--value": remainingHMS.h, "--digits": 2 }}>
                       {remainingHMS.h}
                     </span>
@@ -266,13 +266,13 @@ export default function Home() {
       </div>
        <div className="mt-3 flex justify-between text-xs text-base-content/60">
         <div>
-          <span className="font-medium">Last Check in: </span>{" "}
+          <span className="font-medium">Last Check in : </span>{" "}
           {lastCheckInTime
             ? lastCheckInTime.toLocaleTimeString("en-GB", {
                 hour: "2-digit",
                 minute: "2-digit",
               })
-            : "--:--"}
+            : "-"}
         </div>
 
         {!isRunning && lastCheckOutTime && (

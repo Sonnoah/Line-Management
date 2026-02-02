@@ -31,6 +31,17 @@ export function useCheckinLogic(profile) {
   new Date().toISOString().slice(0, 10)
 );
 
+  async function checkCameraPermission() {
+  if (!navigator.permissions) return "prompt";
+
+  try {
+    const result = await navigator.permissions.query({ name: "camera" });
+    return result.state; 
+  } catch {
+    return "prompt";
+  }
+}
+
 
   const resetSession = () => {
     setStatus("Please Confirm Your Location");
@@ -133,80 +144,111 @@ export function useCheckinLogic(profile) {
   }, [profile]);
 
 
-  useEffect(() => {
-    if (!showCamera || !videoRef.current) return;
+useEffect(() => {
+  if (!showCamera || !videoRef.current) return;
 
-    let stream;
-    async function openCamera() {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoRef.current.srcObject = stream;
-    }
-    openCamera();
+  let stream;
 
-    return () => {
-      if (stream) stream.getTracks().forEach(t => t.stop());
-    };
-  }, [showCamera]);
-
-  const handleGPS = () => {
-  Swal.fire({
-    title: "Getting location",
-    text: "Please wait a moment",
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      Swal.close(); 
-
-      const geoData = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-      };
-
-      setGeo(geoData);
-      setStatus("Current location confirmed");
-      setStatusType("success");
-
-      const time = new Date().toLocaleString("en-US", {
-        timeZone: "Asia/Bangkok",
-        timeStyle: "short",
-        hour12: false,
+  async function openCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+        audio: false,
       });
 
-      setTimeText(
-        mode === "IN"
-          ? "Checked in at " + time
-          : "Checked out at " + time
-      );
+      videoRef.current.srcObject = stream;
+    } catch (err) {
+      console.error("Camera error", err);
 
-      setShowCamera(true);
-    },
-    error => {
-      Swal.close(); 
+      Swal.fire({
+        icon: "error",
+        title: "Camera unavailable",
+        text: "Unable to access camera. Please check permission or open in browser.",
+      });
 
-      setStatus("Unable to access location");
-      setStatusType("error");
-
-    Swal.fire({
-      icon: "error",
-      title: "Location Error",
-       html: `
-            <div>
-              <p>Location access failed</p>
-              <p>Please try again</p>
-            </div>
-          `,
-      width: 300,
-      showConfirmButton: false,
-      timer: 3000
-    });
+      if (window.liff) {
+        window.open(window.location.href, "_blank");
+      }
     }
-  );
-};
+  }
+
+  openCamera();
+
+  return () => {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+  };
+}, [showCamera]);
+
+
+  const handleGPS = async () => {
+    Swal.fire({
+      title: "Getting location",
+      text: "Please wait a moment",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    navigator.geolocation.getCurrentPosition(
+      async pos => {
+        Swal.close();
+
+        const geoData = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        };
+
+        setGeo(geoData);
+        setStatus("Current location confirmed");
+        setStatusType("success");
+
+        const time = new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Bangkok",
+          timeStyle: "short",
+          hour12: false,
+        });
+
+        setTimeText(
+          mode === "IN"
+            ? "Checked in at " + time
+            : "Checked out at " + time
+        );
+
+        const camPermission = await checkCameraPermission();
+
+        if (camPermission === "denied") {
+          Swal.fire({
+            icon: "warning",
+            title: "Camera permission denied",
+            html: `
+              <p>Please enable camera permission manually</p>
+              <ol style="text-align:left">
+                <li>LINE App info</li>
+                <li>Permissions</li>
+                <li>Allow Camera</li>
+              </ol>
+            `,
+          });
+          return;
+        }
+
+        setShowCamera(true);
+      },
+      error => {
+        Swal.close();
+        setStatus("Unable to access location");
+        setStatusType("error");
+
+        Swal.fire({
+          icon: "error",
+          title: "Location Error",
+          text: "Location access failed",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      }
+    );
+  };
+
 
 
   const takePhoto = () => {
