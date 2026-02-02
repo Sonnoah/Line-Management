@@ -47,7 +47,7 @@ export default function Nav() {
             className="menu menu-md dropdown-content bg-base-100 rounded-box mt-0 w-60 p-5 shadow-sm" 
             onClick={() => document.activeElement?.blur()}>
               <li> 
-                  <button className="flex items-center gap-2 text-left" onClick={() => goTo("/")}>
+                  <button className="flex items-center gap-2 text-left" onClick={() => goTo("/main")}>
                     <span className="iconamoon--home"></span>
                     <p className="text-[16px]">Home</p>
                   </button>
