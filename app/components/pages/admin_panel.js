@@ -46,7 +46,6 @@ export default function AdminPanel() {
     );
   }
 
-
   useEffect(() => {
     async function load() {
       const data = await getAllUsers();
@@ -104,9 +103,9 @@ export default function AdminPanel() {
                     <div tabIndex="0" role="button" className="btn btn-ghost btn-xs">
                       <span className="solar--menu-dots-bold"></span>
                     </div>
-                    <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 p-3 shadow-sm">
+                    <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 p-2 w-40  shadow-sm">
                       <li onClick={() => openDetail(profile)}>
-                        <a>
+                        <a className="text-[16px]">
                           <span className="clarity--details-line"></span>
                           Detail
                         </a>
@@ -116,7 +115,7 @@ export default function AdminPanel() {
                             setUserToDelete(profile);
                             setConfirmDelete(true);
                           }}>
-                        <a className="text-[#ea0000]">
+                        <a className="text-[#ea0000] text-[16px]">
                           <span className="solar--trash-bin-minimalistic-broken"></span>
                           Delete
                         </a>

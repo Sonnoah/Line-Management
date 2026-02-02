@@ -165,7 +165,6 @@ export default function Main() {
           </span>
         </div>
 
-
         <div className="stats shadow w-full">
           <div className="stat p-3">
             <div className="stat-figure text-secondary">
@@ -262,20 +261,20 @@ export default function Main() {
           <div className="stat-desc">hrs</div>
         </div>
       </div>
-       <div className="mt-3 flex justify-between text-xs text-base-content/60">
+       <div className="mt-3 flex justify-between font-[14px] text-base-content/60">
         <div>
-          <span className="font-medium">Last Check in : </span>{" "}
+          <span className="font-[14px] ">Last Check in : </span>{" "}
           {lastCheckInTime
             ? lastCheckInTime.toLocaleTimeString("en-GB", {
                 hour: "2-digit",
                 minute: "2-digit",
               })
-            : "-"}
+            : "-"} 
         </div>
 
         {!isRunning && lastCheckOutTime && (
           <div>
-            <span className="font-medium">Last Check out :</span>{" "}
+            <span className="font-[14px] ">Last Check out :</span>{" "}
             {lastCheckOutTime.toLocaleTimeString("en-GB", {
               hour: "2-digit",
               minute: "2-digit",
