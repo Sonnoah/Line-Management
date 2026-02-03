@@ -22,6 +22,7 @@ export function useCheckinLogic(profile) {
   const [userData, setUserData] = useState(null);
   const [todayDone, setTodayDone] = useState(false);
   const [forceMode, setForceMode] = useState(false);
+  const [justCheckedOut, setJustCheckedOut] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -29,17 +30,6 @@ export function useCheckinLogic(profile) {
   const [today, setToday] = useState(
   new Date().toISOString().slice(0, 10)
 );
-
-  async function checkCameraPermission() {
-  if (!navigator.permissions) return "prompt";
-
-  try {
-    const result = await navigator.permissions.query({ name: "camera" });
-    return result.state; 
-  } catch {
-    return "prompt";
-  }
-}
 
 
   const resetSession = () => {
@@ -84,11 +74,10 @@ export function useCheckinLogic(profile) {
     const interval = setInterval(() => {
       const now = new Date().toISOString().slice(0, 10);
       setToday(prev => (prev !== now ? now : prev));
-    }, 60 * 1000);
+    }, 60 * 1000); 
 
     return () => clearInterval(interval);
   }, []);
-
 
   useEffect(() => {
     setJustCheckedOut(false);
@@ -100,7 +89,8 @@ export function useCheckinLogic(profile) {
     if (!profile) return;
 
     async function loadToday() {
-      const docSnap = await getTodayCheckin(profile.userId, today);
+
+    const docSnap = await getTodayCheckin(profile.userId, today);
 
       if (forceMode) return;
 
@@ -108,17 +98,11 @@ export function useCheckinLogic(profile) {
         setMode("IN");
         setCheckinId(null);
         setTodayDone(false);
+        setJustCheckedOut(false);
         return;
       }
 
       const data = docSnap.data();
-
-      if (data.date !== today) {
-        setTodayDone(false);
-        setMode("IN");
-        setCheckinId(null);
-        return;
-      }
 
       if (data.status === "DONE") {
         setTodayDone(true);
@@ -137,55 +121,6 @@ export function useCheckinLogic(profile) {
 
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!todayDone) {
-        console.log("New day but still working — no reset");
-        return;
-      }
-
-      console.log("New day & work completed — reset");
-
-      const newToday = new Date().toISOString().slice(0, 10);
-
-      setToday(newToday);
-      setTodayDone(false);
-      setMode("IN");
-      setCheckinId(null);
-      setJustCheckedOut(false);
-      setForceMode(false);
-
-      setStatus("Please Confirm Your Location");
-      setStatusType("idle");
-      setGeo(null);
-      setPhoto(null);
-      setShowCamera(false);
-    }, msUntilNextDayBangkok());
-
-    return () => clearTimeout(timeout);
-  }, [todayDone]);
-
-
-  useEffect(() => {
-    const onFocus = () => {
-      const now = new Date().toISOString().slice(0, 10);
-
-      if (now !== today && todayDone) {
-        console.log("Focus detected new day — reset");
-
-        setToday(now);
-        setTodayDone(false);
-        setMode("IN");
-        setCheckinId(null);
-      }
-    };
-
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
-  }, [today, todayDone]);
-
-
-
-  useEffect(() => {
     if (!profile?.userId) return;
 
     async function loadUser() {
@@ -198,111 +133,80 @@ export function useCheckinLogic(profile) {
   }, [profile]);
 
 
-useEffect(() => {
-  if (!showCamera || !videoRef.current) return;
+  useEffect(() => {
+    if (!showCamera || !videoRef.current) return;
 
-  let stream;
-
-  async function openCamera() {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-        audio: false,
-      });
-
+    let stream;
+    async function openCamera() {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoRef.current.srcObject = stream;
-    } catch (err) {
-      console.error("Camera error", err);
+    }
+    openCamera();
 
-      Swal.fire({
-        icon: "error",
-        title: "Camera unavailable",
-        text: "Unable to access camera. Please check permission or open in browser.",
+    return () => {
+      if (stream) stream.getTracks().forEach(t => t.stop());
+    };
+  }, [showCamera]);
+
+  const handleGPS = () => {
+  Swal.fire({
+    title: "Getting location",
+    text: "Please wait a moment",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      Swal.close(); 
+
+      const geoData = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      };
+
+      setGeo(geoData);
+      setStatus("Current location confirmed");
+      setStatusType("success");
+
+      const time = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+        timeStyle: "short",
+        hour12: false,
       });
 
-      if (window.liff) {
-        window.open(window.location.href, "_blank");
-      }
-    }
-  }
+      setTimeText(
+        mode === "IN"
+          ? "Checked in at " + time
+          : "Checked out at " + time
+      );
 
-  openCamera();
+      setShowCamera(true);
+    },
+    error => {
+      Swal.close(); 
 
-  return () => {
-    if (stream) stream.getTracks().forEach(t => t.stop());
-  };
-}, [showCamera]);
+      setStatus("Unable to access location");
+      setStatusType("error");
 
-
-  const handleGPS = async () => {
     Swal.fire({
-      title: "Getting location",
-      text: "Please wait a moment",
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading(),
+      icon: "error",
+      title: "Location Error",
+       html: `
+            <div>
+              <p>Location access failed</p>
+              <p>Please try again</p>
+            </div>
+          `,
+      width: 300,
+      showConfirmButton: false,
+      timer: 3000
     });
-
-    navigator.geolocation.getCurrentPosition(
-      async pos => {
-        Swal.close();
-
-        const geoData = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        };
-
-        setGeo(geoData);
-        setStatus("Current location confirmed");
-        setStatusType("success");
-
-        const time = new Date().toLocaleString("en-US", {
-          timeZone: "Asia/Bangkok",
-          timeStyle: "short",
-          hour12: false,
-        });
-
-        setTimeText(
-          mode === "IN"
-            ? "Checked in at " + time
-            : "Checked out at " + time
-        );
-
-        const camPermission = await checkCameraPermission();
-
-        if (camPermission === "denied") {
-          Swal.fire({
-            icon: "warning",
-            title: "Camera permission denied",
-            html: `
-              <p>Please enable camera permission manually</p>
-              <ol style="text-align:left">
-                <li>LINE App info</li>
-                <li>Permissions</li>
-                <li>Allow Camera</li>
-              </ol>
-            `,
-          });
-          return;
-        }
-
-        setShowCamera(true);
-      },
-      error => {
-        Swal.close();
-        setStatus("Unable to access location");
-        setStatusType("error");
-
-        Swal.fire({
-          icon: "error",
-          title: "Location Error",
-          text: "Location access failed",
-          timer: 3000,
-          showConfirmButton: false,
-        });
-      }
-    );
-  };
-
+    }
+  );
+};
 
 
   const takePhoto = () => {
