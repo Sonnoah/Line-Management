@@ -8,26 +8,13 @@ export default function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
- useEffect(() => {
-  const page = searchParams.get("page");
+  useEffect(() => {
+    const to = searchParams.get("to");
 
-  const allowPages = [
-    "check_in",
-    "profile",
-    "request_for_leave",
-    "main",
-  ];
+    if (to) {
+      router.replace(`/${to}`);
+    }
+  }, [searchParams, router]);
 
-  if (!page) return;
-
-  if (!allowPages.includes(page)) {
-    router.replace("/main");
-    return;
-  }
-
-  router.replace(`/${page}`);
-}, [searchParams]);
-
-
-  return <Loading />;
+    return <Loading />;
 }
