@@ -22,7 +22,6 @@ export function useCheckinLogic(profile) {
   const [userData, setUserData] = useState(null);
   const [todayDone, setTodayDone] = useState(false);
   const [forceMode, setForceMode] = useState(false);
-  const [justCheckedOut, setJustCheckedOut] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -85,10 +84,11 @@ export function useCheckinLogic(profile) {
     const interval = setInterval(() => {
       const now = new Date().toISOString().slice(0, 10);
       setToday(prev => (prev !== now ? now : prev));
-    }, 60 * 1000); 
+    }, 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
+
 
   useEffect(() => {
     setJustCheckedOut(false);
@@ -100,8 +100,7 @@ export function useCheckinLogic(profile) {
     if (!profile) return;
 
     async function loadToday() {
-
-    const docSnap = await getTodayCheckin(profile.userId, today);
+      const docSnap = await getTodayCheckin(profile.userId, today);
 
       if (forceMode) return;
 
@@ -109,11 +108,17 @@ export function useCheckinLogic(profile) {
         setMode("IN");
         setCheckinId(null);
         setTodayDone(false);
-        setJustCheckedOut(false);
         return;
       }
 
       const data = docSnap.data();
+
+      if (data.date !== today) {
+        setTodayDone(false);
+        setMode("IN");
+        setCheckinId(null);
+        return;
+      }
 
       if (data.status === "DONE") {
         setTodayDone(true);
@@ -128,6 +133,55 @@ export function useCheckinLogic(profile) {
 
     loadToday();
   }, [profile, forceMode, today]);
+
+
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!todayDone) {
+        console.log("New day but still working — no reset");
+        return;
+      }
+
+      console.log("New day & work completed — reset");
+
+      const newToday = new Date().toISOString().slice(0, 10);
+
+      setToday(newToday);
+      setTodayDone(false);
+      setMode("IN");
+      setCheckinId(null);
+      setJustCheckedOut(false);
+      setForceMode(false);
+
+      setStatus("Please Confirm Your Location");
+      setStatusType("idle");
+      setGeo(null);
+      setPhoto(null);
+      setShowCamera(false);
+    }, msUntilNextDayBangkok());
+
+    return () => clearTimeout(timeout);
+  }, [todayDone]);
+
+
+  useEffect(() => {
+    const onFocus = () => {
+      const now = new Date().toISOString().slice(0, 10);
+
+      if (now !== today && todayDone) {
+        console.log("Focus detected new day — reset");
+
+        setToday(now);
+        setTodayDone(false);
+        setMode("IN");
+        setCheckinId(null);
+      }
+    };
+
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [today, todayDone]);
 
 
 
