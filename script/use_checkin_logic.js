@@ -31,6 +31,38 @@ export function useCheckinLogic(profile) {
   new Date().toISOString().slice(0, 10)
 );
 
+  useEffect(() => {
+    if (!profile) return;
+
+    async function loadToday() {
+      const docSnap = await getTodayCheckin(profile.userId, today);
+
+      if (forceMode) return;
+
+      if (!docSnap) {
+        setMode("IN");
+        setCheckinId(null);
+        setTodayDone(false);  
+        setJustCheckedOut(false);
+        return;
+      }
+
+      const data = docSnap.data();
+
+      if (data.status === "DONE") {
+        setTodayDone(true);
+        setMode("IN");
+        setCheckinId(null);
+      } else {
+        setTodayDone(false);
+        setMode("OUT");
+        setCheckinId(docSnap.id);
+      }
+    }
+
+    loadToday();
+  }, [profile, today, forceMode]);
+
 
   const resetSession = () => {
     setStatus("Please Confirm Your Location");
@@ -80,45 +112,12 @@ export function useCheckinLogic(profile) {
   }, []);
 
   useEffect(() => {
+    setTodayDone(false);
     setJustCheckedOut(false);
     setForceMode(false);
+    setMode("IN");
+    setCheckinId(null);
   }, [today]);
-
-
-  useEffect(() => {
-    if (!profile) return;
-
-    async function loadToday() {
-
-    const docSnap = await getTodayCheckin(profile.userId, today);
-
-      if (forceMode) return;
-
-      if (!docSnap) {
-        setMode("IN");
-        setCheckinId(null);
-        setTodayDone(false);
-        setJustCheckedOut(false);
-        return;
-      }
-
-      const data = docSnap.data();
-
-      if (data.status === "DONE") {
-        setTodayDone(true);
-        setMode("IN");
-        setCheckinId(null);
-      } else {
-        setTodayDone(false);
-        setMode("OUT");
-        setCheckinId(docSnap.id);
-      }
-    }
-
-    loadToday();
-  }, [profile, forceMode, today]);
-
-
 
   useEffect(() => {
     if (!profile?.userId) return;
