@@ -21,7 +21,7 @@ export default function StatusSection({
       
      <button
         className={`btn btn-soft btn-location transition-colors
-          ${mode === "IN" ? "btn-success" : "btn-secondary"}
+          ${mode === "IN" ? "btn-accent" : "btn-secondary"}
         `}
         onClick={onGPS}
       >

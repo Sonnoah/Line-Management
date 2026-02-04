@@ -313,6 +313,7 @@ export function useCheckinLogic(profile) {
     submitting,
     videoRef,
     canvasRef,
+    justCheckedOut,
     forceNewCheckin,
     handleGPS,
     takePhoto,

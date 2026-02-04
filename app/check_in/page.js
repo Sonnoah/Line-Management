@@ -1,6 +1,7 @@
 "use client";
 
 import { Loading } from "@/app/components/loading";
+import { WaitLoading } from "@/app/components/wait_loading";
 import { liff_init } from "@/helper/liff_Init";
 import { useCheckinLogic } from "@/script/use_checkin_logic";
 import StatusSection from "../components/status_section";
@@ -14,7 +15,6 @@ export default function CheckinPage() {
 
   if (loading) return <Loading />;
   if (!profile) return <Loading />;
-  
 
 const {
   mode,
@@ -22,6 +22,7 @@ const {
   geo,
   photo,
   submitting,
+  justCheckedOut,
   handleGPS,
   handleSubmit,
   forceNewCheckin,
@@ -48,8 +49,9 @@ const {
             ${mode === "IN" ? "btn-accent" : "btn-secondary"}
           `}
         >
-          {mode === "IN" ? "Check In" : "Check Out"}
+          {submitting ? <WaitLoading /> : (mode === "IN" ? "Check In" : "Check Out")}
         </button>
+
 
       {todayDone && !justCheckedOut && (
           <TodayDoneOverlay

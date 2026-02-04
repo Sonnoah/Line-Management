@@ -263,7 +263,7 @@ export default function Main() {
       </div>
        <div className="mt-3 flex justify-between font-[12px] text-base-content/60">
         <div>
-          <span className="font-[14px] ">Last Check in : </span>{" "}
+          <span className="font-[10px] ">Last Check in : </span>{" "}
           {lastCheckInTime
             ? lastCheckInTime.toLocaleTimeString("en-GB", {
                 hour: "2-digit",
@@ -274,7 +274,7 @@ export default function Main() {
 
         {!isRunning && lastCheckOutTime && (
           <div>
-            <span className="font-[12px] ">Last Check out :</span>{" "}
+            <span className="font-[10px] ">Last Check out :</span>{" "}
             {lastCheckOutTime.toLocaleTimeString("en-GB", {
               hour: "2-digit",
               minute: "2-digit",

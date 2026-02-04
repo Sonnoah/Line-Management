@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { getLeaveQuota } from "@/lib/get_leave_quota";
 import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { Loading } from "@/app/components/loading";
+import { WaitLoading } from "@/app/components/wait_loading";
 
 export default function Request_For_Leave() {
   const initialForm = {
@@ -177,7 +178,7 @@ export default function Request_For_Leave() {
             disabled={!isFormValid || submitting}
             onClick={handleSubmit}
           >
-            {submitting ? "Submit" : "Submit"}
+            {submitting ?  <WaitLoading /> : "Submit" }
           </button>
         </div>
       </main>

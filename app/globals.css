@@ -14,7 +14,7 @@ body {
 }
 
 .swal2-popup {
-  font-family: "Kanit", sans-serif;
+  font-family: var(--font-kanit);
   width: 300px;
 }
 
