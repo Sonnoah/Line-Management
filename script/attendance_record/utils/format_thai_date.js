@@ -11,9 +11,18 @@ export function dateToYMD(date) {
 }
 
 export function getRowClass(row) {
-  if (row.isHoliday) return "bg-green-100";
-  if (row.leave) return "bg-red-100";
-  if (row.status === "ABSENT") return "bg-red-50";
+  if (row.workedOnHoliday) {
+    return "bg-yellow-100 text-yellow-900";
+  }
+
+  if (row.isHoliday) {
+    return "bg-green-100";
+  }
+
+  if (row.status === "ABSENT") {
+    return "bg-red-50";
+  }
+
   return "";
 }
 
@@ -24,3 +33,11 @@ export function parseLocalDate(dateStr, options = { be: false }) {
 
   return new Date(yearAD, m - 1, d);
 }
+
+export function getTodayRound(baseDate = new Date()) {
+  const day = baseDate.getDate();
+
+  if (day >= 10 && day <= 25) return 1;   
+  return 2;                             
+}
+

@@ -112,14 +112,6 @@ export function useCheckinLogic(profile) {
   }, []);
 
   useEffect(() => {
-    setTodayDone(false);
-    setJustCheckedOut(false);
-    setForceMode(false);
-    setMode("IN");
-    setCheckinId(null);
-  }, [today]);
-
-  useEffect(() => {
     if (!profile?.userId) return;
 
     async function loadUser() {
@@ -274,7 +266,7 @@ export function useCheckinLogic(profile) {
       setStatusType("success");
 
       setTodayDone(true);  
-      setJustCheckedOut(true);  
+      setJustCheckedOut(false);  
       setForceMode(false); 
 
       setMode("IN");

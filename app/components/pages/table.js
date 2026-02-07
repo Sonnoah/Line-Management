@@ -5,10 +5,9 @@ import { getRowClass } from "@/script/attendance_record/utils/format_thai_date";
 
 export default function AdminAttendanceExcelTable({ rows }) {
   return (
-    <div className="overflow-x-auto bg-base-100 rounded-box border">
-      <table className="table table-sm table-zebra">
-        {/* head */}
-        <thead className="bg-purple-200 text-black">
+    <div className="overflow-x-auto rounded-box ">
+      <table className="table table-sm ">
+        <thead className="bg-purple-200 text-black text-[14px]">
           <tr>
             <th className="text-center">ลำดับ</th>
             <th>ชื่อ</th>
@@ -59,11 +58,19 @@ export default function AdminAttendanceExcelTable({ rows }) {
               <td className="text-center">{r.otAccum ?? "-"}</td>
 
               <td className="text-center">
-                {r.isHoliday && (
-                  <span className="badge badge-success badge-sm">
+                {r.workedOnHoliday ? (
+                  <span className="badge bg-warning/20 text-warning-content badge-sm">
+                    ทำงานวันหยุด
+                  </span>
+                ) : r.isHoliday ? (
+                  <span className="badge bg-success/20 text-success-content badge-sm">
                     วันหยุด
                   </span>
-                )}
+                ) : r.status === "ABSENT" ? (
+                  <span className="badge bg-error/20 text-error-content badge-sm">
+                    ขาด
+                  </span>
+                ) : null}
               </td>
 
               <td className="text-center text-error font-medium">

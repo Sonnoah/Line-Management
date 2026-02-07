@@ -5,9 +5,17 @@ import { mapUsersToDailyRow } from "@/script/attendance_record/utils/map_users_t
 import AdminAttendanceTable from "@/app/components/pages/table";
 import { formatThaiDate } from "@/script/attendance_record/utils/format_thai_date";
 import { getDateRangeList } from "@/script/get_date_range_list";
+import { getPayrollConfig } from "@/lib/get_payroll_config";
+import { getEffectivePayrollPeriod } from "@/script/attendance_record/payroll_period_service";
+
 
 export default async function Page() {
-  const period = getCurrentPayrollPeriod(1);
+  const config = await getPayrollConfig(); 
+  const period = getEffectivePayrollPeriod(
+    "10to25",
+    config.active10to25
+  );
+
 
   const users = await getAllUsers();
   const checkins = await getCheckinsForCurrentPeriod(period);
@@ -22,8 +30,9 @@ export default async function Page() {
         {formatThaiDate(period.startDate)} –{" "}
         {formatThaiDate(period.endDate)}
       </h2>
-
-      <AdminAttendanceTable rows={rows} />
+      <div className="wrap">
+        <AdminAttendanceTable rows={rows} />
+      </div>
     </>
   );
 }

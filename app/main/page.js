@@ -145,7 +145,7 @@ export default function Main() {
   };
 
   return (
-        <div className="wrap">
+      <div className="wrap">
       <main className="home-container">
         <div className="flex items-center justify-between mb-3">
           <h3 className="uppercase text-[16px] font-bold">
@@ -261,9 +261,9 @@ export default function Main() {
           <div className="stat-desc">hrs</div>
         </div>
       </div>
-       <div className="mt-3 flex justify-between font-[12px] text-base-content/60">
+       <div className="mt-3 flex justify-between text-base-content/60 text-sm">
         <div>
-          <span className="font-[10px] ">Last Check in : </span>{" "}
+          <span>Last Check in : </span>{" "}
           {lastCheckInTime
             ? lastCheckInTime.toLocaleTimeString("en-GB", {
                 hour: "2-digit",
@@ -274,7 +274,7 @@ export default function Main() {
 
         {!isRunning && lastCheckOutTime && (
           <div>
-            <span className="font-[10px] ">Last Check out :</span>{" "}
+            <span>Last Check out :</span>{" "}
             {lastCheckOutTime.toLocaleTimeString("en-GB", {
               hour: "2-digit",
               minute: "2-digit",

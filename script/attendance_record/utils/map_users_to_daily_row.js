@@ -5,7 +5,6 @@ export function mapUsersToDailyRow(users, checkins, dates) {
   let no = 1;
 
   users.forEach(user => {
-
     const userNo = no++;
 
     dates.forEach(date => {
@@ -14,11 +13,13 @@ export function mapUsersToDailyRow(users, checkins, dates) {
       );
 
       const isHoliday = isHolidayByDepartment(date, user.department);
+      const hasCheckin = !!ci;
+      const workedOnHoliday = isHoliday && hasCheckin;
 
       rows.push({
         no: userNo,
         userId: user.userId,
-        name: user.name,
+        name: user.username || user.displayName,
         department: user.department,
         date,
 
@@ -39,18 +40,33 @@ export function mapUsersToDailyRow(users, checkins, dates) {
         workedHours: ci ? (ci.workedMinutes / 60).toFixed(1) : "0.0",
 
         missingHours:
-          isHoliday ? "0.0" : ci ? (ci.missingMinutes / 60).toFixed(1) : "9.0",
+          isHoliday || workedOnHoliday
+            ? "0.0"
+            : ci
+            ? (ci.missingMinutes / 60).toFixed(1)
+            : "9.0",
 
         overtimeHours: ci ? (ci.overtimeMinutes / 60).toFixed(1) : "0.0",
 
-        status: isHoliday ? "HOLIDAY" : ci?.status || "ABSENT",
-        isHoliday,
+        status: workedOnHoliday
+          ? "WORKED_HOLIDAY"
+          : isHoliday
+          ? "HOLIDAY"
+          : ci?.status || "ABSENT",
 
-        remark: isHoliday ? "วันหยุด" : !ci ? "ขาด" : "",
+        isHoliday,
+        workedOnHoliday, 
+
+        remark: workedOnHoliday
+          ? "ทำงานวันหยุด"
+          : isHoliday
+          ? "วันหยุด"
+          : !ci
+          ? "ขาด"
+          : "",
       });
     });
   });
 
   return rows;
 }
-
