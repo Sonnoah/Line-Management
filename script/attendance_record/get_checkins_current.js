@@ -6,14 +6,13 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
+import { dateToYMD } from "@/script/attendance_record/utils/format_thai_date";
 
 export async function getCheckinsForCurrentPeriod(period) {
-  if (!period?.startDate || !period?.endDate) {
-    throw new Error("Invalid payroll period");
-  }
+  const start = dateToYMD(period.startDate);
+  const end = dateToYMD(period.endDate); 
 
-  const start = period.startDate.toISOString().slice(0, 10);
-  const end = period.endDate.toISOString().slice(0, 10);
+  console.log("[QUERY RANGE]", start, "→", end);
 
   const q = query(
     collection(db, "Checkins"),

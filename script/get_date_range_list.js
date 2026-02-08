@@ -1,22 +1,13 @@
+import { dateToYMD } from "./attendance_record/utils/format_thai_date";
+
 export function getDateRangeList(startDate, endDate) {
   const dates = [];
 
-  const current = new Date(
-    startDate.getFullYear(),
-    startDate.getMonth(),
-    startDate.getDate()
-  );
-
-  const last = new Date(
-    endDate.getFullYear(),
-    endDate.getMonth(),
-    endDate.getDate()
-  );
+  let current = new Date(startDate);
+  const last = new Date(endDate);
 
   while (current <= last) {
-    dates.push(
-      `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}-${String(current.getDate()).padStart(2, "0")}`
-    );
+    dates.push(dateToYMD(current)); 
     current.setDate(current.getDate() + 1);
   }
 

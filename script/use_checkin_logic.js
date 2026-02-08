@@ -7,6 +7,7 @@ import {
   checkOut
 } from "@/lib/check_in_service";
 import { getUser } from "@/script/get_user";
+import { dateToYMD } from "@/script/attendance_record/utils/format_thai_date";
 import Swal from "sweetalert2";
 
 export function useCheckinLogic(profile) {
@@ -23,16 +24,13 @@ export function useCheckinLogic(profile) {
   const [todayDone, setTodayDone] = useState(false);
   const [forceMode, setForceMode] = useState(false);
   const [justCheckedOut, setJustCheckedOut] = useState(false);
+  const [today, setToday] = useState(dateToYMD());
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  const [today, setToday] = useState(
-  new Date().toISOString().slice(0, 10)
-);
-
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || !today) return;
 
     async function loadToday() {
       const docSnap = await getTodayCheckin(profile.userId, today);
@@ -104,12 +102,20 @@ export function useCheckinLogic(profile) {
   
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = new Date().toISOString().slice(0, 10);
+      const now = dateToYMD();
       setToday(prev => (prev !== now ? now : prev));
     }, 60 * 1000); 
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    setTodayDone(false);
+    setJustCheckedOut(false);
+    setForceMode(false);
+    setMode("IN");
+    setCheckinId(null);
+  }, [today]);
 
   useEffect(() => {
     if (!profile?.userId) return;
@@ -229,7 +235,7 @@ export function useCheckinLogic(profile) {
     return;
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = dateToYMD();
 
   try {
     if (mode === "IN") {
@@ -266,7 +272,7 @@ export function useCheckinLogic(profile) {
       setStatusType("success");
 
       setTodayDone(true);  
-      setJustCheckedOut(false);  
+      setJustCheckedOut(true);  
       setForceMode(false); 
 
       setMode("IN");

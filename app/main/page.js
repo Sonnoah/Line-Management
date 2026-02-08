@@ -193,7 +193,7 @@ export default function Main() {
               )}
             </div>
 
-            <div className="stat-desc">hrs</div>
+            <div className="stat-desc">Hrs</div>
           </div>
 
           <div className="stat p-3">
@@ -258,7 +258,7 @@ export default function Main() {
                 </>
               )}
             </div>
-          <div className="stat-desc">hrs</div>
+          <div className="stat-desc">Hrs</div>
         </div>
       </div>
        <div className="mt-3 flex justify-between text-base-content/60 text-sm">

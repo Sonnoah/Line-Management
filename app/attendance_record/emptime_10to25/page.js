@@ -16,7 +16,6 @@ export default async function Page() {
     config.active10to25
   );
 
-
   const users = await getAllUsers();
   const checkins = await getCheckinsForCurrentPeriod(period);
 

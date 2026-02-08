@@ -54,6 +54,8 @@ export default function Profile() {
           <div className={`stat-value text-[18px]`}>
             {used} / {total}
           </div>
+
+          <div className="stat-desc">Count</div>
         </div>
     );
   }

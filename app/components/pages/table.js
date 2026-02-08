@@ -1,6 +1,9 @@
 "use client";
 
-import { formatThaiDate } from "@/script/attendance_record/utils/format_thai_date";
+import {   
+  formatThaiDate,
+  parseLocalDate, 
+} from "@/script/attendance_record/utils/format_thai_date";
 import { getRowClass } from "@/script/attendance_record/utils/format_thai_date";
 
 export default function AdminAttendanceExcelTable({ rows }) {
@@ -37,18 +40,46 @@ export default function AdminAttendanceExcelTable({ rows }) {
               <td className="whitespace-nowrap">{r.name}</td>
 
               <td className="text-center">
-                {formatThaiDate(new Date(r.date))}
+                {formatThaiDate(parseLocalDate(r.date))}
               </td>
 
-              <td className="text-center">07:30</td>
-              <td className="text-center">17:30</td>
+              <td className="text-center">{r.workStart}</td>
+              <td className="text-center">{r.workEnd}</td>
 
               <td className="text-center">{r.checkIn || "-"}</td>
               <td className="text-center">{r.checkOut || "-"}</td>
 
-              <td className="text-center">{r.late ?? "-"}</td>
-              <td className="text-center">{r.otMinutes ?? "-"}</td>
-              <td className="text-center">{r.total ?? "-"}</td>
+              <td className="text-center">
+                {r.late > 0 ? (
+                  <span>
+                    {r.late}
+                  </span>
+                ) : "-"}
+              </td>
+              <td className="text-center">
+                {r.early > 0 ? (
+                  <span>
+                    {r.early}
+                  </span>
+                ) : "-"}
+              </td>
+
+              <td className="text-center">
+                {r.total === null ? (
+                  "-"
+                ) : r.total < 0 ? (
+                  <span>
+                    {r.total}
+                  </span>
+                ) : r.total > 0 ? (
+                  <span>
+                    {r.total}
+                  </span>
+                ) : (
+                  "0"
+                )}
+              </td>
+
 
               <td className="text-center">
                 {r.leave ? <span className="text-error font-bold">ลา</span> : "-"}

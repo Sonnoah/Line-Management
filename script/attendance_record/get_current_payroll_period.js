@@ -38,4 +38,6 @@ export function getCurrentPayrollPeriod(baseDate = new Date()) {
     startDate: new Date(prevYear, prevMonth, 26),
     endDate: new Date(year, month, 9),
   };
+  
 }
+

@@ -53,14 +53,10 @@ const {
         </button>
 
 
-      {todayDone && !justCheckedOut && (
+        {todayDone && !justCheckedOut && (
           <TodayDoneOverlay
-            onCheckinAgain={() => {
-              forceNewCheckin();
-            }}
-            onClose={() => {
-              if (window.liff) window.liff.closeWindow();
-            }}
+            onCheckinAgain={forceNewCheckin}
+            onClose={() => window.liff?.closeWindow()}
           />
         )}
       </main>

@@ -6,10 +6,6 @@ export function formatThaiDate(date) {
   });
 }
 
-export function dateToYMD(date) {
-  return date.toISOString().slice(0, 10);
-}
-
 export function getRowClass(row) {
   if (row.workedOnHoliday) {
     return "bg-yellow-100 text-yellow-900";
@@ -33,6 +29,13 @@ export function parseLocalDate(dateStr, options = { be: false }) {
 
   return new Date(yearAD, m - 1, d);
 }
+
+export function dateToYMD(date = new Date()) {
+  return date.toLocaleDateString("en-CA", {
+    timeZone: "Asia/Bangkok",
+  });
+}
+
 
 export function getTodayRound(baseDate = new Date()) {
   const day = baseDate.getDate();

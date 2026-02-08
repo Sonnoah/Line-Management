@@ -1,4 +1,6 @@
 import { isHolidayByDepartment } from "../utils/is_holiday_by_department";
+import { calcLateMinutes, calcEarlyMinutes } from "./calc";
+import { getWorkTime } from "./get_work_time";
 
 export function mapUsersToDailyRow(users, checkins, dates) {
   const rows = [];
@@ -6,6 +8,8 @@ export function mapUsersToDailyRow(users, checkins, dates) {
 
   users.forEach(user => {
     const userNo = no++;
+
+    const workTime = getWorkTime(user.department);
 
     dates.forEach(date => {
       const ci = checkins.find(
@@ -15,6 +19,25 @@ export function mapUsersToDailyRow(users, checkins, dates) {
       const isHoliday = isHolidayByDepartment(date, user.department);
       const hasCheckin = !!ci;
       const workedOnHoliday = isHoliday && hasCheckin;
+      const lateMinutes =
+        !isHoliday && ci
+          ? calcLateMinutes(ci.checkInAt, workTime.start)
+          : null;
+
+      const earlyMinutes =
+        !isHoliday && ci
+          ? calcEarlyMinutes(
+              ci.checkInAt,
+              ci.checkOutAt,
+              workTime.start,
+              workTime.end
+            )
+          : 0;
+
+      const totalMinutes =
+        earlyMinutes !== null || lateMinutes !== null
+          ? (earlyMinutes || 0) - (lateMinutes || 0)
+          : null;
 
       rows.push({
         no: userNo,
@@ -22,6 +45,8 @@ export function mapUsersToDailyRow(users, checkins, dates) {
         name: user.username || user.displayName,
         department: user.department,
         date,
+        workStart: workTime.start,
+        workEnd: workTime.end,
 
         checkIn: ci?.checkInAt
           ? new Date(ci.checkInAt.seconds * 1000).toLocaleTimeString("th-TH", {
@@ -54,6 +79,9 @@ export function mapUsersToDailyRow(users, checkins, dates) {
           ? "HOLIDAY"
           : ci?.status || "ABSENT",
 
+        late: lateMinutes,
+        early: earlyMinutes,
+        total: totalMinutes,
         isHoliday,
         workedOnHoliday, 
 
