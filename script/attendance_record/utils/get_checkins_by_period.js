@@ -22,3 +22,5 @@ export async function getCheckinsByPeriod(period) {
     ...d.data(),
   }));
 }
+
+

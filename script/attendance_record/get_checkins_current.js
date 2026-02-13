@@ -6,13 +6,11 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
-import { dateToYMD } from "@/script/attendance_record/utils/format_thai_date";
+import { dateToYMD } from "./utils/format_thai_date";
 
 export async function getCheckinsForCurrentPeriod(period) {
   const start = dateToYMD(period.startDate);
-  const end = dateToYMD(period.endDate); 
-
-  console.log("[QUERY RANGE]", start, "→", end);
+  const end = dateToYMD(period.endDate);
 
   const q = query(
     collection(db, "Checkins"),

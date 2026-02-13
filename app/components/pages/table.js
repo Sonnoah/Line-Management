@@ -10,7 +10,7 @@ export default function AdminAttendanceExcelTable({ rows }) {
   return (
     <div className="overflow-x-auto rounded-box ">
       <table className="table table-sm ">
-        <thead className="bg-purple-200 text-black text-[14px]">
+        <thead className="text-black text-[14px]">
           <tr>
             <th className="text-center">ลำดับ</th>
             <th>ชื่อ</th>
@@ -56,6 +56,7 @@ export default function AdminAttendanceExcelTable({ rows }) {
                   </span>
                 ) : "-"}
               </td>
+              
               <td className="text-center">
                 {r.early > 0 ? (
                   <span>
@@ -85,8 +86,13 @@ export default function AdminAttendanceExcelTable({ rows }) {
                 {r.leave ? <span className="text-error font-bold">ลา</span> : "-"}
               </td>
 
-              <td className="text-center">{r.ot ?? "-"}</td>
-              <td className="text-center">{r.otAccum ?? "-"}</td>
+              <td className="text-center">
+                {typeof r.ot === "number" ? r.ot : "-"}
+              </td>
+
+              <td className="text-center">
+                {typeof r.otAccum === "number" ? r.otAccum : "-"}
+              </td>
 
               <td className="text-center">
                 {r.workedOnHoliday ? (

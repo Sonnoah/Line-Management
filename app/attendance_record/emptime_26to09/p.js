@@ -37,7 +37,7 @@ export default async function Page() {
         {formatThaiDate(period.startDate)} –{" "}
         {formatThaiDate(period.endDate)}
       </h2>
-        <AdminAttendanceTable rows={rows} />
+        ฉ
         </main>
       </div>
     </>

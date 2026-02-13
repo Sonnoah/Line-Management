@@ -1,29 +1,55 @@
 import { isHolidayByDepartment } from "../utils/is_holiday_by_department";
-import { calcLateMinutes, calcEarlyMinutes } from "./calc";
+import { calcLateMinutes, calcEarlyMinutes, calcWorkedMinutes } from "./calc";
 import { getWorkTime } from "./get_work_time";
+import { getLeaveOnDate } from "./get_leave_on_date";
+import { dateToYMD } from "./format_thai_date";
 
-export function mapUsersToDailyRow(users, checkins, dates) {
+export function mapUsersToDailyRow(users, checkins, dates, leaves = []) {
   const rows = [];
   let no = 1;
 
+  const todayYMD = dateToYMD();
+  const now = new Date();
+
   users.forEach(user => {
     const userNo = no++;
-
     const workTime = getWorkTime(user.department);
 
     dates.forEach(date => {
+
+      const isToday = date === todayYMD;
+      const isFutureDate = date > todayYMD;
+
+      // เวลาเลิกงานวันนี้
+      const [endH, endM] = workTime.end.split(":").map(Number);
+      const workEndToday = new Date();
+      workEndToday.setHours(endH, endM, 0, 0);
+
+      const isBeforeEnd = isToday && now < workEndToday;
+
       const ci = checkins.find(
         c => c.userId === user.userId && c.date === date
       );
 
+      const leave = getLeaveOnDate(leaves, user.userId, date);
+      const isLeave = !!leave;
+
       const isHoliday = isHolidayByDepartment(date, user.department);
       const hasCheckin = !!ci;
       const workedOnHoliday = isHoliday && hasCheckin;
+
+      // ------------------------
+      // late
+      // ------------------------
       const lateMinutes =
         !isHoliday && ci
           ? calcLateMinutes(ci.checkInAt, workTime.start)
           : null;
 
+      // ------------------------
+      // early / overtime
+      // (ติดลบ = ออกก่อน)
+      // ------------------------
       const earlyMinutes =
         !isHoliday && ci
           ? calcEarlyMinutes(
@@ -32,19 +58,79 @@ export function mapUsersToDailyRow(users, checkins, dates) {
               workTime.start,
               workTime.end
             )
-          : 0;
-
-      const totalMinutes =
-        earlyMinutes !== null || lateMinutes !== null
-          ? (earlyMinutes || 0) - (lateMinutes || 0)
           : null;
 
+      const requiredMinutes = workTime.requiredMinutes;
+
+      let totalMinutes = null;
+      let status = "";
+      let remark = "";
+
+      // =========================
+      // FUTURE DAY
+      // =========================
+      if (isFutureDate) {
+        totalMinutes = null;
+        status = "PENDING";
+      }
+
+      // =========================
+      // TODAY but not finish work yet
+      // =========================
+      else if (isBeforeEnd && !ci) {
+        totalMinutes = null;
+        status = "PENDING";
+      }
+
+      // =========================
+      // LEAVE / HOLIDAY
+      // =========================
+      else if (isLeave || isHoliday) {
+        totalMinutes = 0;
+        status = isLeave ? "LEAVE" : "HOLIDAY";
+      }
+
+      // =========================
+      // ABSENT
+      // =========================
+      else if (!ci) {
+        totalMinutes = -requiredMinutes;
+        status = "ABSENT";
+        remark = "ขาด";
+      }
+
+      // =========================
+      // NORMAL WORK DAY
+      // =========================
+      else {
+        const early = earlyMinutes ?? 0;
+        const late = lateMinutes ?? 0;
+
+        totalMinutes = early - late;
+        status = ci.status;
+      }
+
+      // =========================
+      // HOLIDAY WORKED MINUTES
+      // =========================
+      let holidayWorkedMinutes = 0;
+      if (workedOnHoliday && ci) {
+        holidayWorkedMinutes = calcWorkedMinutes(
+          ci.checkInAt,
+          ci.checkOutAt
+        );
+      }
+
+      // =========================
+      // PUSH ROW
+      // =========================
       rows.push({
         no: userNo,
         userId: user.userId,
         name: user.username || user.displayName,
         department: user.department,
         date,
+
         workStart: workTime.start,
         workEnd: workTime.end,
 
@@ -62,36 +148,22 @@ export function mapUsersToDailyRow(users, checkins, dates) {
             })
           : "",
 
-        workedHours: ci ? (ci.workedMinutes / 60).toFixed(1) : "0.0",
-
-        missingHours:
-          isHoliday || workedOnHoliday
-            ? "0.0"
-            : ci
-            ? (ci.missingMinutes / 60).toFixed(1)
-            : "9.0",
-
-        overtimeHours: ci ? (ci.overtimeMinutes / 60).toFixed(1) : "0.0",
-
-        status: workedOnHoliday
-          ? "WORKED_HOLIDAY"
-          : isHoliday
-          ? "HOLIDAY"
-          : ci?.status || "ABSENT",
-
+        total: totalMinutes,
         late: lateMinutes,
         early: earlyMinutes,
-        total: totalMinutes,
-        isHoliday,
-        workedOnHoliday, 
 
-        remark: workedOnHoliday
-          ? "ทำงานวันหยุด"
-          : isHoliday
-          ? "วันหยุด"
-          : !ci
-          ? "ขาด"
-          : "",
+        status,
+        isHoliday,
+        workedOnHoliday,
+        leave: isLeave,
+        leaveType: leave?.type || null,
+        leaveNote: leave?.note || "",
+
+        remark: isLeave
+          ? leave?.type || "ลา"
+          : workedOnHoliday
+          ? `${holidayWorkedMinutes} นาที`
+          : remark,
       });
     });
   });

@@ -24,19 +24,24 @@ export function calcEarlyMinutes(
   workStart,
   workEnd
 ) {
-  if (!checkInAt || !checkOutAt) return 0;
+  if (!checkOutAt) return 0;
 
-  const inDate = new Date(checkInAt.seconds * 1000);
   const outDate = new Date(checkOutAt.seconds * 1000);
-
-  const inMinutes = inDate.getHours() * 60 + inDate.getMinutes();
   const outMinutes = outDate.getHours() * 60 + outDate.getMinutes();
 
-  const workStartMinutes = timeStrToMinutes(workStart);
   const workEndMinutes = timeStrToMinutes(workEnd);
 
-  const early = workStartMinutes - inMinutes;   // มาก่อน
-  const lateOut = outMinutes - workEndMinutes;  // เลิกช้า
+  const overtime = outMinutes - workEndMinutes;
 
-  return (early > 0 ? early : 0) + (lateOut > 0 ? lateOut : 0);
+  return overtime > 0 ? overtime : 0;
+}
+
+
+export function calcWorkedMinutes(checkInAt, checkOutAt) {
+  if (!checkInAt || !checkOutAt) return 0;
+
+  const inMs = checkInAt.seconds * 1000;
+  const outMs = checkOutAt.seconds * 1000;
+
+  return Math.max(0, Math.floor((outMs - inMs) / 60000));
 }

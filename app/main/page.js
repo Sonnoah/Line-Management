@@ -29,7 +29,7 @@ export default function Main() {
 
   const WORK_SECONDS_PER_DAY =
     userData?.department === "Production"
-      ? 8 * 60 * 60
+      ? 8.5 * 60 * 60
       : 9 * 60 * 60 ;
 
   const isOT = workedSeconds > WORK_SECONDS_PER_DAY;   

@@ -5,8 +5,8 @@ export const WORK_TIME_BY_DEPARTMENT = {
     requiredMinutes: 9 * 60,
   },
   Production: {
-    start: "07:00",
+    start: "07:30",
     end: "16:00",
-    requiredMinutes: 8 * 60, 
+    requiredMinutes: 8.5 * 60, 
   },
 };

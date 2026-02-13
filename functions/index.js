@@ -16,5 +16,3 @@ exports.onCheckinUpdate =
 exports.onCheckinPhotoUpload =
   require("./triggers/on_checkin_photo_upload").onCheckinPhotoUpload;
 
-exports.onCheckinWritten =
-  require("./webhook/on_checkin_written").onCheckinWritten;

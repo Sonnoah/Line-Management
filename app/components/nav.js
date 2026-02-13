@@ -86,6 +86,12 @@ export default function Nav() {
                       <button className="flex items-center gap-2 text-left" onClick={() => goTo("/admin")}>
                         <p className="text-[16px]">Users List</p>
                       </button>
+                      <button className="flex items-center gap-2 text-left" onClick={() => goTo("/attendance_record/emptime_10to25")}>
+                        <p className="text-[16px]">10to25</p>
+                      </button>
+                      <button className="flex items-center gap-2 text-left" onClick={() => goTo("/attendance_record/emptime_26to09")}>
+                        <p className="text-[16px]">26to09</p>
+                      </button>
                     </li>
                   </ul> 
                 </li>
