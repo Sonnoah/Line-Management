@@ -21,8 +21,9 @@ export async function getCheckinsForCurrentPeriod(period) {
 
   const snap = await getDocs(q);
 
-  return snap.docs.map(d => ({
-    id: d.id,
-    ...d.data(),
-  }));
+  return snap.docs.map(doc => ({
+  id: doc.id,
+  ...doc.data()
+}));
+
 }

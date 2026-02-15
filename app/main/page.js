@@ -155,9 +155,9 @@ export default function Main() {
           <span
             className={`badge badge-lg rounded-full text-sm ${
               userData?.department === "Production"
-                ? "bg-warning/10 text-warning"
+                ? "bg-info/10 text-info"
                 : userData?.department === "Office"
-                ? "bg-secondary/10 text-secondary"
+                ? "bg-info/10 text-info"
                 : "bg-base-200 text-base-content"
             }`}
           >
@@ -165,10 +165,11 @@ export default function Main() {
           </span>
         </div>
 
-        <div className="stats shadow w-full">
-          <div className="stat p-3">
-            <div className="stat-figure text-secondary">
-              <span className="streamline-ultimate--co-working-space-laptop" />
+        <div className="flex w-full gap-2">
+          <div className="stats shadow flex-1">
+            <div className="stat p-3">
+            <div className="stat-figure text-info">
+              <span className="streamline-ultimate--work-from-home-user-pet-cat-bold" />
             </div>
 
             <div className="stat-title">
@@ -181,11 +182,11 @@ export default function Main() {
               }`}
             >
               {!data ? (
-                <span className="countdown text-[18px] text-black">
+                <span className="countdown text-[16px] text-black">
                   --:--
                 </span>
               ) : (
-                <span className="countdown font-mono text-[18px]">
+                <span className="countdown font-sans text-[16px]">
                   <span style={{ "--value": workHMS.h, "--digits": 2 }}>{workHMS.h}</span>:
                   <span style={{ "--value": workHMS.m, "--digits": 2 }}>{workHMS.m}</span>:
                   <span style={{ "--value": workHMS.s, "--digits": 2 }}>{workHMS.s}</span>
@@ -195,10 +196,12 @@ export default function Main() {
 
             <div className="stat-desc">Hrs</div>
           </div>
+        </div>
 
+        <div className="stats shadow flex-1">  
           <div className="stat p-3">
-            <div className="stat-figure text-secondary">
-              <span className="duo-icons--clock" />
+            <div className="stat-figure text-info">
+              <span className="fluent--clock-toolbox-20-filled" />
             </div>
 
             <div className="stat-title">
@@ -208,58 +211,60 @@ export default function Main() {
                 ? "Overtime"
                 : "Remaining"}
             </div>
-            <div
-              className={`stat-value transition-opacity flex items-center gap-1 ${
-                !data
-                  ? "text-base-content"
-                  : !isRunning
-                  ? "text-black opacity-50"
-                  : isOT
-                  ? "text-success"
-                  : "text-warning"
-              }`
-            }
-            >
-              {!data ? (
-                <span className="text-[18px] text-black opacity-50">--:--</span>
-              ) : isOT ? (
-                <>
-                  <span className="text-[18px]">+</span>
-                  <span className="countdown font-mono text-[18px]">
-                    <span style={{ "--value": overtimeHMS.h, "--digits": 2 }}>
-                      {overtimeHMS.h}
+              <div
+                className={`stat-value transition-opacity flex items-center gap-1 ${
+                  !data
+                    ? "text-base-content"
+                    : !isRunning
+                    ? "text-black opacity-50"
+                    : isOT
+                    ? "text-success"
+                    : "text-warning"
+                }`
+              }
+              >
+                {!data ? (
+                  <span className="text-[16px] text-black opacity-50">--:--</span>
+                ) : isOT ? (
+                  <>
+                    <span className="text-[16px]">+</span>
+                    <span className="countdown font-sans text-[16px]">
+                      <span style={{ "--value": overtimeHMS.h, "--digits": 2 }}>
+                        {overtimeHMS.h}
+                      </span>
+                      :
+                      <span style={{ "--value": overtimeHMS.m, "--digits": 2 }}>
+                        {overtimeHMS.m}
+                      </span>
+                      :
+                      <span style={{ "--value": overtimeHMS.s, "--digits": 2 }}>
+                        {overtimeHMS.s}
+                      </span>
                     </span>
-                    :
-                    <span style={{ "--value": overtimeHMS.m, "--digits": 2 }}>
-                      {overtimeHMS.m}
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[16px]">-</span>
+                    <span className="countdown font-sans text-[16px]">
+                      <span style={{ "--value": remainingHMS.h, "--digits": 2 }}>
+                        {remainingHMS.h}
+                      </span>
+                      :
+                      <span style={{ "--value": remainingHMS.m, "--digits": 2 }}>
+                        {remainingHMS.m}
+                      </span>
+                      :
+                      <span style={{ "--value": remainingHMS.s, "--digits": 2 }}>
+                        {remainingHMS.s}
+                      </span>
                     </span>
-                    :
-                    <span style={{ "--value": overtimeHMS.s, "--digits": 2 }}>
-                      {overtimeHMS.s}
-                    </span>
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="text-[18px]">-</span>
-                  <span className="countdown font-mono text-[18px]">
-                    <span style={{ "--value": remainingHMS.h, "--digits": 2 }}>
-                      {remainingHMS.h}
-                    </span>
-                    :
-                    <span style={{ "--value": remainingHMS.m, "--digits": 2 }}>
-                      {remainingHMS.m}
-                    </span>
-                    :
-                    <span style={{ "--value": remainingHMS.s, "--digits": 2 }}>
-                      {remainingHMS.s}
-                    </span>
-                  </span>
-                </>
-              )}
-            </div>
-          <div className="stat-desc">Hrs</div>
+                  </>
+                )}
+              </div>
+            <div className="stat-desc">Hrs</div>
+          </div>     
         </div>
+        
       </div>
        <div className="mt-3 flex justify-between text-base-content/60 text-sm">
         <div>

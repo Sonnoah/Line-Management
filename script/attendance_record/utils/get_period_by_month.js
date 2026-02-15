@@ -1,4 +1,4 @@
-function getPayrollPeriodByMonth(mode, baseDate) {
+export function getPayrollPeriodByMonth(mode, baseDate) {
   const y = baseDate.getFullYear();
   const m = baseDate.getMonth();
 
@@ -9,12 +9,9 @@ function getPayrollPeriodByMonth(mode, baseDate) {
     };
   }
 
+  // 26–9
   return {
     startDate: new Date(y, m, 26),
-    endDate: new Date(
-      m === 11 ? y + 1 : y,
-      (m + 1) % 12,
-      9
-    ),
+    endDate: new Date(m === 11 ? y + 1 : y, (m + 1) % 12, 9),
   };
 }

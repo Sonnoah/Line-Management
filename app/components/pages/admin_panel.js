@@ -64,7 +64,7 @@ export default function AdminPanel() {
           <thead>
             <tr>
               <th className="pl-0 pr-0">Name</th>
-              <th className="pl-1 pr-0">Department</th>
+              <th className="pl-1 pr-0">Dept.</th>
               <th className="pl-1 pr-0">Role</th>
               <th className="pl-1 pr-0"></th>
             </tr>
@@ -80,7 +80,7 @@ export default function AdminPanel() {
                       className="h-10 w-10 mask mask-squircle"
                     />
                     <div>
-                      <div className="font-bold text-[14px]">
+                      <div className="font-bold text-[12px]">
                         {profile.displayName}
                       </div>
                       <div className="text-sm opacity-50 text-[10px]">
@@ -94,9 +94,17 @@ export default function AdminPanel() {
                   <div className="text-[14px]">{profile.department}</div>
                 </td>
 
-                <td className="pl-1 pr-0">
-                  <div className="text-[14px]">{profile.role}</div>
-                </td>
+           <td className="pl-1 pr-0">
+            <div
+              className={`text-[14px] px-2 py-1 rounded ${
+                profile.role === "Admin"
+                  ? "badge badge-soft badge-info rounded-full"
+                  : "badge badge-soft opacity-50 rounded-full"
+              }`}
+            >
+              {profile.role}
+            </div>
+          </td>
 
                 <td className="pl-1 pr-0">
                   <div className="dropdown dropdown-bottom dropdown-end">

@@ -65,32 +65,33 @@ export default function Profile() {
     <div className="wrap">
       <main className="profile-container">
           <img src={profile.pictureUrl} alt="profile"
-            className="w-38 h-38 mt-10 rounded-full"
+            className="w-38 h-38 mt-5 rounded-full"
           />
 
           <div className="divider mt-5 w-full uppercase text-[14px]"> Profile </div>
 
-              <div className="stats shadow w-full">
+            <div className="flex gap-1 w-full">
+              <div className="stats shadow flex-1">
                 <QuotaRow
                   title="Private pay"
                   used={quota.privatePay}
                   total={4}
                   color="text-info"
-                  icon={
-                    <span className="lucide--tent-tree"></span>
-                  }
+                  icon={<span className="lucide--tent-tree"></span>}
                 />
+              </div>
 
+              <div className="stats shadow flex-1">
                 <QuotaRow
                   title="Annual"
                   used={quota.annual}
                   total={6}
-                  color=""
-                  icon={
-                    <span className="hugeicons--bitcoin-piggy-bank text-info"></span>
-                  }
-                  />
+                  color="text-info"
+                  icon={<span className="hugeicons--bitcoin-piggy-bank"></span>}
+                />
               </div>
+            </div>
+
     
           
           <div className="userid-row mt-5">

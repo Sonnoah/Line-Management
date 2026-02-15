@@ -96,7 +96,6 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = []) {
       else if (!ci) {
         totalMinutes = -requiredMinutes;
         status = "ABSENT";
-        remark = "ขาด";
       }
 
       // =========================
@@ -125,6 +124,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = []) {
       // PUSH ROW
       // =========================
       rows.push({
+        id: ci?.id || null, 
         no: userNo,
         userId: user.userId,
         name: user.username || user.displayName,
@@ -160,9 +160,9 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = []) {
         leaveNote: leave?.note || "",
 
         remark: isLeave
-          ? leave?.type || "ลา"
+          ? leave?.note || ""
           : workedOnHoliday
-          ? `${holidayWorkedMinutes} นาที`
+          ? `${holidayWorkedMinutes} min`
           : remark,
       });
     });

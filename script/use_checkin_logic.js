@@ -266,8 +266,10 @@ export function useCheckinLogic(profile) {
             text: "Your check out information has been received",
             timer: 3000,
             showConfirmButton: false,
+            willClose: () => {
+              window.location.reload();
+            },
           });
-  
       setStatus("Checked out successfully");
       setStatusType("success");
 
@@ -279,6 +281,7 @@ export function useCheckinLogic(profile) {
       setCheckinId(null);
       resetAfterCheckout();
     }
+    
 
   } catch (e) {
   console.error("CHECKIN ERROR:", e);

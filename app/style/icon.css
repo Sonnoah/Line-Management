@@ -293,11 +293,11 @@
 
 
 /*//////// WORKING ////////*/
-.streamline-ultimate--co-working-space-laptop {
+.streamline-ultimate--work-from-home-user-pet-cat-bold {
   display: inline-block;
   width: 30px;
   height: 30px;
-  --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.5'%3E%3Cpath stroke-miterlimit='10' d='M1.808 3.37a2.456 2.456 0 1 0 4.912 0a2.456 2.456 0 0 0-4.912 0Z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M11.413 9.7h-.008l-4.15.024L4.211 7.27c-.029-.024-.062-.04-.093-.061a2 2 0 0 0-.147-.1a1.4 1.4 0 0 0-.162-.068c-.037-.01-.071-.028-.109-.042a2 2 0 0 0-.225-.045c-.021 0-.04-.01-.062-.012h-.1a1.48 1.48 0 0 0-1.2.545L2.1 7.5c-.025.03-.042.065-.064.1s-.065.09-.092.14a2 2 0 0 0-.069.165c-.014.037-.031.07-.043.109a1.5 1.5 0 0 0-.043.215c0 .025-.012.047-.014.07v.015l-.708 7.347a1.5 1.5 0 0 0 1.159 1.6l5.321 1.217l.36 3.27a1.5 1.5 0 0 0 1.659 1.33a1.5 1.5 0 0 0 1.327-1.656l-.477-4.33a1.5 1.5 0 0 0-1.157-1.3l-5.08-1.16l.321-3.278L5.788 12.4c.267.215.6.332.942.332h.009l4.683-.027a1.5 1.5 0 0 0-.009-3zm7.558-.137l-.686 4.493l-3.611.028m-2.209 2.657H22.94m-8.058 0l-.413 6.042m6.054-6.042l.413 6.042'/%3E%3C/g%3E%3C/svg%3E");
+  --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M15 3a3 3 0 1 1-6 0a3 3 0 0 1 6 0M1.31 8.5a1 1 0 0 0-.966 1.263L1.5 14a1 1 0 0 0 1 1h8a1 1 0 1 0 0-2H8.227L7.201 9.237a1 1 0 0 0-.965-.737zm2.594 8H10.5a2.5 2.5 0 0 0 0-5H9.373l-.725-2.658l-.005-.018A4.002 4.002 0 0 1 15.85 9.91a1.99 1.99 0 0 0-1.35 1.892v2.712c0 .973.328 1.92.888 2.695a1.5 1.5 0 0 1-.888.291h-4.177l-3.058 4.805a1.5 1.5 0 1 1-2.53-1.61l1.416-2.147a.624.624 0 0 0-1.042-.688L3.68 20.024a2.75 2.75 0 0 0-.189 2.602a1.5 1.5 0 0 1-2.257-1.931zm18.066-1.986c0 .82-.239 1.522-.716 1.99l2.149 3.045c.358.586.597 1.289.597 1.992v.117C24 22.946 22.925 24 21.612 24H15a1 1 0 1 1 0-2h1.955v-5.261c-.597-.586-.955-1.406-.955-2.226v-2.71a.5.5 0 0 1 .72-.45l1.668.818h1.194l1.668-.818a.5.5 0 0 1 .72.45z' clip-rule='evenodd'/%3E%3C/svg%3E");
   background-color: currentColor;
   -webkit-mask-image: var(--svg);
   mask-image: var(--svg);
@@ -306,12 +306,11 @@
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
-
-.duo-icons--clock {
+.fluent--clock-toolbox-20-filled {
   display: inline-block;
   width: 30px;
   height: 30px;
-  --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 4c6.928 0 11.258 7.5 7.794 13.5A9 9 0 0 1 12 22C5.072 22 .742 14.5 4.206 8.5A9 9 0 0 1 12 4' class='duoicon-secondary-layer' opacity='0.3'/%3E%3Cpath fill='%23000' d='M7.366 2.971A1 1 0 0 1 7 4.337a10.1 10.1 0 0 0-2.729 2.316a1 1 0 1 1-1.544-1.27a12 12 0 0 1 3.271-2.777a1 1 0 0 1 1.367.365zM18 2.606a12 12 0 0 1 3.272 2.776a1 1 0 0 1-1.544 1.27a10 10 0 0 0-2.729-2.315a1 1 0 0 1 1.002-1.731zM12 8a1 1 0 0 0-.993.883L11 9v3.986c-.003.222.068.44.202.617l.09.104l2.106 2.105a1 1 0 0 0 1.498-1.32l-.084-.094L13 12.586V9a1 1 0 0 0-1-1' class='duoicon-primary-layer'/%3E%3C/svg%3E");
+  --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23000' d='M11 1a8 8 0 1 1 0 16v-3.5a2.5 2.5 0 0 0-2.042-2.458A2.5 2.5 0 0 0 6.5 9h-2a2.5 2.5 0 0 0-1.485.489A8 8 0 0 1 11 1m-.5 3a.5.5 0 0 0-.5.5v5l.008.09a.5.5 0 0 0 .492.41h3l.09-.008A.5.5 0 0 0 13.5 9H11V4.5l-.008-.09A.5.5 0 0 0 10.5 4M3 12v-.5A1.5 1.5 0 0 1 4.5 10h2A1.5 1.5 0 0 1 8 11.5v.5h.5a1.5 1.5 0 0 1 1.5 1.5V15H8v-.5a.5.5 0 0 0-1 0v.5H4v-.5a.5.5 0 0 0-1 0v.5H1v-1.5A1.5 1.5 0 0 1 2.5 12zm1-.5v.5h3v-.5a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5M8 16h2v1.5A1.5 1.5 0 0 1 8.5 19h-6A1.5 1.5 0 0 1 1 17.5V16h2v.5a.5.5 0 0 0 1 0V16h3v.5a.5.5 0 0 0 1 0z'/%3E%3C/svg%3E");
   background-color: currentColor;
   -webkit-mask-image: var(--svg);
   mask-image: var(--svg);
@@ -320,7 +319,6 @@
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
-
 
 /*//////// TRAVEL ////////*/
 .streamline--travel-places-beach-island-waves-outdoor-recreation-tree-beach-palm-wave-water {
@@ -386,6 +384,21 @@
   width: 70px;
   height: 70px;
   --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cg fill='%23000'%3E%3Cpath fill-rule='evenodd' d='M9.5 9.5H14a3.5 3.5 0 0 1 3.5 3.5v3a3.5 3.5 0 0 1-3.5 3.5H9A3.5 3.5 0 0 1 5.5 16v-3A3.5 3.5 0 0 1 8 9.645V6.75C8 4.693 9.552 3 11.5 3S15 4.693 15 6.75V7a.75.75 0 0 1-1.5 0v-.25c0-1.257-.91-2.25-2-2.25s-2 .993-2 2.25z' clip-rule='evenodd' opacity='0.2'/%3E%3Cpath fill-rule='evenodd' d='M7.5 12.5a2 2 0 1 0 4 0a2 2 0 0 0-4 0m3 0a1 1 0 1 1-2 0a1 1 0 0 1 2 0' clip-rule='evenodd'/%3E%3Cpath fill-rule='evenodd' d='M12 7.5H7A3.5 3.5 0 0 0 3.5 11v3A3.5 3.5 0 0 0 7 17.5h5a3.5 3.5 0 0 0 3.5-3.5v-3A3.5 3.5 0 0 0 12 7.5M4.5 11A2.5 2.5 0 0 1 7 8.5h5a2.5 2.5 0 0 1 2.5 2.5v3a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 14z' clip-rule='evenodd'/%3E%3Cpath d='M7 8a.5.5 0 0 1-1 0V4.5a3.5 3.5 0 1 1 7 0v1a.5.5 0 0 1-1 0v-1a2.5 2.5 0 0 0-5 0z'/%3E%3C/g%3E%3C/svg%3E");
+  background-color: currentColor;
+  -webkit-mask-image: var(--svg);
+  mask-image: var(--svg);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+
+.solar--export-outline {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M14.47 7.53a.75.75 0 1 0 1.06-1.06l-3-3a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 1.06 1.06l1.72-1.72V14a.75.75 0 0 0 1.5 0V5.81z'/%3E%3Cpath fill='%23000' d='M20.75 12a.75.75 0 0 0-1.5 0a7.25 7.25 0 1 1-14.5 0a.75.75 0 0 0-1.5 0a8.75 8.75 0 1 0 17.5 0'/%3E%3C/svg%3E");
   background-color: currentColor;
   -webkit-mask-image: var(--svg);
   mask-image: var(--svg);

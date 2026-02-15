@@ -6,27 +6,29 @@ import {
 } from "@/script/attendance_record/utils/format_thai_date";
 import { getRowClass } from "@/script/attendance_record/utils/format_thai_date";
 
-export default function AdminAttendanceExcelTable({ rows }) {
+export default function AdminAttendanceExcelTable({ rows, onEdit}) {
   return (
     <div className="overflow-x-auto rounded-box ">
       <table className="table table-sm ">
-        <thead className="text-black text-[14px]">
+        <thead className="text-[14px]">
           <tr>
-            <th className="text-center">ลำดับ</th>
-            <th>ชื่อ</th>
-            <th className="text-center">วันที่</th>
-            <th className="text-center">กำหนดเข้างาน</th>
-            <th className="text-center">กำหนดออกงาน</th>
-            <th className="text-center">เข้า</th>
-            <th className="text-center">ออก</th>
-            <th className="text-center">สาย</th>
-            <th className="text-center">ล่วงเวลา</th>
-            <th className="text-center">ผลรวม</th>
-            <th className="text-center">ลา</th>
+            <th className="text-center">No</th>
+            <th className="text-center">Name</th>
+            <th className="text-center">Date</th>
+            <th className="text-center">Scheduled In</th>
+            <th className="text-center">Scheduled Out</th>
+            <th className="text-center">Check In</th>
+            <th className="text-center">Check Out</th>
+            <th className="text-center">Late</th>
+            <th className="text-center">Excess Time</th>
+            <th className="text-center">Total</th>
+            <th className="text-center">Leave</th>
             <th className="text-center">OT</th>
-            <th className="text-center">OT สะสม</th>
-            <th className="text-center">วันทำงาน / วันหยุด</th>
-            <th className="text-center">หมายเหตุ</th>
+            <th className="text-center">Accrued OT</th>
+            <th className="text-center">Status</th>
+            <th className="text-center">Remark</th>
+            <th className="text-center"></th>
+            
           </tr>
         </thead>
 
@@ -37,7 +39,7 @@ export default function AdminAttendanceExcelTable({ rows }) {
               className={`${getRowClass(r)} hover:bg-base-300`}
             >
               <th className="text-center">{r.no}</th>
-              <td className="whitespace-nowrap">{r.name}</td>
+              <td className="text-center whitespace-nowrap">{r.name}</td>
 
               <td className="text-center">
                 {formatThaiDate(parseLocalDate(r.date))}
@@ -77,14 +79,19 @@ export default function AdminAttendanceExcelTable({ rows }) {
                     {r.total}
                   </span>
                 ) : (
-                  "0"
+                  "-"
                 )}
               </td>
 
-
-              <td className="text-center">
-                {r.leave ? <span className="text-error font-bold">ลา</span> : "-"}
-              </td>
+             <td className="text-center">
+              {r.leave ? (
+                <span className="badge bg-info/20 text-info-content badge-sm">
+                  {r.leaveType || "Leave"}
+                </span>
+              ) : (
+                "-"
+              )}
+            </td>
 
               <td className="text-center">
                 {typeof r.ot === "number" ? r.ot : "-"}
@@ -97,21 +104,30 @@ export default function AdminAttendanceExcelTable({ rows }) {
               <td className="text-center">
                 {r.workedOnHoliday ? (
                   <span className="badge bg-warning/20 text-warning-content badge-sm">
-                    ทำงานวันหยุด
+                    Weekend Work
                   </span>
                 ) : r.isHoliday ? (
                   <span className="badge bg-success/20 text-success-content badge-sm">
-                    วันหยุด
+                    Day Off
                   </span>
                 ) : r.status === "ABSENT" ? (
                   <span className="badge bg-error/20 text-error-content badge-sm">
-                    ขาด
+                    Absent
                   </span>
                 ) : null}
               </td>
 
-              <td className="text-center text-error font-medium">
+              <td className="text-center">
                 {r.remark || "-"}
+              </td>
+
+              <td className="text-center">
+                <button
+                  onClick={() => onEdit(r)}
+                  className="btn btn-xs btn-ghost"
+                >
+                  <span className="solar--menu-dots-bold"></span>
+                </button>
               </td>
             </tr>
           ))}
