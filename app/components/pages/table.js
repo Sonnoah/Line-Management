@@ -4,31 +4,45 @@ import {
   formatThaiDate,
   parseLocalDate, 
 } from "@/script/attendance_record/utils/format_thai_date";
+import { useState } from "react";
 import { getRowClass } from "@/script/attendance_record/utils/format_thai_date";
+import HolidayListModal from "@/app/components/pages/holiday_list_modal";
+
 
 export default function AdminAttendanceExcelTable({ rows, onEdit}) {
+
+  const [showHolidayModal, setShowHolidayModal] = useState(false);
+  const [showAddHolidayModal, setShowAddHolidayModal] = useState(false);
+  
   return (
     <div className="overflow-x-auto rounded-box ">
       <table className="table table-sm ">
         <thead className="text-[14px]">
           <tr>
             <th className="text-center">No</th>
-            <th className="text-center">Name</th>
-            <th className="text-center">Date</th>
+            <th> Name</th>
+            <th> Date</th>
             <th className="text-center">Scheduled In</th>
             <th className="text-center">Scheduled Out</th>
             <th className="text-center">Check In</th>
             <th className="text-center">Check Out</th>
-            <th className="text-center">Late</th>
-            <th className="text-center">Excess Time</th>
-            <th className="text-center">Total</th>
+            <th className="text-center">Late (Min)</th>
+            <th className="text-center">Overtime (Min)</th>
+            <th className="text-center">Total (Min)</th>
             <th className="text-center">Leave</th>
-            <th className="text-center">OT</th>
-            <th className="text-center">Accrued OT</th>
+            <th className="text-center">OT (Min)</th>
+            <th className="text-center">Accrued OT (Min)</th>
             <th className="text-center">Status</th>
             <th className="text-center">Remark</th>
-            <th className="text-center"></th>
-            
+            <th className="text-center">
+              <button 
+                type="button"
+                className="btn btn-ghost btn-circle"
+                onClick={() => setShowHolidayModal(true)}
+              >
+                <span className="streamline--calendar-add"></span>
+              </button>
+            </th>
           </tr>
         </thead>
 
@@ -38,20 +52,20 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
               key={idx}
               className={`${getRowClass(r)} hover:bg-base-300`}
             >
-              <th className="text-center">{r.no}</th>
-              <td className="text-center whitespace-nowrap">{r.name}</td>
+              <th className="text-center text-[14px]">{r.no}</th>
+              <td className="whitespace-nowrap text-[14px]">{r.name}</td>
 
-              <td className="text-center">
+              <td>
                 {formatThaiDate(parseLocalDate(r.date))}
               </td>
 
-              <td className="text-center">{r.workStart}</td>
-              <td className="text-center">{r.workEnd}</td>
+              <td className="text-center text-[14px]">{r.workStart}</td>
+              <td className="text-center text-[14px]">{r.workEnd}</td>
 
-              <td className="text-center">{r.checkIn || "-"}</td>
-              <td className="text-center">{r.checkOut || "-"}</td>
+              <td className="text-center text-[14px]">{r.checkIn || "-"}</td>
+              <td className="text-center text-[14px]">{r.checkOut || "-"}</td>
 
-              <td className="text-center">
+              <td className="text-center text-[14px]">
                 {r.late > 0 ? (
                   <span>
                     {r.late}
@@ -59,7 +73,7 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
                 ) : "-"}
               </td>
               
-              <td className="text-center">
+              <td className="text-center text-[14px]">
                 {r.early > 0 ? (
                   <span>
                     {r.early}
@@ -67,7 +81,7 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
                 ) : "-"}
               </td>
 
-              <td className="text-center">
+              <td className="text-center text-[14px]">
                 {r.total === null ? (
                   "-"
                 ) : r.total < 0 ? (
@@ -83,9 +97,9 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
                 )}
               </td>
 
-             <td className="text-center">
+             <td className="text-center text-[14px]">
               {r.leave ? (
-                <span className="badge bg-info/20 text-info-content badge-sm">
+                <span className="badge badge-outline badge-info w-30">
                   {r.leaveType || "Leave"}
                 </span>
               ) : (
@@ -93,35 +107,44 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
               )}
             </td>
 
-              <td className="text-center">
+              <td className="text-center text-[14px]">
                 {typeof r.ot === "number" ? r.ot : "-"}
               </td>
 
-              <td className="text-center">
+              <td className="text-center text-[14px]">
                 {typeof r.otAccum === "number" ? r.otAccum : "-"}
               </td>
 
-              <td className="text-center">
+              <td className="text-center text-[14px] ">
                 {r.workedOnHoliday ? (
-                  <span className="badge bg-warning/20 text-warning-content badge-sm">
+                  <span className="badge badge-outline badge-warning w-30">
                     Weekend Work
                   </span>
+
+                ) : r.isCompanyHoliday ? (  
+                  <span className="badge badge-outline badge-primary w-30">
+                    Holiday
+                  </span>
+
                 ) : r.isHoliday ? (
-                  <span className="badge bg-success/20 text-success-content badge-sm">
+                  <span className="badge badge-outline badge-success w-30">
                     Day Off
                   </span>
+
                 ) : r.status === "ABSENT" ? (
-                  <span className="badge bg-error/20 text-error-content badge-sm">
+                  <span className="badge badge-outline badge-error w-30">
                     Absent
                   </span>
+
                 ) : null}
               </td>
 
-              <td className="text-center">
+
+              <td className="text-center text-[14px]">
                 {r.remark || "-"}
               </td>
 
-              <td className="text-center">
+              <td className="text-center text-[14px]">
                 <button
                   onClick={() => onEdit(r)}
                   className="btn btn-xs btn-ghost"
@@ -133,6 +156,9 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
           ))}
         </tbody>
       </table>
+        {showHolidayModal && (
+          <HolidayListModal onClose={() => setShowHolidayModal(false)} />
+        )}
     </div>
   );
 }

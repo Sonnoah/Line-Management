@@ -65,7 +65,7 @@ export default function AdminPanel() {
             <tr>
               <th className="pl-0 pr-0">Name</th>
               <th className="pl-1 pr-0">Dept.</th>
-              <th className="pl-1 pr-0">Role</th>
+              <th className="pl-1 pr-0 text-center">Role</th>
               <th className="pl-1 pr-0"></th>
             </tr>
           </thead>
@@ -94,7 +94,7 @@ export default function AdminPanel() {
                   <div className="text-[14px]">{profile.department}</div>
                 </td>
 
-           <td className="pl-1 pr-0">
+           <td className="pl-1 pr-0 text-center">
             <div
               className={`text-[14px] px-2 py-1 rounded ${
                 profile.role === "Admin"
@@ -111,9 +111,9 @@ export default function AdminPanel() {
                     <div tabIndex="0" role="button" className="btn btn-ghost btn-xs">
                       <span className="solar--menu-dots-bold"></span>
                     </div>
-                    <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 p-2 w-40  shadow-sm">
+                    <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 p-2 w-40 shadow-sm">
                       <li onClick={() => openDetail(profile)}>
-                        <a className="text-[16px]">
+                        <a>
                           <span className="clarity--details-line"></span>
                           Detail
                         </a>
@@ -123,12 +123,11 @@ export default function AdminPanel() {
                             setUserToDelete(profile);
                             setConfirmDelete(true);
                           }}>
-                        <a className="text-[#ea0000] text-[16px]">
+                        <a className="text-[#ea0000]">
                           <span className="solar--trash-bin-minimalistic-broken"></span>
                           Delete
                         </a>
                       </li>
-
                     </ul>
                   </div>
                 </td>

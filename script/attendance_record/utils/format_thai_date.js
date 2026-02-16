@@ -7,6 +7,11 @@ export function formatThaiDate(date) {
 }
 
 export function getRowClass(row) {
+
+  if (row.isCompanyHoliday) {
+    return "bg-purple-100 text-purple-900";
+  }
+
   if (row.workedOnHoliday) {
     return "bg-warning/20 text-warning-content";
   }
@@ -14,6 +19,7 @@ export function getRowClass(row) {
   if (row.isHoliday) {
     return "bg-success/20 text-success-content";
   }
+
   if (row.status === "ABSENT") {
     return "bg-error/20 text-error-content";
   }
@@ -58,12 +64,11 @@ export function calcOTDisplay(totalMinutes) {
 }
 
 export function applyOtAccum(rows) {
-  const accumMap = {}; // userId -> accum minutes
+  const accumMap = {}; 
 
   return rows.map(row => {
     const userId = row.userId;
 
-    // ✅ สำคัญมาก: ห้ามใช้ if (!accumMap[userId])
     if (!(userId in accumMap)) {
       accumMap[userId] = 0;
     }

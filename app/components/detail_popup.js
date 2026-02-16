@@ -21,6 +21,7 @@ const Detail_popup = forwardRef(
 
   const [confirmEditDept, setConfirmEditDept] = useState(false);
   const [confirmSaveDept, setConfirmSaveDept] = useState(false);
+  
 
   const isFirstSetDept = !department; 
 
@@ -161,9 +162,6 @@ const Detail_popup = forwardRef(
               }}
             />
           </div>
-
-
-
             <div>
               <div className="userid-row items-center">
                 <p className="label_admin_title opacity-50">Role</p>

@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx-js-style";
-import { buildSummary } from "@/script/attendance_record/utils/build_summary";
-import { getStatusText, addBorderToSheet } from "@/script/attendance_record/excel_style";
+import { buildSummary } from "@/app/components/excel/build_summary";
+import { getStatusText, addBorderToSheet, setFont, centerColumn} from "@/app/components/excel/excel_style";
 
 export function exportAttendanceToExcel(rows, label) {
 
@@ -15,23 +15,25 @@ export function exportAttendanceToExcel(rows, label) {
   // 1️⃣ DAILY SHEET
   // =====================================
 
-  const dailyData = rows.map(r => ({
+  const blankIfZero = (value) => value === 0 ? "" : value ?? "";
+
+    const dailyData = rows.map(r => ({
     "No": r.no,
     "Name": r.name,
     "Date": r.date,
-    "Scheduled In": r.workStart || "",
-    "Scheduled Out": r.workEnd || "",
+    "Scheduled Time": r.workStart || "",
+    "": r.workEnd || "",
     "Check In": r.checkIn || "",
     "Check Out": r.checkOut || "",
-    "Late (Min)": r.late || 0,
-    "Overtime (Min)": r.early || 0,
-    "Total": r.total ?? "",
-    "OT Total": r.ot ?? "",
-    "OT Accumulated": r.otAccum ?? "",
+    "Late (Min)": blankIfZero(r.late),
+    "Overtime (Min)": blankIfZero(r.early),
+    "Total": blankIfZero(r.total),
+    "OT Total": r.ot > 0 ? r.ot : "",
+    "OT Accumulated": blankIfZero(r.otAccum),
     "Leave Type": r.leaveType || "",
     "Status": getStatusText(r),
     "Remark": r.remark || ""
-  }));
+    }));
 
   const dailySheet = XLSX.utils.json_to_sheet([]);
 
@@ -58,7 +60,7 @@ export function exportAttendanceToExcel(rows, label) {
         font: { bold: true },
         fill: {
             patternType: "solid",
-            fgColor: { rgb: "9370db" }
+            fgColor: { rgb: "EEECE1" }
         },
         alignment: {
             horizontal: "center",
@@ -72,22 +74,38 @@ export function exportAttendanceToExcel(rows, label) {
 
     if (!dailySheet[cellAddress]) continue;
 
+    // title //
     dailySheet[cellAddress].s = {
-      font: { bold: true },
-      fill: {
-        patternType: "solid",
-        fgColor: { rgb: "D9D9D9" }
-      }
+        font: { 
+            bold: true,
+            sz: 14   
+        },
+        fill: {
+            patternType: "solid",
+            fgColor: { rgb: "EEECE1" }
+        },
+        alignment: {
+            horizontal: "center",
+            vertical: "center"
+        }
     };
   }
-
     // merge title
     dailySheet["!merges"] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }
+        { s: { r: 0, c: 0 }, e: { r: 1, c: 14 } }
     ];
 
-    // ใส่ border ทั้ง sheet ก่อน
+    if (!dailySheet["!merges"]) dailySheet["!merges"] = [];
+
+    dailySheet["!merges"].push({
+        s: { r: 2, c: 3 }, // D3
+        e: { r: 2, c: 4 }  // E3
+    });
+
+
     addBorderToSheet(dailySheet);
+    setFont(dailySheet);
+    centerColumn(dailySheet);
 
     // 🎨 สี row ตาม status
     rows.forEach((r, rowIndex) => {
@@ -96,10 +114,11 @@ export function exportAttendanceToExcel(rows, label) {
 
     let fillColor = null;
 
-    if (r.workedOnHoliday) fillColor = "ffff00";
-    else if (r.isHoliday) fillColor = "32cd32";
-    else if (r.status === "ABSENT") fillColor = "ff0000";
-    else if (r.leave) fillColor = "87cefa";
+    if (r.workedOnHoliday) fillColor = "FFFF00";
+    else if (r.isCompanyHoliday) fillColor = "B1A0C7";
+    else if (r.isHoliday) fillColor = "92D050";
+    else if (r.status === "ABSENT") fillColor = "FF0000";
+    else if (r.leave) fillColor = "92CDDC";
 
     if (!fillColor) return;
 
@@ -126,18 +145,18 @@ export function exportAttendanceToExcel(rows, label) {
         { wch: 4  },   // No
         { wch: 21 },  // Name
         { wch: 12 },  // Date
-        { wch: 12 },  // Scheduled In
-        { wch: 12 },  // Scheduled Out
+        { wch: 10 },  // Scheduled In
+        { wch: 10 },  // Scheduled Out
         { wch: 10 },  // Check In
         { wch: 10 },  // Check Out
         { wch: 10 },  // Late Minutes
         { wch: 14 },  // Overtime Minutes
         { wch: 10 },  // Total Minutes
         { wch: 10 },  // OT Total
-        { wch: 14 },  // OT Accumulated
-        { wch: 13 },  // Leave Type
-        { wch: 13 },  // Status
-        { wch: 16 },  // Remark
+        { wch: 15 },  // OT Accumulated
+        { wch: 14 },  // Leave Type
+        { wch: 16 },  // Status
+        { wch: 18 },  // Remark
     ];
     dailySheet["!rows"] = [
         { hpt: 14 },
@@ -161,7 +180,7 @@ export function exportAttendanceToExcel(rows, label) {
     "Date": label,
     "Working Days": r.workingDays,
     "Holiday": r.holidays,
-    "Late - No Time Offset (Min)": r.lateMinutes,
+    "Net Late (min)": r.lateMinutes,
     "Total OT": r.otTotal,
     "Private Pay": r.leaveWithPay,
     "Private No Pay": r.leaveNoPay,
@@ -190,17 +209,23 @@ export function exportAttendanceToExcel(rows, label) {
 
     if (!summarySheet[cellAddress]) continue;
 
+    // Headder //
     summarySheet[cellAddress].s = {
-        font: { bold: true },
+        font: { 
+            bold: true,
+        },
+        fill: {
+            patternType: "solid",
+            fgColor: { rgb: "92D050" }   
+        },
         alignment: {
             horizontal: "center",
             vertical: "center"
         }
     };
-    }
+}
 
 
-    // header style Summary
     for (let col = summaryRange.s.c; col <= summaryRange.e.c; col++) {
         
     const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
@@ -208,55 +233,62 @@ export function exportAttendanceToExcel(rows, label) {
     if (!summarySheet[cellAddress]) continue;
 
     summarySheet["!merges"] = [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }
+        { s: { r: 0, c: 0 }, e: { r: 1, c: 9 } }
     ];
     
     addBorderToSheet(summarySheet);
+    setFont(summarySheet);
 
+    // Title //
     summarySheet[cellAddress].s = {  
-        font: { bold: true },
+        font: { 
+            bold: true,
+            sz: 14   
+        },
         fill: {
-        patternType: "solid",
-        fgColor: { rgb: "D9D9D9" }
+            patternType: "solid",
+            fgColor: { rgb: "EEECE1" }
+        },
+        alignment: {
+            horizontal: "center",
+            vertical: "center"
         }
     };
 
 }
-    rows.forEach((r, rowIndex) => {
 
-    const excelRow = rowIndex + 1; // ✅ FIX (data เริ่ม row 3)
-
-    let fillColor = null;
-
-    if (r.leave) fillColor = "32cd32";
-
-    if (!fillColor) return;
-
-    for (let col = summaryRange.s.c; col <= summaryRange.e.c; col++) {
-
-        const cellAddress = XLSX.utils.encode_cell({
-        r: excelRow,
-        c: col
-        });
+    for (let col = 6; col <= 9; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: 2, c: col });
 
         if (!summarySheet[cellAddress]) continue;
 
         summarySheet[cellAddress].s = {
-        ...summarySheet[cellAddress].s,   
-        fill: {
+            ...summarySheet[cellAddress].s,
+            fill: {
             patternType: "solid",
-            fgColor: { rgb: fillColor }
-        }
+            fgColor: { rgb: "FFFF00" } 
+            }
+        };
+    }   
+
+    const cellAddress = XLSX.utils.encode_cell({ r: 2, c: 5 });
+
+    if (summarySheet[cellAddress]) {
+        summarySheet[cellAddress].s = {
+            ...summarySheet[cellAddress].s,
+            fill: {
+            patternType: "solid",
+            fgColor: { rgb: "92CDDC" } 
+            }
         };
     }
-    });
 
     summarySheet["!cols"] = [
         { wch: 22 },  // Name
         { wch: 25 },  // Date
         { wch: 14 },  // Working Days
         { wch: 12 },  // Holiday
-        { wch: 22 },  // Late Minutes
+        { wch: 16 },  // Late Minutes
         { wch: 13 },  // Total OT
         { wch: 16 },  // Private Pay
         { wch: 18 },  // Private No Pay

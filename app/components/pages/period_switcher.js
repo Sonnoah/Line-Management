@@ -5,8 +5,8 @@ import { useState, useMemo} from "react";
 import AdminAttendanceTable from "@/app/components/pages/table";
 import AdminEditModal from "@/app/components/pages/admin_edit_modal";
 import SummaryTable from "./summary_table";
-import { buildSummary } from "@/script/attendance_record/utils/build_summary";
-import { exportAttendanceToExcel } from "../export_excel";
+import { buildSummary } from "@/app/components/excel/build_summary";
+import { exportAttendanceToExcel } from "../excel/export_excel";
 
 export default function PeriodSwitcher({
   rows,
@@ -64,7 +64,7 @@ export default function PeriodSwitcher({
             26–09
           </button>
 
-          <form className="filter">
+          <form className="filter gap-1">
             <input className={`btn ${viewMode === "daily" ? "btn-soft btn-info" : "opacity-30"}`}  
               type="radio" aria-label="Daily"
               onClick={() => setViewMode("daily")}
@@ -105,7 +105,6 @@ export default function PeriodSwitcher({
         ) : (
           <SummaryTable summary={summaryData} />
         )}
-
       </main>
     </div>
   );

@@ -4,6 +4,7 @@ import { mapUsersToDailyRow } from "@/script/attendance_record/utils/map_users_t
 import { formatThaiDate, applyOtAccum } from "@/script/attendance_record/utils/format_thai_date";
 import { getDateRangeList } from "@/script/get_date_range_list";
 import { getApprovedRequests } from "@/script/attendance_record/utils/get_approved_leaves";
+import { getCompanyHolidays } from "@/script/attendance_record/utils/get_company_holidays";
 import PeriodSwitcher from "../components/pages/period_switcher";
 
 export default async function Page({ searchParams }) {
@@ -35,14 +36,15 @@ export default async function Page({ searchParams }) {
     round: mode === "10to25" ? "10–25" : "26–9"
   };
 
-  const [users, checkins, leaves] = await Promise.all([
+  const [users, checkins, leaves, companyHolidays] = await Promise.all([
     getAllUsers(),
     getCheckinsForCurrentPeriod(period),
     getApprovedRequests(),
+    getCompanyHolidays(), 
   ]);
 
   const dates = getDateRangeList(period.startDate, period.endDate);
-  const baseRows = mapUsersToDailyRow(users, checkins, dates, leaves);
+  const baseRows = mapUsersToDailyRow(users, checkins, dates, leaves, companyHolidays);
   const rows = applyOtAccum(baseRows);
 
   return (

@@ -4,7 +4,7 @@ import { getWorkTime } from "./get_work_time";
 import { getLeaveOnDate } from "./get_leave_on_date";
 import { dateToYMD } from "./format_thai_date";
 
-export function mapUsersToDailyRow(users, checkins, dates, leaves = []) {
+export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyHolidays = []) {
   const rows = [];
   let no = 1;
 
@@ -34,7 +34,17 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = []) {
       const leave = getLeaveOnDate(leaves, user.userId, date);
       const isLeave = !!leave;
 
-      const isHoliday = isHolidayByDepartment(date, user.department);
+     const companyHoliday = companyHolidays.find(
+      h => h.date === date
+    );
+
+    const isCompanyHoliday = !!companyHoliday;
+    const isHoliday =
+      isCompanyHoliday || isHolidayByDepartment(date, user.department);
+
+
+
+
       const hasCheckin = !!ci;
       const workedOnHoliday = isHoliday && hasCheckin;
 
@@ -155,15 +165,21 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = []) {
         status,
         isHoliday,
         workedOnHoliday,
+        isCompanyHoliday,
         leave: isLeave,
         leaveType: leave?.type || null,
         leaveNote: leave?.note || "",
 
-        remark: isLeave
+        remark: isCompanyHoliday && workedOnHoliday
+          ? `${holidayWorkedMinutes} min`
+          : isCompanyHoliday
+          ? companyHoliday?.title || "Holiday"
+          : isLeave
           ? leave?.note || ""
           : workedOnHoliday
           ? `${holidayWorkedMinutes} min`
-          : remark,
+          : remark || "",
+
       });
     });
   });

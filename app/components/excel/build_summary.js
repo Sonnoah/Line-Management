@@ -29,7 +29,11 @@ export function buildSummary(rows, label) {
       u.workingDays += 1;
     }
 
-    // ✅ วันหยุดบริษัท !r.workedOnHoliday
+     if (r.isCompanyHoliday) {
+      u.holidays += 1;
+    }
+
+    // ✅ วันหยุดบริษัท 
     if (r.isHoliday) {
       u.holidays += 1;
     }
@@ -41,8 +45,9 @@ export function buildSummary(rows, label) {
 
     // ✅ OT
     if (typeof r.ot === "number" && r.ot > 0) {
-        u.otTotal += r.ot;
+      u.otTotal = Number((u.otTotal + r.ot / 60).toFixed(2));
     }
+
 
 
     // ✅ ลา

@@ -7,9 +7,9 @@ export default function SummaryTable({ summary }) {
         <thead>
           <tr>
             <th className="text-center">Name</th>
-            <th className="text-center">Work Day</th>
-            <th className="text-center">Day Off</th>
-            <th className="text-center">Late - No Time Offset (Min)</th>
+            <th className="text-center">Work Day (day)</th>
+            <th className="text-center">Day Off (day)</th>
+            <th className="text-center">Net Late (min)</th>
             <th className="text-center">Total OT</th>
             <th className="text-center">Parivate Pay</th>
             <th className="text-center">Parivate No Pay</th>
@@ -21,15 +21,47 @@ export default function SummaryTable({ summary }) {
         <tbody>
           {summary.map((u, i) => (
             <tr key={i}>
-              <td>{u.name}</td>
-              <td className="text-center">{u.workingDays}</td>
-              <td className="text-center">{u.holidays}</td>
-              <td className="text-center">{u.lateMinutes}</td>
-              <td className="text-center">{u.otTotal}</td>
-              <td className="text-center">{u.leaveWithPay}</td>
-              <td className="text-center">{u.leaveNoPay}</td>
-              <td className="text-center">{u.leaveAnnual}</td>
-              <td className="text-center">{u.leaveSick}</td>
+              <td className="text-[14px]">{u.name}</td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft badge-primary rounded-full w-20">
+                  {u.workingDays}
+                </span>
+              </td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft badge-secondary rounded-full w-20">
+                  {u.holidays}
+                </span>
+              </td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft badge-warning rounded-full w-20">
+                  {u.lateMinutes}
+                </span>
+              </td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft badge-accent rounded-full w-20">
+                  {u.otTotal}
+                </span>
+              </td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft badge-info rounded-full w-20">
+                  {u.leaveWithPay}
+                </span>
+              </td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft badge-error rounded-full w-20">
+                  {u.leaveNoPay}
+                </span>
+              </td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft rounded-full w-20">
+                  {u.leaveAnnual}
+                </span>
+              </td>
+              <td className="text-center text-[14px] align-middle">
+                <span className="badge badge-soft badge-success rounded-full w-20">
+                  {u.leaveSick}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>

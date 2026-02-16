@@ -83,8 +83,8 @@ export default function Nav() {
                   <span className="solar--user-id-broken"></span><p className=" text-[16px]">Admit Panel</p></a> 
                   <ul>
                      <li> 
-                      <button className="flex items-center gap-2 text-left" onClick={() => goTo("/admin")}>
-                        <p className="text-[16px]">Users List</p>
+                      <button className="flex items-center gap-2 text-left" onClick={() => goTo("/user_management")}>
+                        <p className="text-[16px]">User management</p>
                       </button>
                       <button className="flex items-center gap-2 text-left" onClick={() => goTo("/attendance_record")}>
                         <p className="text-[16px]">Attendance Record</p>

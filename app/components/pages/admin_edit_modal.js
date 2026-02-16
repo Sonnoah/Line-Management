@@ -12,14 +12,14 @@ export default function AdminEditModal({ row, onClose }) {
 
     const handleSave = async () => {
     if (!row.id) {
-            Swal.fire({
-              icon: "warning",
-              title: "Not Found",
-              text: "No results matching this Document ID",
-              timer: 5000,
-              showConfirmButton: false,
-            });
-        return;
+        Swal.fire({
+          icon: "warning",
+          title: "Not Found",
+          text: "No results matching this Document ID",
+          timer: 5000,
+          showConfirmButton: false,
+        });
+    return;
     }
 
     const ref = doc(db, "Checkins", row.id);
@@ -57,9 +57,9 @@ export default function AdminEditModal({ row, onClose }) {
   return (
     <div className="modal modal-open">
       <div className="modal-box">
-        <h3 className="font-bold text-lg mb-4">แก้ไขเวลา</h3>
+        <h3 className="font-bold text-lg mb-4">Edit</h3>
 
-        <label>เวลาเข้า</label>
+        <label>Check In</label>
         <input
           type="time"
           value={checkIn}
@@ -67,7 +67,7 @@ export default function AdminEditModal({ row, onClose }) {
           className="input w-full border-[#243c5a]/10 outline-accent text-[16px] mb-3 mt-1"
         />
 
-        <label>เวลาออก</label>
+        <label>Check Out</label>
         <input
           type="time"
           value={checkOut}
@@ -75,7 +75,7 @@ export default function AdminEditModal({ row, onClose }) {
           className="input w-full border-[#243c5a]/10 outline-accent text-[16px] mb-3 mt-1"
         />
 
-        <label>หมายเหตุ</label>
+        <label>Remark</label>
         <input
           type="text"
           value={adminremark}
