@@ -13,8 +13,10 @@ export default function Home() {
 
     if (to) {
       router.replace(`/${to}`);
+    } else {
+      router.replace("/main"); 
     }
   }, [searchParams, router]);
 
-    return <Loading />;
+  return <Loading />;
 }

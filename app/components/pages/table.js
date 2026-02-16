@@ -55,7 +55,7 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
               <th className="text-center text-[14px]">{r.no}</th>
               <td className="whitespace-nowrap text-[14px]">{r.name}</td>
 
-              <td>
+              <td className="text-[14px]">
                 {formatThaiDate(parseLocalDate(r.date))}
               </td>
 
@@ -116,7 +116,11 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
               </td>
 
               <td className="text-center text-[14px] ">
-                {r.workedOnHoliday ? (
+                {r.isCompanyHoliday && r.workedOnHoliday ? (
+                  <span className="badge badge-outline badge-warning w-30">
+                    Holiday Work
+                  </span>
+                ) : r.workedOnHoliday ? (
                   <span className="badge badge-outline badge-warning w-30">
                     Weekend Work
                   </span>

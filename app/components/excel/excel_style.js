@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx-js-style";
 
 export function getStatusText(r) {
+  if (r.isCompanyHoliday && r.workedOnHoliday) return "Holiday Work";
   if (r.workedOnHoliday) return "Weekend Work";
   if (r.isCompanyHoliday) return "Holiday";
   if (r.isHoliday) return "Day Off";

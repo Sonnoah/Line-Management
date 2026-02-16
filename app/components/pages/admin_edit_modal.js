@@ -57,7 +57,7 @@ export default function AdminEditModal({ row, onClose }) {
   return (
     <div className="modal modal-open">
       <div className="modal-box">
-        <h3 className="font-bold text-lg mb-4">Edit</h3>
+        <h3 className="font-bold text-[16px] mb-4">Edit</h3>
 
         <label>Check In</label>
         <input

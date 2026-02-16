@@ -114,7 +114,8 @@ export function exportAttendanceToExcel(rows, label) {
 
     let fillColor = null;
 
-    if (r.workedOnHoliday) fillColor = "FFFF00";
+    if (r.isCompanyHoliday && r.workedOnHoliday) fillColor = "B1A0C7";
+    else if (r.workedOnHoliday) fillColor = "FFFF00";
     else if (r.isCompanyHoliday) fillColor = "B1A0C7";
     else if (r.isHoliday) fillColor = "92D050";
     else if (r.status === "ABSENT") fillColor = "FF0000";
