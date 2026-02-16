@@ -27,7 +27,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="th">
+    <html lang="th" data-theme="light">
       <body className={kanit.className}>
         <LiffLogin>
           <Nav/>
