@@ -15,7 +15,6 @@ export default function Profile() {
   });
   const [loading, setLoading] = useState(true);
 
-
   function handleUsernameUpdated(newUsername) {
   setProfile(prev => ({
       ...prev,

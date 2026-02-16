@@ -2,7 +2,7 @@
 
 import { saveToFirestore } from "@/lib/savedata";
 import { useState, useEffect } from "react";
-import { getLeaveQuota } from "@/lib/get_leave_quota";
+import { getLeaveQuota, calculateDays } from "@/lib/get_leave_quota";
 import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { Loading } from "@/app/components/loading";
 import { WaitLoading } from "@/app/components/wait_loading";
@@ -49,15 +49,31 @@ export default function Request_For_Leave() {
   const isPrivatePayFull = quota.privatePay >= 4;
   const isAnnualFull = quota.annual >= 6;
 
-  const isQuotaExceeded =
-    (formData.type === "Private pay" && isPrivatePayFull) ||
-    (formData.type === "Annual" && isAnnualFull);
+  // const isQuotaExceeded =
+  //   (formData.type === "Private pay" && isPrivatePayFull) ||
+  //   (formData.type === "Annual" && isAnnualFull);
 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  // ✅ วางตรงนี้
+  const requestedDays = calculateDays(
+    formData.start_date,
+    formData.end_date
+  );
+
+  const isPrivatePayExceeded =
+    formData.type === "Private pay" &&
+    quota.privatePay + requestedDays > 4;
+
+  const isAnnualExceeded =
+    formData.type === "Annual" &&
+    quota.annual + requestedDays > 6;
+
+  const isQuotaExceeded = isPrivatePayExceeded || isAnnualExceeded;
 
   const isFormValid =
     formData.name &&
@@ -66,6 +82,7 @@ export default function Request_For_Leave() {
     formData.end_date &&
     formData.total_day &&
     !isQuotaExceeded;
+
 
     const handleSubmit = async () => {
     if (isQuotaExceeded || loading || submitting) return;
@@ -181,6 +198,15 @@ export default function Request_For_Leave() {
             {submitting ?  <WaitLoading /> : "Submit" }
           </button>
         </div>
+          {isQuotaExceeded && (
+            <p className="text-center text-error text-sm mt-2">
+              {formData.type === "Private pay" &&
+                `Quota exceeded. You can only use ${4 - quota.privatePay} more day(s)`}
+
+              {formData.type === "Annual" &&
+                `Quota exceeded. You can only use ${6 - quota.annual} more day(s)`}
+            </p>
+          )}
       </main>
     </div>
   );
