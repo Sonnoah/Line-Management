@@ -60,15 +60,19 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       // early / overtime
       // (ติดลบ = ออกก่อน)
       // ------------------------
+      const checkInDate = toJSDate(ci?.checkInAt);
+      const checkOutDate = toJSDate(ci?.checkOutAt);
+
       const earlyMinutes =
-        !isHoliday && ci?.checkInAt && ci?.checkOutAt
+        !isHoliday && checkInDate && checkOutDate
           ? calcEarlyMinutes(
-              toJSDate(ci.checkInAt),
-              toJSDate(ci.checkOutAt),
+              checkInDate,
+              checkOutDate,
               workTime.start,
               workTime.end
             )
           : null;
+
 
 
       const requiredMinutes = workTime.requiredMinutes;

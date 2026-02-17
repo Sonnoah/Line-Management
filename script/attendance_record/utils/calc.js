@@ -1,12 +1,32 @@
+function toJSDate(value) {
+  if (!value) return null;
+
+  // Firestore Timestamp
+  if (typeof value.toDate === "function") {
+    return value.toDate();
+  }
+
+  // Plain object { seconds }
+  if (value.seconds) {
+    return new Date(value.seconds * 1000);
+  }
+
+  // Already Date
+  if (value instanceof Date) {
+    return value;
+  }
+
+  return null;
+}
+
 export function timeStrToMinutes(timeStr) {
   const [h, m] = timeStr.split(":").map(Number);
   return h * 60 + m;
 }
 
 export function calcLateMinutes(checkInAt, workStart) {
-  if (!checkInAt) return null;
-
-  const checkInDate = new Date(checkInAt.seconds * 1000);
+  const checkInDate = toJSDate(checkInAt);
+  if (!checkInDate) return null;
 
   const checkInMinutes =
     checkInDate.getHours() * 60 + checkInDate.getMinutes();
@@ -24,10 +44,11 @@ export function calcEarlyMinutes(
   workStart,
   workEnd
 ) {
-  if (!checkOutAt) return 0;
+  const outDate = toJSDate(checkOutAt);
+  if (!outDate) return 0;
 
-  const outDate = new Date(checkOutAt.seconds * 1000);
-  const outMinutes = outDate.getHours() * 60 + outDate.getMinutes();
+  const outMinutes =
+    outDate.getHours() * 60 + outDate.getMinutes();
 
   const workEndMinutes = timeStrToMinutes(workEnd);
 
@@ -36,12 +57,14 @@ export function calcEarlyMinutes(
   return overtime > 0 ? overtime : 0;
 }
 
-
 export function calcWorkedMinutes(checkInAt, checkOutAt) {
-  if (!checkInAt || !checkOutAt) return 0;
+  const inDate = toJSDate(checkInAt);
+  const outDate = toJSDate(checkOutAt);
 
-  const inMs = checkInAt.seconds * 1000;
-  const outMs = checkOutAt.seconds * 1000;
+  if (!inDate || !outDate) return 0;
 
-  return Math.max(0, Math.floor((outMs - inMs) / 60000));
+  return Math.max(
+    0,
+    Math.floor((outDate.getTime() - inDate.getTime()) / 60000)
+  );
 }
