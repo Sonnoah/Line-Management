@@ -55,16 +55,6 @@ export function getTodayRound(baseDate = new Date()) {
   return 2;                             
 }
 
-export function calcOTDisplay(totalMinutes) {
-  if (totalMinutes == null) return null;
-
-  if (totalMinutes < 0) return totalMinutes;
-
-  if (totalMinutes < 30) return null;
-
-  return Math.floor(totalMinutes / 30) * 30;
-}
-
 export function applyOtAccum(rows) {
   const accumMap = {}; 
 

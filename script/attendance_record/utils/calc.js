@@ -62,6 +62,13 @@ export function calcEarlyMinutes(checkOutDate, workEndStr) {
   return 0;
 }
 
+export function calcOTMinutes(totalMinutes) {
+  if (typeof totalMinutes !== "number") return 0;
+
+  if (totalMinutes < 30) return 0;
+
+  return Math.floor(totalMinutes / 30) * 30;
+}
 
 
 export function calcWorkedMinutes(checkInAt, checkOutAt) {

@@ -49,22 +49,22 @@
 //       const checkInDate = toJSDate(ci?.checkInAt);
 //       const checkOutDate = toJSDate(ci?.checkOutAt);
 
-//       // ✅ late
-//       const lateMinutes =
-//         !isHoliday && checkInDate
-//           ? calcLateMinutes(checkInDate, workTime.start)
-//           : null;
+//     //   // ✅ late
+//     //   const lateMinutes =
+//     //     !isHoliday && checkInDate
+//     //       ? calcLateMinutes(checkInDate, workTime.start)
+//     //       : null;
 
-//       // ✅ early
-//       const earlyMinutes =
-//         !isHoliday && checkInDate && checkOutDate
-//           ? calcEarlyMinutes(
-//               checkInDate,
-//               checkOutDate,
-//               workTime.start,
-//               workTime.end
-//             )
-//           : null;
+//     //   // ✅ early
+//     //   const earlyMinutes =
+//     //     !isHoliday && checkInDate && checkOutDate
+//     //       ? calcEarlyMinutes(
+//     //           checkInDate,
+//     //           checkOutDate,
+//     //           workTime.start,
+//     //           workTime.end
+//     //         )
+//     //       : null;
 
 //       const requiredMinutes = workTime.requiredMinutes;
 
@@ -72,33 +72,33 @@
 //       let status = "";
 //       let remark = "";
 
-//       // if (isFutureDate) {
-//       //   totalMinutes = null;
-//       //   status = "PENDING";
-//       // }
+//       if (isFutureDate) {
+//         totalMinutes = null;
+//         status = "PENDING";
+//       }
 
-//       // else if (isBeforeEnd && !ci) {
-//       //   totalMinutes = null;
-//       //   status = "PENDING";
-//       // }
+//       else if (isBeforeEnd && !ci) {
+//         totalMinutes = null;
+//         status = "PENDING";
+//       }
 
-//       // else if (isLeave || isHoliday) {
-//       //   totalMinutes = 0;
-//       //   status = isLeave ? "LEAVE" : "HOLIDAY";
-//       // }
+//       else if (isLeave || isHoliday) {
+//         totalMinutes = 0;
+//         status = isLeave ? "LEAVE" : "HOLIDAY";
+//       }
 
-//       // else if (!ci) {
-//       //   totalMinutes = -requiredMinutes;
-//       //   status = "ABSENT";
-//       // }
+//       else if (!ci) {
+//         totalMinutes = -requiredMinutes;
+//         status = "ABSENT";
+//       }
 
-//       // else {
-//       //   const early = earlyMinutes ?? 0;
-//       //   const late = lateMinutes ?? 0;
+//       else {
+//         const early = earlyMinutes ?? 0;
+//         const late = lateMinutes ?? 0;
 
-//       //   totalMinutes = early - late;
-//       //   status = ci.status;
-//       // }
+//         totalMinutes = early - late;
+//         status = ci.status;
+//       }
 
 
 //       let holidayWorkedMinutes = 0;

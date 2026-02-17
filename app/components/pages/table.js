@@ -82,19 +82,7 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
               </td>
 
               <td className="text-center text-[14px]">
-                {r.total === null ? (
-                  "-"
-                ) : r.total < 0 ? (
-                  <span>
-                    {r.total}
-                  </span>
-                ) : r.total > 0 ? (
-                  <span>
-                    {r.total}
-                  </span>
-                ) : (
-                  "-"
-                )}
+                {r.total === 0 ? "-" : r.total}
               </td>
 
              <td className="text-center text-[14px]">
@@ -107,9 +95,9 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
               )}
             </td>
 
-              <td className="text-center text-[14px]">
-                {typeof r.ot === "number" ? r.ot : "-"}
-              </td>
+            <td className="text-center text-[14px]">
+              {r.ot === 0 ? "-" : r.ot}
+            </td>
 
               <td className="text-center text-[14px]">
                 {typeof r.otAccum === "number" ? r.otAccum : "-"}

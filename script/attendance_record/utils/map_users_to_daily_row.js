@@ -1,5 +1,5 @@
 import { isHolidayByDepartment } from "../utils/is_holiday_by_department";
-import { calcLateMinutes, calcEarlyMinutes, calcWorkedMinutes } from "./calc";
+import { calcLateMinutes, calcEarlyMinutes, calcWorkedMinutes, calcOTFromDiff } from "./calc";
 import { getWorkTime } from "./get_work_time";
 import { getLeaveOnDate } from "./get_leave_on_date";
 import { dateToYMD, toJSDate } from "./format_thai_date";
@@ -18,6 +18,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
     dates.forEach(date => {
 
       const isToday = date === todayYMD;
+      const isFutureDate = date > todayYMD;
 
       const [endH, endM] = workTime.end.split(":").map(Number);
       const workEndToday = new Date();
@@ -76,66 +77,69 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       );
     }
 
-      
-      let totalMinutes = null;
-      let status = "";
-      let remark = "";
+    // OT //
+    const totalMinutes = (earlyMinutes || 0) - (lateMinutes || 0);
 
-      rows.push({
-        id: ci?.id || null, 
-        no: userNo,
-        userId: user.userId,
-        name: user.username || user.displayName,
-        department: user.department,
-        date,
 
-        workStart: workTime.start,
-        workEnd: workTime.end,
 
-      checkIn: ci?.checkInAt
-        ? toJSDate(ci.checkInAt)?.toLocaleTimeString("th-TH", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-            timeZone: "Asia/Bangkok"
-          })
-        : "",
+    
+    rows.push({
+      id: ci?.id || null, 
+      no: userNo,
+      userId: user.userId,
+      name: user.username || user.displayName,
+      department: user.department,
+      date,
 
-      checkOut: ci?.checkOutAt
-        ? toJSDate(ci.checkOutAt)?.toLocaleTimeString("th-TH", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-            timeZone: "Asia/Bangkok"
-          })
-        : "",
+      workStart: workTime.start,
+      workEnd: workTime.end,
 
-        late: lateMinutes,
-        early: earlyMinutes,
+    checkIn: ci?.checkInAt
+      ? toJSDate(ci.checkInAt)?.toLocaleTimeString("th-TH", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "Asia/Bangkok"
+        })
+      : "",
 
-        status,
-        isHoliday,
-        workedOnHoliday,
-        isCompanyHoliday,
-        leave: isLeave,
-        leaveType: leave?.type || null,
-        leaveNote: leave?.note || "",
+    checkOut: ci?.checkOutAt
+      ? toJSDate(ci.checkOutAt)?.toLocaleTimeString("th-TH", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "Asia/Bangkok"
+        })
+      : "",
 
-        remark: isCompanyHoliday && workedOnHoliday
-          ? `${holidayWorkedMinutes} min`
-          : isCompanyHoliday
-          ? companyHoliday?.title || "Holiday"
-          : isLeave
-          ? leave?.note || ""
-          : workedOnHoliday
-          ? `${holidayWorkedMinutes} min`
-          : remark || "",
+      late: lateMinutes,
+      early: earlyMinutes,
+      total : totalMinutes,
 
-      });
+
+      // status,
+      isHoliday,
+      workedOnHoliday,
+      isCompanyHoliday,
+      leave: isLeave,
+      leaveType: leave?.type || null,
+      leaveNote: leave?.note || "",
+
+      // remark: isCompanyHoliday && workedOnHoliday
+      //   ? `${holidayWorkedMinutes} min`
+      //   : isCompanyHoliday
+      //   ? companyHoliday?.title || "Holiday"
+      //   : isLeave
+      //   ? leave?.note || ""
+      //   : workedOnHoliday
+      //   ? `${holidayWorkedMinutes} min`
+      //   : remark || "",
+
     });
   });
+});
 
 
 
-  return rows;
+return rows;
 }
