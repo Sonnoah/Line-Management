@@ -40,31 +40,42 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
     const isHoliday =
       isCompanyHoliday || isHolidayByDepartment(date, user.department);
 
-      const hasCheckin = !!ci;
-      const workedOnHoliday = isHoliday && hasCheckin;
+    const hasCheckin = !!ci;
+    const workedOnHoliday = isHoliday && hasCheckin;
 
 
-      const checkInDate = ci?.checkInAt
-      const checkOutDate = ci?.checkOutAt
+    const checkInDate = ci?.checkInAt
+    const checkOutDate = ci?.checkOutAt
+;
+  
+    let holidayWorkedMinutes = 0;
+    if (workedOnHoliday && ci) {
+      holidayWorkedMinutes = calcWorkedMinutes(
+        checkInDate,
+        checkOutDate
+      );
+    }
 
-   
-      let holidayWorkedMinutes = 0;
-      if (workedOnHoliday && ci) {
-        holidayWorkedMinutes = calcWorkedMinutes(
-          checkInDate,
-          checkOutDate
-        );
-      }
+    // LATE //
+    let lateMinutes = 0;
 
-      // LATE //
-      let lateMinutes = 0;
+    if (!isHoliday && !isLeave && ci?.checkInAt) {
+      lateMinutes = calcLateMinutes(
+        toJSDate(ci.checkInAt),
+        workTime.start
+      );
+    }
 
-      if (!isHoliday && !isLeave && ci?.checkInAt) {
-        lateMinutes = calcLateMinutes(
-          toJSDate(ci.checkInAt),
-          workTime.start
-        );
-      }
+    // EARLY //
+    let earlyMinutes = 0;
+
+    if (!isHoliday && !isLeave && ci?.checkOutAt) {
+      earlyMinutes = calcEarlyMinutes(
+        toJSDate(ci.checkOutAt),
+        workTime.end
+      );
+    }
+
       
       let totalMinutes = null;
       let status = "";
@@ -100,6 +111,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         : "",
 
         late: lateMinutes,
+        early: earlyMinutes,
 
         status,
         isHoliday,
@@ -122,6 +134,8 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       });
     });
   });
+
+
 
   return rows;
 }

@@ -41,28 +41,28 @@ export function calcLateMinutes(checkInDate, workStartStr) {
 }
 
 
+export function calcEarlyMinutes(checkOutDate, workEndStr) {
+  if (!checkOutDate || !workEndStr) return 0;
 
-export function calcEarlyMinutes(
-  checkInAt,
-  checkOutAt,
-  workStart,
-  workEnd
-) {
-  const outDate = toJSDate(checkOutAt);
-  if (!outDate) return 0;
+  const checkOutTime = checkOutDate.toLocaleTimeString("en-GB", {
+    hour12: false,
+    timeZone: "Asia/Bangkok",
+  });
 
-  // เอาวันเดียวกันของ checkOut มาเป็นฐาน
-  const workEndDate = new Date(outDate);
+  const [coH, coM] = checkOutTime.split(":").map(Number);
+  const [endH, endM] = workEndStr.split(":").map(Number);
 
-  const [endH, endM] = workEnd.split(":").map(Number);
-  workEndDate.setHours(endH, endM, 0, 0);
+  const checkOutMinutes = coH * 60 + coM;
+  const workEndMinutes = endH * 60 + endM;
 
-  const diffMinutes = Math.floor(
-    (outDate.getTime() - workEndDate.getTime()) / 60000
-  );
+  if (checkOutMinutes > workEndMinutes) {
+    return checkOutMinutes - workEndMinutes;
+  }
 
-  return diffMinutes > 0 ? diffMinutes : 0;
+  return 0;
 }
+
+
 
 export function calcWorkedMinutes(checkInAt, checkOutAt) {
   const inDate = toJSDate(checkInAt);
