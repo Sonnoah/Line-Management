@@ -1,17 +1,14 @@
 function toJSDate(value) {
   if (!value) return null;
 
-  // Firestore Timestamp
   if (typeof value.toDate === "function") {
     return value.toDate();
   }
 
-  // Plain object { seconds }
   if (value.seconds) {
     return new Date(value.seconds * 1000);
   }
 
-  // Already Date
   if (value instanceof Date) {
     return value;
   }
@@ -24,21 +21,19 @@ export function timeStrToMinutes(timeStr) {
   return h * 60 + m;
 }
 
-export function calcLateMinutes(checkInAt, workStart) {
-  const inDate = toJSDate(checkInAt);
-  if (!inDate) return 0;
+export function calcLateMinutes(checkInDate, workStartStr) {
+  if (!checkInDate || !workStartStr) return 0;
 
-  const workStartDate = new Date(inDate);
+  const [startH, startM] = workStartStr.split(":").map(Number);
 
-  const [startH, startM] = workStart.split(":").map(Number);
-  workStartDate.setHours(startH, startM, 0, 0);
+  const workStart = new Date(checkInDate);
+  workStart.setHours(startH, startM, 0, 0);
 
-  const diffMinutes = Math.floor(
-    (inDate.getTime() - workStartDate.getTime()) / 60000
-  );
+  if (checkInDate <= workStart) return 0;
 
-  return diffMinutes > 0 ? diffMinutes : 0;
+  return Math.floor((checkInDate - workStart) / (1000 * 60));
 }
+
 
 
 export function calcEarlyMinutes(

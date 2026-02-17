@@ -36,8 +36,7 @@ export function parseLocalDate(dateStr, options = { be: false }) {
   const [y, m, d] = dateStr.split("-").map(Number);
 
   const yearAD = options.be ? y - 543 : y;
-
-  // ใช้ Date.UTC ป้องกัน timezone shift
+  
   return new Date(Date.UTC(yearAD, m - 1, d));
 }
 

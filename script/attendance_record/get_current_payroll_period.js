@@ -1,6 +1,5 @@
 export function getCurrentPayrollPeriod(baseDate = new Date()) {
 
-  // บังคับ timezone เป็น Asia/Bangkok
   const thaiDate = new Date(
     baseDate.toLocaleString("en-US", {
       timeZone: "Asia/Bangkok"
