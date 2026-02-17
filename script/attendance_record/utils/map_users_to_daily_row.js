@@ -154,7 +154,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         : "",
 
         checkOut: ci?.checkOutAt
-        ? ci.checkInAt.toDate().toLocaleTimeString("th-TH", {
+        ? ci.checkOut.toDate().toLocaleTimeString("th-TH", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,
