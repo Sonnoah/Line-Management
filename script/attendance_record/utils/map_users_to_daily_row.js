@@ -145,18 +145,30 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         workEnd: workTime.end,
 
         checkIn: ci?.checkInAt
-          ? new Date(ci.checkInAt.seconds * 1000).toLocaleTimeString("th-TH", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "",
+        ? ci.checkInAt.toDate().toLocaleTimeString("th-TH", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: "Asia/Bangkok"
+          })
+        : "",
 
         checkOut: ci?.checkOutAt
-          ? new Date(ci.checkOutAt.seconds * 1000).toLocaleTimeString("th-TH", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "",
+        ? ci.checkInAt.toDate().toLocaleTimeString("th-TH", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: "Asia/Bangkok"
+          })
+        : "",
+
+
+        // checkOut: ci?.checkOutAt
+        //   ? new Date(ci.checkOutAt.seconds * 1000).toLocaleTimeString("th-TH", {
+        //       hour: "2-digit",
+        //       minute: "2-digit",
+        //     })
+        //   : "",
 
         total: totalMinutes,
         late: lateMinutes,
