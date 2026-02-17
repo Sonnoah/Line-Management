@@ -61,14 +61,15 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       // (ติดลบ = ออกก่อน)
       // ------------------------
       const earlyMinutes =
-        !isHoliday && ci
+        !isHoliday && ci?.checkInAt && ci?.checkOutAt
           ? calcEarlyMinutes(
-              ci.checkInAt,
-              ci.checkOutAt,
+              toJSDate(ci.checkInAt),
+              toJSDate(ci.checkOutAt),
               workTime.start,
               workTime.end
             )
           : null;
+
 
       const requiredMinutes = workTime.requiredMinutes;
 
