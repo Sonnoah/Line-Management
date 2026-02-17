@@ -42,24 +42,18 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
     const isHoliday =
       isCompanyHoliday || isHolidayByDepartment(date, user.department);
 
-
-
-
       const hasCheckin = !!ci;
       const workedOnHoliday = isHoliday && hasCheckin;
 
-      // ------------------------
-      // late
-      // ------------------------
+      
+      // late //
       const lateMinutes =
         !isHoliday && ci
           ? calcLateMinutes(ci.checkInAt, workTime.start)
           : null;
 
-      // ------------------------
-      // early / overtime
-      // (ติดลบ = ออกก่อน)
-      // ------------------------
+
+      // early / overtime //
       const earlyMinutes =
         !isHoliday && ci
           ? calcEarlyMinutes(
@@ -68,7 +62,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
               workTime.start,
               workTime.end
             )
-          : null;
+          : null; 
 
       const requiredMinutes = workTime.requiredMinutes;
 
@@ -76,41 +70,35 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       let status = "";
       let remark = "";
 
-      // =========================
-      // FUTURE DAY
-      // =========================
+
+      // FUTURE DAY //
       if (isFutureDate) {
         totalMinutes = null;
         status = "PENDING";
       }
 
-      // =========================
-      // TODAY but not finish work yet
-      // =========================
+
+      // TODAY but not finish work yet //
       else if (isBeforeEnd && !ci) {
         totalMinutes = null;
         status = "PENDING";
       }
 
-      // =========================
-      // LEAVE / HOLIDAY
-      // =========================
+
+      // LEAVE / HOLIDAY //
       else if (isLeave || isHoliday) {
         totalMinutes = 0;
         status = isLeave ? "LEAVE" : "HOLIDAY";
       }
 
-      // =========================
-      // ABSENT
-      // =========================
+
+      // ABSENT //
       else if (!ci) {
         totalMinutes = -requiredMinutes;
         status = "ABSENT";
       }
 
-      // =========================
-      // NORMAL WORK DAY
-      // =========================
+      // NORMAL WORK DAY //
       else {
         const early = earlyMinutes ?? 0;
         const late = lateMinutes ?? 0;
@@ -119,9 +107,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         status = ci.status;
       }
 
-      // =========================
-      // HOLIDAY WORKED MINUTES
-      // =========================
+      // HOLIDAY WORKED MINUTES //
       let holidayWorkedMinutes = 0;
       if (workedOnHoliday && ci) {
         holidayWorkedMinutes = calcWorkedMinutes(
@@ -130,9 +116,8 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         );
       }
 
-      // =========================
-      // PUSH ROW
-      // =========================
+
+      // PUSH ROW //
       rows.push({
         id: ci?.id || null, 
         no: userNo,
