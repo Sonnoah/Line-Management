@@ -1,15 +1,15 @@
 export function getCurrentPayrollPeriod(baseDate = new Date()) {
-  if (!(baseDate instanceof Date)) {
-    baseDate = new Date(baseDate);
-  }
 
-  if (isNaN(baseDate)) {
-    throw new Error("Invalid baseDate passed to getCurrentPayrollPeriod");
-  }
+  // บังคับ timezone เป็น Asia/Bangkok
+  const thaiDate = new Date(
+    baseDate.toLocaleString("en-US", {
+      timeZone: "Asia/Bangkok"
+    })
+  );
 
-  const year = baseDate.getFullYear();
-  const month = baseDate.getMonth(); 
-  const day = baseDate.getDate();
+  const year = thaiDate.getFullYear();
+  const month = thaiDate.getMonth();
+  const day = thaiDate.getDate();
 
   if (day >= 10 && day <= 25) {
     return {
@@ -38,6 +38,4 @@ export function getCurrentPayrollPeriod(baseDate = new Date()) {
     startDate: new Date(prevYear, prevMonth, 26),
     endDate: new Date(year, month, 9),
   };
-  
 }
-

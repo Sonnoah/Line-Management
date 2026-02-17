@@ -36,7 +36,7 @@ export default function AddHolidayModal({ holiday, onClose  }) {
         date,
         title,
         createdAt: Timestamp.now(),
-        createdBy: "admin"
+        createdBy: "Admin"
       });
     }
 
