@@ -55,41 +55,6 @@ export function getTodayRound(baseDate = new Date()) {
   return 2;                             
 }
 
-export function applyOtAccum(rows) {
-  const accumMap = {}; 
-
-  return rows.map(row => {
-    const userId = row.userId;
-
-    if (!(userId in accumMap)) {
-      accumMap[userId] = 0;
-    }
-
-    let otToday = 0;
-    const total = row.total;
-
-    if (typeof total === "number") {
-      if (total < 0) {
-        otToday = total;
-      } else if (total >= 30) {
-        if (total < 60) otToday = 30;
-        else if (total < 90) otToday = 60;
-        else if (total < 120) otToday = 90;
-        else otToday = Math.floor(total / 30) * 30;
-      }
-    }
-
-    // --- สะสม ---
-    accumMap[userId] += otToday;
-
-    return {
-      ...row,
-      ot: otToday !== 0 ? otToday : "-",
-      otAccum: accumMap[userId],
-    };
-  });
-}
-
 
 export function toJSDate(value) {
   if (!value) return null;

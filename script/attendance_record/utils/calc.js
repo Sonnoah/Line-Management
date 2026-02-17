@@ -70,6 +70,45 @@ export function calcOTMinutes(totalMinutes) {
   return Math.floor(totalMinutes / 30) * 30;
 }
 
+export function applyOtAccum(rows) {
+  const accumMap = {};
+
+  return rows.map(row => {
+    const userId = row.userId;
+
+    if (!(userId in accumMap)) {
+      accumMap[userId] = 0;
+    }
+
+    // 🚫 ถ้า total ไม่ใช่ตัวเลข (null, "-", undefined)
+    if (typeof row.total !== "number") {
+      return {
+        ...row,
+        ot: "-",
+        otAccum: "-",
+      };
+    }
+
+    let otToday = 0;
+    const total = row.total;
+
+    if (total < 0) {
+      otToday = total;
+    } else if (total >= 30) {
+      otToday = Math.floor(total / 30) * 30;
+    }
+
+    accumMap[userId] += otToday;
+
+    return {
+      ...row,
+      ot: otToday !== 0 ? otToday : "-",
+      otAccum: accumMap[userId],
+    };
+  });
+}
+
+
 
 export function calcWorkedMinutes(checkInAt, checkOutAt) {
   const inDate = toJSDate(checkInAt);

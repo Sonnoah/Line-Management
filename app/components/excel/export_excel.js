@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx-js-style";
-import { buildSummary } from "@/app/components/excel/build_summary";
+import { buildSummary } from "@/app/components/pages/build_summary";
 import { getStatusText, addBorderToSheet, setFont, centerColumn} from "@/app/components/excel/excel_style";
 
 export function exportAttendanceToExcel(rows, label) {

@@ -5,7 +5,7 @@ import { useState, useMemo} from "react";
 import AdminAttendanceTable from "@/app/components/pages/table";
 import AdminEditModal from "@/app/components/pages/admin_edit_modal";
 import SummaryTable from "./summary_table";
-import { buildSummary } from "@/app/components/excel/build_summary";
+import { buildSummary } from "@/app/components/pages/build_summary";
 import { exportAttendanceToExcel } from "../excel/export_excel";
 
 export default function PeriodSwitcher({

@@ -1,7 +1,8 @@
 import { getCheckinsForCurrentPeriod } from "@/script/attendance_record/get_checkins_current";
 import { getAllUsers } from "@/lib/get_all_users";
 import { mapUsersToDailyRow } from "@/script/attendance_record/utils/map_users_to_daily_row";
-import { formatThaiDate, applyOtAccum } from "@/script/attendance_record/utils/format_thai_date";
+import { formatThaiDate} from "@/script/attendance_record/utils/format_thai_date";
+import { applyOtAccum } from "@/script/attendance_record/utils/calc";
 import { getDateRangeList } from "@/script/get_date_range_list";
 import { getApprovedRequests } from "@/script/attendance_record/utils/get_approved_leaves";
 import { getCompanyHolidays } from "@/script/attendance_record/utils/get_company_holidays";

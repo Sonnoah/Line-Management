@@ -17,6 +17,8 @@ export function buildSummary(rows, label) {
         leaveNoPay: 0,
         leaveAnnual: 0,
         leaveSick: 0,
+
+        otAccum: 0 
       };
     }
 
@@ -24,31 +26,18 @@ export function buildSummary(rows, label) {
 
     const hasFullCheck = r.checkIn && r.checkOut;
 
-    // ✅ วันทำงาน = มี checkin + checkout
     if (hasFullCheck) {
       u.workingDays += 1;
     }
 
-     if (r.isCompanyHoliday) {
+    if (r.isCompanyHoliday || r.isHoliday) {
       u.holidays += 1;
     }
 
-    // ✅ วันหยุดบริษัท 
-    if (r.isHoliday) {
-      u.holidays += 1;
+    // ✅ เก็บค่า otAccum ล่าสุด (ไม่บวกสะสม)
+    if (typeof r.otAccum === "number") {
+      u.otAccum = r.otAccum;
     }
-
-    // ✅ สาย
-    if (typeof r.otAccum === "number" && r.otAccum < 0) {
-      u.lateMinutes += Math.abs(r.otAccum);
-    }
-
-    // ✅ OT
-    if (typeof r.ot === "number" && r.ot > 0) {
-      u.otTotal = Number((u.otTotal + r.ot / 60).toFixed(2));
-    }
-
-
 
     // ✅ ลา
     if (r.leave) {
@@ -65,6 +54,19 @@ export function buildSummary(rows, label) {
         case "Sick":
           u.leaveSick += 1;
           break;
+      }
+    }
+  });
+
+  // ✅ คำนวณ OT / Late หลัง loop จบ
+  Object.values(map).forEach(u => {
+    if (typeof u.otAccum === "number") {
+      if (u.otAccum < 0) {
+        u.lateMinutes = Math.abs(u.otAccum);
+        u.otTotal = 0;
+      } else if (u.otAccum > 0) {
+        u.otTotal = Number((u.otAccum / 60).toFixed(2));
+        u.lateMinutes = 0;
       }
     }
   });

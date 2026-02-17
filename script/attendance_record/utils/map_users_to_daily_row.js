@@ -1,5 +1,5 @@
 import { isHolidayByDepartment } from "../utils/is_holiday_by_department";
-import { calcLateMinutes, calcEarlyMinutes, calcWorkedMinutes, calcOTFromDiff } from "./calc";
+import { calcLateMinutes, calcEarlyMinutes, calcWorkedMinutes, } from "./calc";
 import { getWorkTime } from "./get_work_time";
 import { getLeaveOnDate } from "./get_leave_on_date";
 import { dateToYMD, toJSDate } from "./format_thai_date";
@@ -78,11 +78,38 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
     }
 
     // OT //
-    const totalMinutes = (earlyMinutes || 0) - (lateMinutes || 0);
+    const requiredMinutes = workTime.requiredMinutes;
+
+    let totalMinutes;
+    let status = "";
+    let remark = "";
+
+    if (isFutureDate) {
+      totalMinutes = null;
+      status = "PENDING";
+    }
+
+    else if (isBeforeEnd && !ci) {
+      totalMinutes = null;
+      status = "PENDING";
+    }
+
+    else if (isLeave || isHoliday) {
+      totalMinutes = 0;
+      status = isLeave ? "LEAVE" : "HOLIDAY";
+    }
+
+    else if (!ci) {
+      totalMinutes = -requiredMinutes;
+      status = "ABSENT";
+    }
+
+    else {
+      totalMinutes = (earlyMinutes || 0) - (lateMinutes || 0);
+      status = ci.status;
+    }
 
 
-
-    
     rows.push({
       id: ci?.id || null, 
       no: userNo,
@@ -114,10 +141,10 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
 
       late: lateMinutes,
       early: earlyMinutes,
-      total : totalMinutes,
+      total : totalMinutes || "-",
 
 
-      // status,
+      status,
       isHoliday,
       workedOnHoliday,
       isCompanyHoliday,
@@ -125,15 +152,15 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       leaveType: leave?.type || null,
       leaveNote: leave?.note || "",
 
-      // remark: isCompanyHoliday && workedOnHoliday
-      //   ? `${holidayWorkedMinutes} min`
-      //   : isCompanyHoliday
-      //   ? companyHoliday?.title || "Holiday"
-      //   : isLeave
-      //   ? leave?.note || ""
-      //   : workedOnHoliday
-      //   ? `${holidayWorkedMinutes} min`
-      //   : remark || "",
+      remark: isCompanyHoliday && workedOnHoliday
+        ? `${holidayWorkedMinutes} min`
+        : isCompanyHoliday
+        ? companyHoliday?.title || "Holiday"
+        : isLeave
+        ? leave?.note || ""
+        : workedOnHoliday
+        ? `${holidayWorkedMinutes} min`
+        : remark || "",
 
     });
   });

@@ -11,7 +11,7 @@ export default function AddHolidayModal({ holiday, onClose  }) {
   const [title, setTitle] = useState(holiday?.title || "");
 
   const handleSave = async () => {
-  if (!date || !title) {
+  if (!date) {
     Swal.fire({
       icon: "warning",
       title: "Select date",
@@ -27,14 +27,14 @@ export default function AddHolidayModal({ holiday, onClose  }) {
       // ✅ UPDATE
       await updateDoc(doc(db, "CompanyHolidays", holiday.id), {
         date,
-        title,
+     
         updatedAt: Timestamp.now()
       });
     } else {
       // ✅ CREATE
       await addDoc(collection(db, "CompanyHolidays"), {
         date,
-        title,
+        title : title || "Holiday",
         createdAt: Timestamp.now(),
         createdBy: "Admin"
       });

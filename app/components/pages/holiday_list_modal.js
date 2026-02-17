@@ -27,6 +27,7 @@ export default function HolidayListModal({ onClose }) {
     const handleDelete = async (id) => {
         await deleteDoc(doc(db, "CompanyHolidays", id));
         fetchHolidays();
+        window.location.reload();
     };
 
   return (
