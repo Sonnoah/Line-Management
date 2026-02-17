@@ -7,7 +7,10 @@ import { getApprovedRequests } from "@/script/attendance_record/utils/get_approv
 import { getCompanyHolidays } from "@/script/attendance_record/utils/get_company_holidays";
 import PeriodSwitcher from "../components/pages/period_switcher";
 
+
+
 export default async function Page({ searchParams }) {
+
 
   const mode = searchParams?.mode || "10to25";
 
