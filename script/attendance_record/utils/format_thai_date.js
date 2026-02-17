@@ -102,17 +102,19 @@ export function applyOtAccum(rows) {
 }
 
 
-export function toJSDate(timestamp) {
-  if (!timestamp) return null;
+export function toJSDate(value) {
+  if (!value) return null;
 
-  // ถ้าเป็น Firestore Timestamp
-  if (typeof timestamp.toDate === "function") {
-    return timestamp.toDate();
+  if (typeof value.toDate === "function") {
+    return value.toDate();
   }
 
-  // ถ้าเป็น plain object { seconds }
-  if (timestamp.seconds) {
-    return new Date(timestamp.seconds * 1000);
+  if (value.seconds) {
+    return new Date(value.seconds * 1000);
+  }
+
+  if (value instanceof Date) {
+    return value;
   }
 
   return null;

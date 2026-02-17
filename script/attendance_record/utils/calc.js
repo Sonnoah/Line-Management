@@ -25,18 +25,21 @@ export function timeStrToMinutes(timeStr) {
 }
 
 export function calcLateMinutes(checkInAt, workStart) {
-  const checkInDate = toJSDate(checkInAt);
-  if (!checkInDate) return null;
+  const inDate = toJSDate(checkInAt);
+  if (!inDate) return 0;
 
-  const checkInMinutes =
-    checkInDate.getHours() * 60 + checkInDate.getMinutes();
+  const workStartDate = new Date(inDate);
 
-  const workStartMinutes = timeStrToMinutes(workStart);
+  const [startH, startM] = workStart.split(":").map(Number);
+  workStartDate.setHours(startH, startM, 0, 0);
 
-  const late = checkInMinutes - workStartMinutes;
+  const diffMinutes = Math.floor(
+    (inDate.getTime() - workStartDate.getTime()) / 60000
+  );
 
-  return late > 0 ? late : 0;
+  return diffMinutes > 0 ? diffMinutes : 0;
 }
+
 
 export function calcEarlyMinutes(
   checkInAt,
@@ -47,14 +50,17 @@ export function calcEarlyMinutes(
   const outDate = toJSDate(checkOutAt);
   if (!outDate) return 0;
 
-  const outMinutes =
-    outDate.getHours() * 60 + outDate.getMinutes();
+  // เอาวันเดียวกันของ checkOut มาเป็นฐาน
+  const workEndDate = new Date(outDate);
 
-  const workEndMinutes = timeStrToMinutes(workEnd);
+  const [endH, endM] = workEnd.split(":").map(Number);
+  workEndDate.setHours(endH, endM, 0, 0);
 
-  const overtime = outMinutes - workEndMinutes;
+  const diffMinutes = Math.floor(
+    (outDate.getTime() - workEndDate.getTime()) / 60000
+  );
 
-  return overtime > 0 ? overtime : 0;
+  return diffMinutes > 0 ? diffMinutes : 0;
 }
 
 export function calcWorkedMinutes(checkInAt, checkOutAt) {
