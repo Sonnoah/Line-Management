@@ -38,20 +38,34 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       h => h.date === date
     );
 
+    function toDateSafe(value) {
+      if (!value) return null;
+
+      if (value instanceof Date) return value;
+
+      if (typeof value.toDate === "function") {
+        return value.toDate();
+      }
+
+      if (value.seconds) {
+        return new Date(value.seconds * 1000);
+      }
+
+      return new Date(value);
+    }
+
     const isCompanyHoliday = !!companyHoliday;
     const isHoliday =
       isCompanyHoliday || isHolidayByDepartment(date, user.department);
 
       const hasCheckin = !!ci;
       const workedOnHoliday = isHoliday && hasCheckin;
-
       
       // late //
       const lateMinutes =
         !isHoliday && ci
           ? calcLateMinutes(ci.checkInAt, workTime.start)
           : null;
-
 
       // early / overtime //
       const earlyMinutes =
