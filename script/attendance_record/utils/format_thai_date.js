@@ -1,8 +1,9 @@
 export function formatThaiDate(date) {
-  return date.toLocaleDateString("en-GB", {
+  return date.toLocaleDateString("th-TH", {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: "Asia/Bangkok"
   });
 }
 
@@ -36,8 +37,10 @@ export function parseLocalDate(dateStr, options = { be: false }) {
 
   const yearAD = options.be ? y - 543 : y;
 
-  return new Date(yearAD, m - 1, d);
+  // ใช้ Date.UTC ป้องกัน timezone shift
+  return new Date(Date.UTC(yearAD, m - 1, d));
 }
+
 
 export function dateToYMD(date = new Date()) {
   return date.toLocaleDateString("en-CA", {

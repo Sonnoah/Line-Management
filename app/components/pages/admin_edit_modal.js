@@ -5,6 +5,7 @@ import { doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
 import Swal from "sweetalert2";
 
+
 export default function AdminEditModal({ row, onClose }) {
   const [checkIn, setCheckIn] = useState(row.checkIn || "");
   const [checkOut, setCheckOut] = useState(row.checkOut || "");
@@ -63,6 +64,8 @@ export default function AdminEditModal({ row, onClose }) {
         <input
           type="time"
           value={checkIn}
+          step="60"
+          lang="en-GB"
           onChange={(e) => setCheckIn(e.target.value)}
           className="input w-full border-[#243c5a]/10 outline-accent text-[16px] mb-3 mt-1"
         />
@@ -71,6 +74,8 @@ export default function AdminEditModal({ row, onClose }) {
         <input
           type="time"
           value={checkOut}
+          step="60"
+          lang="en-GB" 
           onChange={(e) => setCheckOut(e.target.value)}
           className="input w-full border-[#243c5a]/10 outline-accent text-[16px] mb-3 mt-1"
         />
