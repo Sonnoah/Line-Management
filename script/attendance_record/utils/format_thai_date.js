@@ -109,7 +109,7 @@ export function toJSDate(value) {
     return value.toDate();
   }
 
-  if (value.seconds) {
+  if (typeof value.seconds === "number") {
     return new Date(value.seconds * 1000);
   }
 

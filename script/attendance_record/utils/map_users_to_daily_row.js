@@ -48,21 +48,17 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       const hasCheckin = !!ci;
       const workedOnHoliday = isHoliday && hasCheckin;
 
-      // ------------------------
-      // late
-      // ------------------------
-      const lateMinutes =
-        !isHoliday && ci
-          ? calcLateMinutes(ci.checkInAt, workTime.start)
-          : null;
 
-      // ------------------------
-      // early / overtime
-      // (ติดลบ = ออกก่อน)
-      // ------------------------
       const checkInDate = toJSDate(ci?.checkInAt);
       const checkOutDate = toJSDate(ci?.checkOutAt);
 
+      // ✅ late
+      const lateMinutes =
+        !isHoliday && checkInDate
+          ? calcLateMinutes(checkInDate, workTime.start)
+          : null;
+
+      // ✅ early
       const earlyMinutes =
         !isHoliday && checkInDate && checkOutDate
           ? calcEarlyMinutes(
@@ -72,6 +68,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
               workTime.end
             )
           : null;
+
 
 
 
@@ -130,8 +127,8 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       let holidayWorkedMinutes = 0;
       if (workedOnHoliday && ci) {
         holidayWorkedMinutes = calcWorkedMinutes(
-          ci.checkInAt,
-          ci.checkOutAt
+          checkInDate,
+          checkOutDate
         );
       }
 
