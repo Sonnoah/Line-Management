@@ -24,14 +24,20 @@ export function timeStrToMinutes(timeStr) {
 export function calcLateMinutes(checkInDate, workStartStr) {
   if (!checkInDate || !workStartStr) return 0;
 
+  const checkInTime = checkInDate.toLocaleTimeString("en-GB", {
+    hour12: false,
+    timeZone: "Asia/Bangkok",
+  });
+
+  const [ciH, ciM] = checkInTime.split(":").map(Number);
   const [startH, startM] = workStartStr.split(":").map(Number);
 
-  const workStart = new Date(checkInDate);
-  workStart.setHours(startH, startM, 0, 0);
+  const checkInMinutes = ciH * 60 + ciM;
+  const workStartMinutes = startH * 60 + startM;
 
-  if (checkInDate <= workStart) return 0;
+  if (checkInMinutes <= workStartMinutes) return 0;
 
-  return Math.floor((checkInDate - workStart) / (1000 * 60));
+  return checkInMinutes - workStartMinutes;
 }
 
 
