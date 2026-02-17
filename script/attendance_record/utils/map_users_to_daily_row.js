@@ -38,36 +38,28 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       h => h.date === date
     );
 
-    function toDateSafe(value) {
-      if (!value) return null;
-
-      if (value instanceof Date) return value;
-
-      if (typeof value.toDate === "function") {
-        return value.toDate();
-      }
-
-      if (value.seconds) {
-        return new Date(value.seconds * 1000);
-      }
-
-      return new Date(value);
-    }
-
     const isCompanyHoliday = !!companyHoliday;
     const isHoliday =
       isCompanyHoliday || isHolidayByDepartment(date, user.department);
 
+
+
+
       const hasCheckin = !!ci;
       const workedOnHoliday = isHoliday && hasCheckin;
-      
-      // late //
+
+      // ------------------------
+      // late
+      // ------------------------
       const lateMinutes =
         !isHoliday && ci
           ? calcLateMinutes(ci.checkInAt, workTime.start)
           : null;
 
-      // early / overtime //
+      // ------------------------
+      // early / overtime
+      // (ติดลบ = ออกก่อน)
+      // ------------------------
       const earlyMinutes =
         !isHoliday && ci
           ? calcEarlyMinutes(
@@ -76,7 +68,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
               workTime.start,
               workTime.end
             )
-          : null; 
+          : null;
 
       const requiredMinutes = workTime.requiredMinutes;
 
@@ -84,35 +76,41 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       let status = "";
       let remark = "";
 
-
-      // FUTURE DAY //
+      // =========================
+      // FUTURE DAY
+      // =========================
       if (isFutureDate) {
         totalMinutes = null;
         status = "PENDING";
       }
 
-
-      // TODAY but not finish work yet //
+      // =========================
+      // TODAY but not finish work yet
+      // =========================
       else if (isBeforeEnd && !ci) {
         totalMinutes = null;
         status = "PENDING";
       }
 
-
-      // LEAVE / HOLIDAY //
+      // =========================
+      // LEAVE / HOLIDAY
+      // =========================
       else if (isLeave || isHoliday) {
         totalMinutes = 0;
         status = isLeave ? "LEAVE" : "HOLIDAY";
       }
 
-
-      // ABSENT //
+      // =========================
+      // ABSENT
+      // =========================
       else if (!ci) {
         totalMinutes = -requiredMinutes;
         status = "ABSENT";
       }
 
-      // NORMAL WORK DAY //
+      // =========================
+      // NORMAL WORK DAY
+      // =========================
       else {
         const early = earlyMinutes ?? 0;
         const late = lateMinutes ?? 0;
@@ -121,7 +119,9 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         status = ci.status;
       }
 
-      // HOLIDAY WORKED MINUTES //
+      // =========================
+      // HOLIDAY WORKED MINUTES
+      // =========================
       let holidayWorkedMinutes = 0;
       if (workedOnHoliday && ci) {
         holidayWorkedMinutes = calcWorkedMinutes(
@@ -130,8 +130,9 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         );
       }
 
-
-      // PUSH ROW //
+      // =========================
+      // PUSH ROW
+      // =========================
       rows.push({
         id: ci?.id || null, 
         no: userNo,
@@ -144,30 +145,26 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         workEnd: workTime.end,
 
         checkIn: ci?.checkInAt
-        ? ci.checkInAt.toDate().toLocaleTimeString("th-TH", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-            timeZone: "Asia/Bangkok"
-          })
-        : "",
+          ? new Date(ci.checkInAt.seconds * 1000).toLocaleTimeString("th-TH", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "",
 
         checkOut: ci?.checkOutAt
-        ? ci.checkOutAt.toDate().toLocaleTimeString("th-TH", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-            timeZone: "Asia/Bangkok"
-          })
-        : "",
+          ? new Date(ci.checkOutAt.seconds * 1000).toLocaleTimeString("th-TH", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "",
 
-
-        // checkOut: ci?.checkOutAt
-        //   ? new Date(ci.checkOutAt.seconds * 1000).toLocaleTimeString("th-TH", {
-        //       hour: "2-digit",
-        //       minute: "2-digit",
-        //     })
-        //   : "",
+        // ? ci.checkInAt.toDate().toLocaleTimeString("th-TH", {
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        //     hour12: false,
+        //     timeZone: "Asia/Bangkok"
+        //   })
+        // : "",
 
         total: totalMinutes,
         late: lateMinutes,
