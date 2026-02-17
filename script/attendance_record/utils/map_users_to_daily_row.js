@@ -2,7 +2,7 @@ import { isHolidayByDepartment } from "../utils/is_holiday_by_department";
 import { calcLateMinutes, calcEarlyMinutes, calcWorkedMinutes } from "./calc";
 import { getWorkTime } from "./get_work_time";
 import { getLeaveOnDate } from "./get_leave_on_date";
-import { dateToYMD } from "./format_thai_date";
+import { dateToYMD, toJSDate } from "./format_thai_date";
 
 export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyHolidays = []) {
   const rows = [];
@@ -144,27 +144,26 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
         workStart: workTime.start,
         workEnd: workTime.end,
 
-        checkIn: ci?.checkInAt
-          ? new Date(ci.checkInAt.seconds * 1000).toLocaleTimeString("th-TH", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "",
+      checkIn: ci?.checkInAt
+        ? toJSDate(ci.checkInAt)?.toLocaleTimeString("th-TH", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: "Asia/Bangkok"
+          })
+        : "",
 
-        checkOut: ci?.checkOutAt
-          ? new Date(ci.checkOutAt.seconds * 1000).toLocaleTimeString("th-TH", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "",
+      checkOut: ci?.checkOutAt
+        ? toJSDate(ci.checkOutAt)?.toLocaleTimeString("th-TH", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: "Asia/Bangkok"
+          })
+        : "",
 
-        // ? ci.checkInAt.toDate().toLocaleTimeString("th-TH", {
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        //     hour12: false,
-        //     timeZone: "Asia/Bangkok"
-        //   })
-        // : "",
+
+
 
         total: totalMinutes,
         late: lateMinutes,
