@@ -6,11 +6,9 @@ import { getDateRangeList } from "@/script/get_date_range_list";
 import { getApprovedRequests } from "@/script/attendance_record/utils/get_approved_leaves";
 import { getCompanyHolidays } from "@/script/attendance_record/utils/get_company_holidays";
 import PeriodSwitcher from "../components/pages/period_switcher";
-
-
+import AdminGuard from "@/app/components/admin_guard";
 
 export default async function Page({ searchParams }) {
-
 
   const mode = searchParams?.mode || "10to25";
 
@@ -51,12 +49,14 @@ export default async function Page({ searchParams }) {
   const rows = applyOtAccum(baseRows);
 
   return (
-    <PeriodSwitcher
-      rows={rows}
-      label={label}
-      mode={mode}
-      selectedMonth={selectedMonth}
-    />
+    <AdminGuard>
+      <PeriodSwitcher
+        rows={rows}
+        label={label}
+        mode={mode}
+        selectedMonth={selectedMonth}
+      />
+    </AdminGuard>
   );
 }
 

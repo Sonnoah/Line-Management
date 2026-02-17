@@ -6,6 +6,7 @@ import { get_liff_Profile } from "@/helper/liff_get_profile";
 import { getUser } from "@/script/get_user";
 import { Loading } from "@/app/components/loading";
 import AdminPanel from "../components/pages/admin_panel";
+import AdminGuard from "@/app/components/admin_guard";
 
 export default function AdminPage() {
   const [checking, setChecking] = useState(true);
@@ -20,7 +21,7 @@ export default function AdminPage() {
       const dbUser = await getUser(profile.userId);
 
       if (dbUser?.role !== "Admin") {
-        router.replace("/"); 
+        router.replace("/main"); 
         return;
       }
 
@@ -35,5 +36,9 @@ export default function AdminPage() {
 
   if (!allowed) return null;
 
-  return <AdminPanel />;
+  return (
+    <AdminGuard>
+      <AdminPanel />;
+    </AdminGuard>
+  );
 }
