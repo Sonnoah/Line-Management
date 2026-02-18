@@ -194,7 +194,7 @@ export default function Main() {
               )}
             </div>
 
-            <div className="stat-desc">Hrs</div>
+            <div className="stat-desc">Hr</div>
           </div>
         </div>
 
@@ -261,7 +261,7 @@ export default function Main() {
                   </>
                 )}
               </div>
-            <div className="stat-desc">Hrs</div>
+            <div className="stat-desc">Hr</div>
           </div>     
         </div>
         

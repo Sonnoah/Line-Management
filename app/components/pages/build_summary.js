@@ -12,6 +12,9 @@ export function buildSummary(rows, label) {
         holidays: 0,
         lateMinutes: 0,
         otTotal: 0,
+        
+        holidayMinutes: 0,
+        otTotalx2: 0,
 
         leaveWithPay: 0,
         leaveNoPay: 0,
@@ -34,12 +37,16 @@ export function buildSummary(rows, label) {
       u.holidays += 1;
     }
 
-    // ✅ เก็บค่า otAccum ล่าสุด (ไม่บวกสะสม)
+    if (typeof r.holidayWorkedMinutes === "number") {
+      u.holidayMinutes += r.holidayWorkedMinutes;
+    }
+
+    //  เก็บค่า otAccum ล่าสุด (ไม่บวกสะสม)
     if (typeof r.otAccum === "number") {
       u.otAccum = r.otAccum;
     }
 
-    // ✅ ลา
+    //  ลา
     if (r.leave) {
       switch (r.leaveType) {
         case "Private pay":
@@ -58,18 +65,27 @@ export function buildSummary(rows, label) {
     }
   });
 
-  // ✅ คำนวณ OT / Late หลัง loop จบ
+
   Object.values(map).forEach(u => {
-    if (typeof u.otAccum === "number") {
-      if (u.otAccum < 0) {
-        u.lateMinutes = Math.abs(u.otAccum);
-        u.otTotal = 0;
-      } else if (u.otAccum > 0) {
-        u.otTotal = Number((u.otAccum / 60).toFixed(2));
-        u.lateMinutes = 0;
-      }
+  if (typeof u.otAccum === "number") {
+    if (u.otAccum < 0) {
+      u.lateMinutes = Math.abs(u.otAccum);
+      u.otTotal = 0;
+    } else if (u.otAccum > 0) {
+      u.otTotal = Number((u.otAccum / 60));
+      u.lateMinutes = 0;
     }
-  });
+  }
+
+  //  คำนวณ OT วันหยุด (x2)
+  if (u.holidayMinutes > 0) {
+    u.otTotalx2 = Math.floor(u.holidayMinutes / 60);
+  } else {
+    u.otTotalx2 = 0;
+  }
+});
+
+
 
   return Object.values(map);
 }

@@ -42,7 +42,7 @@ export default async function Page({ searchParams }) {
     getAllUsers(),
     getCheckinsForCurrentPeriod(period),
     getApprovedRequests(),
-    getCompanyHolidays(), 
+    getCompanyHolidays(),  
   ]);
 
   const dates = getDateRangeList(period.startDate, period.endDate);

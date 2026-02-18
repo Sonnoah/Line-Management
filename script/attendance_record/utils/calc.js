@@ -80,7 +80,6 @@ export function applyOtAccum(rows) {
       accumMap[userId] = 0;
     }
 
-    // 🚫 ถ้า total ไม่ใช่ตัวเลข (null, "-", undefined)
     if (typeof row.total !== "number") {
       return {
         ...row,

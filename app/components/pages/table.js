@@ -9,7 +9,7 @@ import { getRowClass } from "@/script/attendance_record/utils/format_thai_date";
 import HolidayListModal from "@/app/components/pages/holiday_list_modal";
 
 
-export default function AdminAttendanceExcelTable({ rows, onEdit}) {
+export default function AdminAttendanceTable({ rows, onEdit}) {
 
   const [showHolidayModal, setShowHolidayModal] = useState(false);
   const [showAddHolidayModal, setShowAddHolidayModal] = useState(false);
@@ -22,6 +22,7 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
             <th className="text-center">No</th>
             <th> Name</th>
             <th> Date</th>
+            <th> Department</th>
             <th className="text-center">Scheduled In</th>
             <th className="text-center">Scheduled Out</th>
             <th className="text-center">Check In</th>
@@ -58,6 +59,8 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
               <td className="text-[14px]">
                 {formatThaiDate(parseLocalDate(r.date))}
               </td>
+
+              <td className="text-center text-[14px]">{r.department || "-"}</td>
 
               <td className="text-center text-[14px]">{r.workStart}</td>
               <td className="text-center text-[14px]">{r.workEnd}</td>
@@ -128,7 +131,9 @@ export default function AdminAttendanceExcelTable({ rows, onEdit}) {
                     Absent
                   </span>
 
-                ) : null}
+                ) : (
+                "-"
+                )}
               </td>
 
 

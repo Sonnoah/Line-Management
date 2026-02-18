@@ -50,10 +50,11 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
 ;
   
     let holidayWorkedMinutes = 0;
-    if (workedOnHoliday && ci) {
+
+    if (workedOnHoliday && ci?.checkInAt && ci?.checkOutAt) {
       holidayWorkedMinutes = calcWorkedMinutes(
-        checkInDate,
-        checkOutDate
+        ci.checkInAt,
+        ci.checkOutAt
       );
     }
 
@@ -70,12 +71,27 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
     // EARLY //
     let earlyMinutes = 0;
 
-    if (!isHoliday && !isLeave && ci?.checkOutAt) {
-      earlyMinutes = calcEarlyMinutes(
-        toJSDate(ci.checkOutAt),
-        workTime.end
-      );
+    if (!isHoliday && !isLeave && ci?.checkOutAt && ci?.checkInAt) {
+
+      const checkInDate = toJSDate(ci.checkInAt);
+      const checkOutDate = toJSDate(ci.checkOutAt);
+
+      // สร้างเวลาเลิกงานตาม schedule โดยอิงจากวันที่ checkIn
+      const [endH, endM] = workTime.end.split(":").map(Number);
+
+      const scheduledEnd = new Date(checkInDate);
+      scheduledEnd.setHours(endH, endM, 0, 0);
+
+      // ถ้าเลิกงานข้ามวัน และเวลาเลิกน้อยกว่าเวลาเข้า
+      if (checkOutDate < scheduledEnd) {
+        scheduledEnd.setDate(scheduledEnd.getDate() - 1);
+      }
+
+      const diff = Math.floor((checkOutDate - scheduledEnd) / 60000);
+
+      earlyMinutes = diff > 0 ? diff : 0;
     }
+
 
     // OT //
     const requiredMinutes = workTime.requiredMinutes;
@@ -108,7 +124,6 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       totalMinutes = (earlyMinutes || 0) - (lateMinutes || 0);
       status = ci.status;
     }
-
 
     rows.push({
       id: ci?.id || null, 
@@ -143,6 +158,7 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       early: earlyMinutes,
       total : totalMinutes || "-",
 
+      holidayWorkedMinutes: holidayWorkedMinutes || 0,
 
       status,
       isHoliday,
@@ -153,13 +169,13 @@ export function mapUsersToDailyRow(users, checkins, dates, leaves = [], companyH
       leaveNote: leave?.note || "",
 
       remark: isCompanyHoliday && workedOnHoliday
-        ? `${holidayWorkedMinutes} min`
+        ? `${Math.floor(holidayWorkedMinutes / 60)} hr | ${holidayWorkedMinutes} min`
         : isCompanyHoliday
         ? companyHoliday?.title || "Holiday"
         : isLeave
         ? leave?.note || ""
         : workedOnHoliday
-        ? `${holidayWorkedMinutes} min`
+        ? `${Math.floor(holidayWorkedMinutes / 60)} hr | ${holidayWorkedMinutes} min`
         : remark || "",
 
     });

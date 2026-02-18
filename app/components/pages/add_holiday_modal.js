@@ -24,14 +24,14 @@ export default function AddHolidayModal({ holiday, onClose  }) {
 
   try {
     if (holiday) {
-      // ✅ UPDATE
+      //  UPDATE  // 
       await updateDoc(doc(db, "CompanyHolidays", holiday.id), {
         date,
      
         updatedAt: Timestamp.now()
       });
     } else {
-      // ✅ CREATE
+      //  CREATE  // 
       await addDoc(collection(db, "CompanyHolidays"), {
         date,
         title : title || "Holiday",
