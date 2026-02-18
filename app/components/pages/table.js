@@ -154,7 +154,12 @@ export default function AdminAttendanceTable({ rows, onEdit}) {
         </tbody>
       </table>
         {showHolidayModal && (
-          <HolidayListModal onClose={() => setShowHolidayModal(false)} />
+          <HolidayListModal
+            onClose={() => {
+              setShowHolidayModal(false);
+              window.location.reload();;
+            }}
+          />
         )}
     </div>
   );

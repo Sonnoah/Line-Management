@@ -27,7 +27,7 @@ export default function HolidayListModal({ onClose }) {
     const handleDelete = async (id) => {
         await deleteDoc(doc(db, "CompanyHolidays", id));
         fetchHolidays();
-        window.location.reload();
+        // window.location.reload();
     };
 
   return (
@@ -37,7 +37,7 @@ export default function HolidayListModal({ onClose }) {
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" 
                     onClick={onClose}>
                     ✕
-                    </button>
+                </button>
             </form>
 
                 <table className="table table-sm">
@@ -99,7 +99,7 @@ export default function HolidayListModal({ onClose }) {
                     onClose={() => {
                     setShowAddHolidayModal(false);
                     setSelectedHoliday(null);
-                    fetchHolidays(); 
+                    fetchHolidays();
                     }}
                 />
             )}

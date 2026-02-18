@@ -27,7 +27,6 @@ export default function AddHolidayModal({ holiday, onClose  }) {
       //  UPDATE  // 
       await updateDoc(doc(db, "CompanyHolidays", holiday.id), {
         date,
-     
         updatedAt: Timestamp.now()
       });
     } else {
@@ -46,9 +45,9 @@ export default function AddHolidayModal({ holiday, onClose  }) {
       text: holiday ? "Holiday Updated" : "Holiday Added",
       timer: 2000,
       showConfirmButton: false,
-      willClose: () => {
-        window.location.reload();
-      }
+      // willClose: () => {
+      //   window.location.reload();
+      // }
     });
 
   } catch (error) {

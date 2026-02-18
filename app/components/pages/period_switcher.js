@@ -25,6 +25,8 @@ export default function PeriodSwitcher({
 
   const mode = searchParams.get("mode") || "10to25";
   const now = new Date();
+
+  
   const selectedMonth =
     searchParams.get("month") ||
     `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
