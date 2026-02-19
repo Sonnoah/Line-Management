@@ -63,10 +63,13 @@ export default function Profile() {
   return (
     <div className="wrap">
       <main className="profile-container">
-          <img src={profile.pictureUrl} alt="profile"
-            className="w-38 h-38 mt-5 rounded-full"
-          />
-
+        <img
+          src={profile.pictureUrl || "/avatar.png"}
+          onError={(e) => {
+            e.currentTarget.src = "/avatar.png";
+          }}
+          className="w-38 h-38 mt-5 rounded-full"
+        />
           <div className="divider mt-5 w-full uppercase text-[14px]"> Profile </div>
 
             <div className="flex gap-1 w-full">

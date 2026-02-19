@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 import AddHolidayModal from "@/app/components/pages/add_holiday_modal";
 
 import { db } from "@/lib/firebase_config";
@@ -10,6 +11,8 @@ export default function HolidayListModal({ onClose }) {
     const [holidays, setHolidays] = useState([]);
     const [showAddHolidayModal, setShowAddHolidayModal] = useState(false);
     const [selectedHoliday, setSelectedHoliday] = useState(null);
+
+    const router = useRouter();
 
     useEffect(() => {
         fetchHolidays();
@@ -27,7 +30,7 @@ export default function HolidayListModal({ onClose }) {
     const handleDelete = async (id) => {
         await deleteDoc(doc(db, "CompanyHolidays", id));
         fetchHolidays();
-        // window.location.reload();
+        router.refresh();
     };
 
   return (

@@ -9,6 +9,7 @@ import { buildSummary } from "@/app/components/pages/build_summary";
 import { exportAttendanceToExcel } from "../excel/export_excel";
 import { useRef, useEffect } from "react";
 
+
 export default function PeriodSwitcher({
   rows,
   label,
@@ -129,13 +130,13 @@ export default function PeriodSwitcher({
             <span className="ci--filter"></span> Filter
             </button>
               {isOpen && (
-                <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-60 p-2 mt-2 shadow-sm">
+                <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-max p-2 mt-2 shadow-sm">
                   <li><a className="pointer-events-none">
                     <p className="text-[14px] font-bold">Filter By Department</p></a> 
                   </li>
                     <ul className="menu menu-vertical lg:menu-horizontal ">
                       <li>
-                        <input className= {`btn btn-soft mr-2 rounded-full border-0
+                        <input className= {`btn btn-soft mr-2 mb-2 rounded-full border-0
                           ${selectedDepartments.includes("Office")
                             ? "btn-soft btn-info "
                             : ""
@@ -145,7 +146,7 @@ export default function PeriodSwitcher({
                             onChange={() => toggleDepartment("Office")}/>
                       </li>
                       <li>
-                        <input className= {`btn btn-soft mr-1 rounded-full border-0
+                        <input className= {`btn btn-soft mr-1 mb-2 rounded-full border-0
                           ${selectedDepartments.includes("Production")
                             ? "btn-info "
                             : ""

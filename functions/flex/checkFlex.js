@@ -1,70 +1,135 @@
 function checkFlex({
-  title, dateText, color, userName, timeText, photoUrl, lat, lng,
+  title,
+  color,
+  dateText,
+  userName,
+  timeText,
+  photoUrl,
+  lat,
+  lng,
 }) {
   return {
     type: "flex",
     altText: `${title} - ${userName}`,
     contents: {
       type: "bubble",
+
       header: {
         type: "box",
         layout: "vertical",
-        backgroundColor: color,
-        paddingAll: "12px",
         contents: [
           {
             type: "text",
             text: title,
-            weight: "bold",
             size: "lg",
-            align: "center",
             color: "#FFFFFF",
+            weight: "bold",
           },
           {
             type: "text",
             text: dateText,
-            size: "sm",
-            align: "center",
             color: "#FFFFFF",
-            margin: "sm",
+            size: "sm",
           },
         ],
+        alignItems: "center",
+        paddingAll: "12px",
       },
-      body: {
+
+      hero: {
         type: "box",
         layout: "vertical",
-        spacing: "md",
         contents: [
           {
-            type: "image",
-            url: photoUrl,
-            size: "full",
-            aspectRatio: "4:3",
-            aspectMode: "cover",
-            action: {
-              type: "uri",
-              uri: photoUrl,
-            },
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              {
+                type: "image",
+                url: photoUrl,
+                size: "full",
+                aspectMode: "cover",
+                aspectRatio: "20:13",
+                action: {
+                  type: "uri",
+                  uri: photoUrl,
+                },
+              },
+            ],
+            cornerRadius: "20px",
           },
+        ],
+        paddingStart: "20px",
+        paddingEnd: "20px",
+        paddingTop: "10px",
+      },
+
+      body: {
+        type: "box",
+        layout: "horizontal",
+        contents: [
           {
-            type: "text",
-            text: `Name: ${userName}`,
-            wrap: true,
-          },
-          {
-            type: "text",
-            text: `Time: ${timeText}`,
-            wrap: true,
+            type: "box",
+            layout: "vertical",
+            margin: "lg",
+            spacing: "sm",
+            contents: [
+              {
+                type: "box",
+                layout: "baseline",
+                spacing: "sm",
+                contents: [
+                  {
+                    type: "text",
+                    text: "Name",
+                    size: "sm",
+                    flex: 2,
+                    weight: "bold",
+                  },
+                  {
+                    type: "text",
+                    text: userName,
+                    wrap: true,
+                    size: "sm",
+                    flex: 5,
+                  },
+                ],
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                spacing: "sm",
+                contents: [
+                  {
+                    type: "text",
+                    text: "Time",
+                    size: "sm",
+                    flex: 2,
+                    weight: "bold",
+                  },
+                  {
+                    type: "text",
+                    text: timeText,
+                    wrap: true,
+                    size: "sm",
+                    flex: 5,
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
+
       footer: {
         type: "box",
         layout: "vertical",
+        spacing: "sm",
         contents: [
           {
             type: "button",
             style: "link",
+            height: "sm",
             action: {
               type: "uri",
               label: "Location",
@@ -72,8 +137,16 @@ function checkFlex({
             },
           },
         ],
+        flex: 0,
+      },
+
+      styles: {
+        header: {
+          backgroundColor: color,
+        },
       },
     },
   };
 }
+
 exports.checkFlex = checkFlex;

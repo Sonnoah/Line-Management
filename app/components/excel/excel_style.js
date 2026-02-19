@@ -64,7 +64,7 @@ export function centerColumn(sheet) {
 
   const range = XLSX.utils.decode_range(sheet["!ref"]);
 
-  const targetCols = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
+  const targetCols = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
 
   for (let row = range.s.r; row <= range.e.r; row++) {
 

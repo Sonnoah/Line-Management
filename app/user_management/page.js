@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { get_liff_Profile } from "@/helper/liff_get_profile";
-import { getUser } from "@/script/get_user";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase_config";
 import { Loading } from "@/app/components/loading";
 import AdminPanel from "../components/pages/admin_panel";
 import AdminGuard from "@/app/components/admin_guard";
@@ -14,31 +15,41 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function checkRole() {
+    let unsubscribe;
+
+    async function checkRoleRealtime() {
       const profile = await get_liff_Profile();
       if (!profile) return;
 
-      const dbUser = await getUser(profile.userId);
+      const userRef = doc(db, "Users", profile.userId);
 
-      if (dbUser?.role !== "Admin") {
-        router.replace("/main"); 
-        return;
-      }
+      unsubscribe = onSnapshot(userRef, (snap) => {
+        const dbUser = snap.data();
 
-      setAllowed(true);
-      setChecking(false);
+        if (!dbUser || dbUser.role !== "Admin") {
+          setAllowed(false);
+          router.replace("/main");
+        } else {
+          setAllowed(true);
+        }
+
+        setChecking(false);
+      });
     }
 
-    checkRole();
+    checkRoleRealtime();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   if (checking) return <Loading />;
-
   if (!allowed) return null;
 
   return (
     <AdminGuard>
-      <AdminPanel />;
+      <AdminPanel />
     </AdminGuard>
   );
 }

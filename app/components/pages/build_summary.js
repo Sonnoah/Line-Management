@@ -66,25 +66,61 @@ export function buildSummary(rows, label) {
   });
 
 
-  Object.values(map).forEach(u => {
-  if (typeof u.otAccum === "number") {
-    if (u.otAccum < 0) {
-      u.lateMinutes = Math.abs(u.otAccum);
-      u.otTotal = 0;
-    } else if (u.otAccum > 0) {
-      u.otTotal = Number((u.otAccum / 60));
-      u.lateMinutes = 0;
+//   Object.values(map).forEach(u => {
+//   if (typeof u.otAccum === "number") {
+//     if (u.otAccum < 0) {
+//       u.lateMinutes = Math.abs(u.otAccum);
+//       u.otTotal = 0;
+//     } else if (u.otAccum > 0) {
+//       u.otTotal = Number((u.otAccum / 60));
+//       u.lateMinutes = 0;
+//     }
+//   }
+
+//   //  คำนวณ OT วันหยุด (x2)
+//   if (u.holidayMinutes > 0) {
+//     u.otTotalx2 = Math.floor(u.holidayMinutes / 60);
+//   } else {
+//     u.otTotalx2 = 0;
+//   }
+// });
+
+Object.values(map).forEach(u => {
+
+    // ===== OT ปกติ =====
+    if (typeof u.otAccum === "number") {
+      if (u.otAccum < 0) {
+        u.lateMinutes = Math.abs(u.otAccum);
+        u.otTotal = 0;
+      } else if (u.otAccum > 0) {
+        u.otTotal = u.otAccum / 60;
+        u.lateMinutes = 0;
+      }
     }
-  }
 
-  //  คำนวณ OT วันหยุด (x2)
-  if (u.holidayMinutes > 0) {
-    u.otTotalx2 = Math.floor(u.holidayMinutes / 60);
-  } else {
-    u.otTotalx2 = 0;
-  }
-});
+    // ===== OT วันหยุด (x2) =====
+    let holidayMinutes = u.holidayMinutes || 0;
+    let accumMinutes = u.otAccum || 0;
 
+    // ถ้า otAccum ติดลบ → ต้องเอา OT วันหยุดไปหักก่อน
+    if (accumMinutes < 0 && holidayMinutes > 0) {
+
+      const remainingMinutes = holidayMinutes + accumMinutes; 
+      // accumMinutes เป็นลบอยู่แล้ว
+
+      if (remainingMinutes > 0) {
+        u.otTotalx2 = Math.floor(remainingMinutes / 60);
+        u.lateMinutes = 0; // ถูกชดเชยหมดแล้ว
+      } else {
+        u.otTotalx2 = 0;
+        u.lateMinutes = Math.abs(remainingMinutes);
+      }
+
+    } else {
+      u.otTotalx2 = Math.floor(holidayMinutes / 60);
+    }
+
+  });
 
 
   return Object.values(map);

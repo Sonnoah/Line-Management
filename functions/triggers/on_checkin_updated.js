@@ -2,7 +2,7 @@ const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { LINE_CHANNEL_TOKEN } = require("../services/line_service");
 const { pushMessage, multicastMessage } = require("../services/line_service");
 const { db, admin } = require("../config/firebase");
-const { checkFlex } = require("./checkFlex");
+const { checkFlex } = require("../flex/checkFlex");
 
 exports.onCheckinUpdate = onDocumentWritten(
   {

@@ -7,13 +7,14 @@ import {
 import { useState } from "react";
 import { getRowClass } from "@/script/attendance_record/utils/format_thai_date";
 import HolidayListModal from "@/app/components/pages/holiday_list_modal";
-
+import { useRouter } from "next/navigation";
 
 export default function AdminAttendanceTable({ rows, onEdit}) {
 
   const [showHolidayModal, setShowHolidayModal] = useState(false);
-  const [showAddHolidayModal, setShowAddHolidayModal] = useState(false);
   
+  const router = useRouter();
+
   return (
     <div className="overflow-x-auto rounded-box ">
       <table className="table table-sm ">
@@ -157,7 +158,7 @@ export default function AdminAttendanceTable({ rows, onEdit}) {
           <HolidayListModal
             onClose={() => {
               setShowHolidayModal(false);
-              window.location.reload();;
+              // router.refresh();
             }}
           />
         )}

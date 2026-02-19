@@ -4,13 +4,15 @@ import { useState } from "react";
 import { doc, updateDoc, collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
 import Swal from "sweetalert2";
-
+import { useRouter } from "next/navigation";
 
 export default function AddHolidayModal({ holiday, onClose  }) {
   const [date, setDate] = useState(holiday?.date || "");
   const [title, setTitle] = useState(holiday?.title || "");
+  const router = useRouter();
 
   const handleSave = async () => {
+
   if (!date) {
     Swal.fire({
       icon: "warning",
@@ -39,15 +41,17 @@ export default function AddHolidayModal({ holiday, onClose  }) {
       });
     }
 
+    onClose();
+
     Swal.fire({
       icon: "success",
       title: "Success",
       text: holiday ? "Holiday Updated" : "Holiday Added",
       timer: 2000,
       showConfirmButton: false,
-      // willClose: () => {
-      //   window.location.reload();
-      // }
+      willClose: () => {
+        router.refresh();
+      }
     });
 
   } catch (error) {

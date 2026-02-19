@@ -6,6 +6,8 @@ import { Loading } from "@/app/components/loading";
 import { deleteUser } from "@/script/delete_user";
 import Detail_popup from "../detail_popup";
 import ConfirmDialog from "../confirm_dialog";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase_config";
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -47,14 +49,23 @@ export default function AdminPanel() {
   }
 
   useEffect(() => {
-    async function load() {
-      const data = await getAllUsers();
+    const q = query(
+      collection(db, "Users"),
+      orderBy("createdAt", "desc") 
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        userId: doc.id,
+        ...doc.data()
+      }));
+
       setUsers(data);
       setLoading(false);
-    }
-    load();
-  }, []);
+    });
 
+    return () => unsubscribe();
+  }, []);
   if (loading) return <Loading />;
   
   return (
@@ -76,7 +87,10 @@ export default function AdminPanel() {
                 <td className="pl-0 pr-0">
                   <div className="flex items-center gap-3">
                     <img
-                      src={profile.pictureUrl}
+                    src={profile.pictureUrl || "/avatar.png"}
+                    onError={(e) => {
+                      e.currentTarget.src = "/avatar.png";
+                    }}
                       className="h-10 w-10 mask mask-squircle"
                     />
                     <div>

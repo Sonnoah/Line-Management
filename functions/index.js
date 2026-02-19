@@ -16,3 +16,5 @@ exports.onCheckinUpdate =
 exports.onCheckinPhotoUpload =
   require("./triggers/on_checkin_photo_upload").onCheckinPhotoUpload;
 
+exports.deleteOldCheckins =
+  require("./triggers/delete_old_checkins").deleteOldCheckins;

@@ -21,6 +21,7 @@ export function exportAttendanceToExcel(rows, label) {
     "No": r.no,
     "Name": r.name,
     "Date": r.date,
+    "Department": r.department,
     "Scheduled Time": r.workStart || "",
     "": r.workEnd || "",
     "Check In": r.checkIn || "",
@@ -92,14 +93,14 @@ export function exportAttendanceToExcel(rows, label) {
   }
     // merge title
     dailySheet["!merges"] = [
-        { s: { r: 0, c: 0 }, e: { r: 1, c: 14 } }
+        { s: { r: 0, c: 0 }, e: { r: 1, c: 15 } }
     ];
 
     if (!dailySheet["!merges"]) dailySheet["!merges"] = [];
 
     dailySheet["!merges"].push({
-        s: { r: 2, c: 3 }, // D3
-        e: { r: 2, c: 4 }  // E3
+        s: { r: 2, c: 4 }, // D3
+        e: { r: 2, c: 5 }  // E3
     });
 
 
@@ -114,12 +115,12 @@ export function exportAttendanceToExcel(rows, label) {
 
     let fillColor = null;
 
-    if (r.isCompanyHoliday && r.workedOnHoliday) fillColor = "B1A0C7";
-    else if (r.workedOnHoliday) fillColor = "FFFF00";
-    else if (r.isCompanyHoliday) fillColor = "B1A0C7";
-    else if (r.isHoliday) fillColor = "92D050";
-    else if (r.status === "ABSENT") fillColor = "FF0000";
-    else if (r.leave) fillColor = "92CDDC";
+    if (r.isCompanyHoliday && r.workedOnHoliday) fillColor = "B1A0C7"; // สีเหลือง
+    else if (r.workedOnHoliday) fillColor = "FFFF00"; // สีเหลือง
+    else if (r.isCompanyHoliday) fillColor = "CCC0DA"; // สีม่วง
+    else if (r.isHoliday) fillColor = "92D050"; // สีเขียว
+    else if (r.status === "ABSENT") fillColor = "FF8B8B"; // สีแดง
+    else if (r.leave) fillColor = "B7DEE8"; // สีฟ้า
 
     if (!fillColor) return;
 
@@ -146,6 +147,7 @@ export function exportAttendanceToExcel(rows, label) {
         { wch: 4  },   // No
         { wch: 21 },  // Name
         { wch: 12 },  // Date
+        { wch: 12 },  // Department
         { wch: 10 },  // Scheduled In
         { wch: 10 },  // Scheduled Out
         { wch: 10 },  // Check In
@@ -182,7 +184,8 @@ export function exportAttendanceToExcel(rows, label) {
     "Working Days": r.workingDays,
     "Holiday": r.holidays,
     "Net Late (min)": r.lateMinutes,
-    "Total OT": r.otTotal,
+    "OT x 1": r.otTotal,
+    "TO x 2": r.otTotalx2,
     "Private Pay": r.leaveWithPay,
     "Private No Pay": r.leaveNoPay,
     "Annual Leave": r.leaveAnnual,
@@ -234,7 +237,7 @@ export function exportAttendanceToExcel(rows, label) {
     if (!summarySheet[cellAddress]) continue;
 
     summarySheet["!merges"] = [
-        { s: { r: 0, c: 0 }, e: { r: 1, c: 9 } }
+        { s: { r: 0, c: 0 }, e: { r: 1, c: 10 } }
     ];
     
     addBorderToSheet(summarySheet);
@@ -248,7 +251,7 @@ export function exportAttendanceToExcel(rows, label) {
         },
         fill: {
             patternType: "solid",
-            fgColor: { rgb: "EEECE1" }
+            fgColor: { rgb: "92D050" }
         },
         alignment: {
             horizontal: "center",
@@ -258,7 +261,7 @@ export function exportAttendanceToExcel(rows, label) {
 
 }
 
-    for (let col = 6; col <= 9; col++) {
+    for (let col = 7; col <= 10; col++) {
         const cellAddress = XLSX.utils.encode_cell({ r: 2, c: col });
 
         if (!summarySheet[cellAddress]) continue;
@@ -272,7 +275,8 @@ export function exportAttendanceToExcel(rows, label) {
         };
     }   
 
-    const cellAddress = XLSX.utils.encode_cell({ r: 2, c: 5 });
+    for (let col = 5; col <= 6; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: 2, c: col });
 
     if (summarySheet[cellAddress]) {
         summarySheet[cellAddress].s = {
@@ -282,7 +286,8 @@ export function exportAttendanceToExcel(rows, label) {
             fgColor: { rgb: "92CDDC" } 
             }
         };
-    }
+    } 
+}
 
     summarySheet["!cols"] = [
         { wch: 22 },  // Name
@@ -290,7 +295,8 @@ export function exportAttendanceToExcel(rows, label) {
         { wch: 14 },  // Working Days
         { wch: 12 },  // Holiday
         { wch: 16 },  // Late Minutes
-        { wch: 13 },  // Total OT
+        { wch: 13 },  // OT x 1
+        { wch: 13 },  // OT x 2
         { wch: 16 },  // Private Pay
         { wch: 18 },  // Private No Pay
         { wch: 16 },  // Annual Leave

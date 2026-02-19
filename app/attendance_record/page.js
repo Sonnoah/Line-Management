@@ -10,6 +10,7 @@ import { getCompanyHolidays } from "@/script/attendance_record/utils/get_company
 import PeriodSwitcher from "../components/pages/period_switcher";
 import AdminGuard from "@/app/components/admin_guard";
 
+
 export default async function Page({ searchParams }) {
 
   let mode = searchParams?.mode;

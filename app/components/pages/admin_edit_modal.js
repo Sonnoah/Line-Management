@@ -4,12 +4,15 @@ import { useState } from "react";
 import { doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase_config";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 
 export default function AdminEditModal({ row, onClose }) {
   const [checkIn, setCheckIn] = useState(row.checkIn || "");
   const [checkOut, setCheckOut] = useState(row.checkOut || "");
   const [adminremark, setAdminRemark] = useState(row.remark || "");
+  
+  const router = useRouter();
 
     const handleSave = async () => {
     if (!row.id) {
@@ -50,7 +53,7 @@ export default function AdminEditModal({ row, onClose }) {
             timer: 1500,
             showConfirmButton: false,
             willClose: () => {
-                window.location.reload();
+                router.refresh();
             },
         });
     }
