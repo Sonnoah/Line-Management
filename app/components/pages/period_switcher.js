@@ -139,7 +139,7 @@ export default function PeriodSwitcher({
                         <input className= {`btn btn-soft mr-2 mb-2 rounded-full border-0
                           ${selectedDepartments.includes("Office")
                             ? "btn-soft btn-info "
-                            : ""
+                            : "opacity-50"
                           }`} 
                             type="checkbox" aria-label="Office"
                             checked={selectedDepartments.includes("Office")}
@@ -149,7 +149,7 @@ export default function PeriodSwitcher({
                         <input className= {`btn btn-soft mr-1 mb-2 rounded-full border-0
                           ${selectedDepartments.includes("Production")
                             ? "btn-info "
-                            : ""
+                            : "opacity-50"
                           }`} 
                           type="checkbox" aria-label="Production"                        
                           checked={selectedDepartments.includes("Production")}

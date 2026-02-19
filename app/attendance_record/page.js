@@ -52,6 +52,7 @@ export default async function Page({ searchParams }) {
     round: mode === "10to25" ? "10–25" : "26–9"
   };
 
+
   const [users, checkins, leaves, companyHolidays] = await Promise.all([
     getAllUsers(),
     getCheckinsForCurrentPeriod(period),

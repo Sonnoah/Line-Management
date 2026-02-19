@@ -35,7 +35,7 @@ export default function HolidayListModal({ onClose }) {
 
   return (
     <dialog className="modal modal-open">
-        <div className="modal-box w-h-6/12 h-6/12">
+        <div className="modal-box w-h-max h-9/12">
             <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" 
                     onClick={onClose}>

@@ -172,9 +172,8 @@ export function exportAttendanceToExcel(rows, label) {
 
   XLSX.utils.book_append_sheet(workbook, dailySheet, "Daily Report");
 
-  // =====================================
-  // 2️⃣ SUMMARY SHEET
-  // =====================================
+
+  // SUMMARY SHEET  //
 
   const summaryData = buildSummary(rows, label);
 

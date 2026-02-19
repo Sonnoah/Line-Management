@@ -28,6 +28,32 @@ export function useCheckinLogic(profile) {
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const cameraStreamRef = useRef(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    async function openCamera() {
+      try {
+        if (!cameraStreamRef.current) {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          cameraStreamRef.current = stream;
+        }
+
+        if (showCamera) {
+          videoRef.current.srcObject = cameraStreamRef.current;
+        } else {
+          videoRef.current.srcObject = null;
+        }
+
+      } catch (err) {
+        console.error("Camera error:", err);
+      }
+    }
+
+    openCamera();
+
+  }, [showCamera]);
 
   useEffect(() => {
     if (!profile || !today) return;
@@ -60,6 +86,28 @@ export function useCheckinLogic(profile) {
 
     loadToday();
   }, [profile, today, forceMode]);
+
+  useEffect(() => {
+    return () => {
+      if (cameraStreamRef.current) {
+        cameraStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+
+    const takePhoto = () => {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      if (!canvas || !video) return;
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+
+      setPhoto(canvas.toDataURL("image/jpeg"));
+      video.srcObject = null;
+    };
 
 
   const resetSession = () => {
@@ -130,20 +178,6 @@ export function useCheckinLogic(profile) {
   }, [profile]);
 
 
-  useEffect(() => {
-    if (!showCamera || !videoRef.current) return;
-
-    let stream;
-    async function openCamera() {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoRef.current.srcObject = stream;
-    }
-    openCamera();
-
-    return () => {
-      if (stream) stream.getTracks().forEach(t => t.stop());
-    };
-  }, [showCamera]);
 
   const handleGPS = () => {
   Swal.fire({
@@ -204,23 +238,6 @@ export function useCheckinLogic(profile) {
     }
   );
 };
-
-
-  const takePhoto = () => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    if (!canvas || !video) return;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
-
-    setPhoto(canvas.toDataURL("image/jpeg"));
-
-    const stream = video.srcObject;
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    video.srcObject = null;
-  };
 
   const handleSubmit = async () => {
   if (submitting) return;
