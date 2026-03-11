@@ -16,7 +16,7 @@
     "flatpickr": "^4.6.13",
     "font-awesome": "^4.7.0",
     "iconify": "^1.4.0",
-    "next": "^14.2.5",
+    "next": "14.2.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-flatpickr": "^4.0.11",
